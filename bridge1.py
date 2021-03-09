@@ -8,7 +8,7 @@ from class_reliability import *
 import time
 
 #
-# Step 0 - Column: g(R, D1, D2, D3,Mtt) = R-D1-D2-D3-Mtt = 0
+# Step 0 - Bridge bending ultimate limit state: g(R, D1, D2, D3,Mtt) = R-D1-D2-D3-Mtt = 0
 #
 
 
@@ -35,8 +35,8 @@ xvar = [
 #
 # FORM method
 #
-column = Reliability(xvar, gfunction)
-column.form(iHLRF=True)
+bridge = Reliability(xvar, gfunction)
+bridge.form(iHLRF=True)
 tf = time.time()
 ttotal = tf - ti
 print(f'Processing time = {ttotal}')
