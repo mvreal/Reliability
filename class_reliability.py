@@ -518,8 +518,17 @@ class Reliability():
                 hx = weibull_min.pdf(ynh, kapah) / (w1h - epsilon)
                 weight = weight * ((fx/norm.pdf(zf[:, i], 0, 1)) / (hx/norm.pdf(zk[:, i], 0, 1)))
 
+        norm_multivarf = multivariate_normal(mean=None, cov=Rz)
+        phif = list(map(norm_multivarf.pdf, zf))
+        phif = np.array(phif)
+        norm_multivarh = multivariate_normal(mean=None, cov=Rz)
+        phih = list(map(norm_multivarh.pdf, zk))
+        phih = np.array(phih)
+        weight = weight * phif / phih
 
-        return x, zf, zk, weight
+
+
+        return x, weight
 
     def mc(self, ns, nsigma=1.00):
         #
@@ -565,14 +574,7 @@ class Reliability():
         # Step 1 - Generation of the random numbers according to their appropriate distribution
         #
 
-        xp, zf, zk, wp = self.var_gen(ns, nsigma)
-
-        varzf = zf.T
-        varzh = zk.T
-        for i in range(ns):
-            phif = multivariate_normal.pdf(varzf[:, i], mean=None, cov=Rz)
-            phih = multivariate_normal.pdf(varzh[:, i], mean=None, cov=Rz)
-        wp = wp*phif/phih
+        xp, wp = self.var_gen(ns, nsigma)
 
         #
         #
