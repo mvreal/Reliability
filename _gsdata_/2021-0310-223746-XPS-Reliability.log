@@ -1,0 +1,38 @@
+2021-03-10 22:37:46: -- Analysis Started by Analyze And Sync All
+2021-03-10 22:37:46: L: State file does not exist: F:/Reliability/_gsdata_/_file_state_v4._gs
+2021-03-10 22:37:46: /.idea/.name: Conflict: New files that differ
+2021-03-10 22:37:46: /.idea/shelf/Uncommitted_changes_before_Update_at_09_03_2021_15_48__Default_Changelist_.xml: Conflict: New files that differ
+2021-03-10 22:37:46: /.idea/workspace.xml: Conflict: New files that differ
+2021-03-10 22:37:46: /__pycache__/class_reliability.cpython-37.pyc: Conflict: New files that differ
+2021-03-10 22:37:46: /class_reliability.py: Conflict: New files that differ
+2021-03-10 22:37:46: Analyze has finished with Conflicts. Resolve Conflicts by selecting the correct sync direction, then click Sync
+2021-03-10 22:37:46: Changes: 6, Conflicts: 5, CopyTime: 0, CopyState: 35/0, Errors: 0, All: 43
+2021-03-10 22:37:46: Left to Right: Copy File: 1 
+2021-03-10 22:37:46: Right to Left: Copy State: 35 
+2021-03-10 22:37:47: == Sync Started by Analyze And Sync All
+2021-03-10 22:37:47: Copy New 'F:/Reliability/.gitignore' -> 'Q:/Reliability/.gitignore'
+2021-03-10 22:37:47: /.idea/.name: unresolved conflict results in No Copy
+2021-03-10 22:37:47: /.idea/shelf/Uncommitted_changes_before_Update_at_09_03_2021_15_48__Default_Changelist_.xml: unresolved conflict results in No Copy
+2021-03-10 22:37:47: /.idea/workspace.xml: unresolved conflict results in No Copy
+2021-03-10 22:37:47: /__pycache__/class_reliability.cpython-37.pyc: unresolved conflict results in No Copy
+2021-03-10 22:37:47: /class_reliability.py: unresolved conflict results in No Copy
+2021-03-10 22:37:47: == Sync Complete. Time: 00:00:00, Speed: 0 bytes/s, OK: 36, Errors: 0, Conflicts: 5
+2021-03-10 22:37:47: 
+2021-03-10 22:38:00: === User Changed Action from 'CONFLICT' to 'COPY_LEFT_TO_RIGHT' on item /.idea/.name
+2021-03-10 22:38:00: Done.
+2021-03-10 22:38:05: === User Changed Action from 'CONFLICT' to 'COPY_LEFT_TO_RIGHT' on item /.idea/shelf/Uncommitted_changes_before_Update_at_09_03_2021_15_48__Default_Changelist_.xml
+2021-03-10 22:38:05: Done.
+2021-03-10 22:38:07: === User Changed Action from 'CONFLICT' to 'COPY_LEFT_TO_RIGHT' on item /.idea/workspace.xml
+2021-03-10 22:38:07: Done.
+2021-03-10 22:38:15: === User Changed Action from 'CONFLICT' to 'COPY_LEFT_TO_RIGHT' on item /__pycache__/class_reliability.cpython-37.pyc
+2021-03-10 22:38:15: Done.
+2021-03-10 22:38:17: === User Changed Action from 'CONFLICT' to 'COPY_LEFT_TO_RIGHT' on item /class_reliability.py
+2021-03-10 22:38:17: Done.
+2021-03-10 22:38:23: == Sync Started by User
+2021-03-10 22:38:23: Copy Over 'F:/Reliability/.idea/.name' -> 'Q:/Reliability/.idea/.name' (User Action)
+2021-03-10 22:38:23: Copy Over 'F:/Reliability/.idea/shelf/Uncommitted_changes_before_Update_at_09_03_2021_15_48__Default_Changelist_.xml' -> 'Q:/Reliability/.idea/shelf/Uncommitted_changes_before_Update_at_09_03_2021_15_48__Default_Changelist_.xml' (User Action)
+2021-03-10 22:38:23: Copy Over 'F:/Reliability/.idea/workspace.xml' -> 'Q:/Reliability/.idea/workspace.xml' (User Action)
+2021-03-10 22:38:23: Copy Over 'F:/Reliability/__pycache__/class_reliability.cpython-37.pyc' -> 'Q:/Reliability/__pycache__/class_reliability.cpython-37.pyc' (User Action)
+2021-03-10 22:38:23: Copy Over 'F:/Reliability/class_reliability.py' -> 'Q:/Reliability/class_reliability.py' (User Action)
+2021-03-10 22:38:23: == Sync Complete. Time: 00:00:00, Speed: 0 bytes/s, OK: 5, Errors: 0
+2021-03-10 22:38:23: 
