@@ -29,8 +29,248 @@ class Reliability():
                 i += 1
                 # Mean value of the random variables x
                 self.x0[i] = float(var['varmean'])
+                if var['vardist'].lower() in ['norm', 'normal', 'gauss']:
+                    var['vardist'] = 'gauss'
+                elif var['vardist'].lower() in ['uniform', 'uniforme', 'const']:
+                    var['vardist'] = 'uniform'
+                elif var['vardist'].lower() in ['lognormal', 'lognorm', 'log']:
+                    var['vardist'] = 'lognorm'
+                elif var['vardist'].lower() in ['gumbel', 'extvalue1', 'evt1max']:
+                    var['vardist'] = 'gumbel'
+                elif var['vardist'].lower() in ['frechet', 'extvalue2', 'evt2max']:
+                    var['vardist'] = 'frechet'
+                elif var['vardist'].lower() in ['weibull', 'extvalue3', 'evt3min']:
+                    var['vardist'] = 'weibull'
+
         if self.corrmatrix is None:
             self.corrmatrix = np.eye(self.n)
+#
+# Nataf correction of the correlation matrix
+#
+
+    def nataf(self):
+        """
+        Nataf correction of the correlation matrix
+        According to:
+        Liu, P.-L. and Kiureghian, A.D. Multivariate distribution models with prescribed marginals and covariances
+        Probabilistic Engineering Mechanics, 1986, Vol. 1, No.2, p. 105-112
+        """
+        Rz = np.array(self.corrmatrix)
+        for i in range(self.n):
+            for j in range(i):
+
+                # Variables parameters
+                f = 1.00
+                ro = self.corrmatrix[i][j]
+                cvi = float(self.xvar[i]['varcov'])
+                cvj = float(self.xvar[j]['varcov'])
+
+                # Table 4: Xi is gauss and Xj belongs to group 1 - f is constant
+
+                # 1 Xi = gauss and Xj = gauss
+
+                if self.xvar[i]['vardist'] is 'gauss' and self.xvar[j]['vardist'] is 'gauss':
+                    f = 1.000
+
+                # 2 Xi = gauss and Xj = uniform
+
+                elif self.xvar[i]['vardist'] is 'gauss' and self.xvar[j]['vardist'] is 'uniform' \
+                        or self.xvar[i]['vardist'] is 'uniform' and self.xvar[j]['vardist'] is 'gauss':
+                    f = 1.023
+
+                # 3 Xi = gauss and Xj = gumbel
+
+                elif self.xvar[i]['vardist'] is 'gauss' and self.xvar[i]['vardist'] is 'gumbel' \
+                        or self.xvar[i]['vardist'] is 'gumbel' and self.xvar[j]['vardist'] is 'gauss':
+                    f = 1.031
+
+                # Table 5: Xi is gauss and Xj belongs to group 2 - f depends on cvj
+
+                # 4 Xi = gauss and Xj = lognorm
+
+                elif self.xvar[i]['vardist'] is 'gauss' and self.xvar[j]['vardist'] is 'lognorm' \
+                        or self.xvar[i]['vardist'] is 'lognorm' and self.xvar[j]['vardist'] is 'gauss':
+                    if self.xvar[i]['vardist'] is 'lognorm':
+                        cv = cvi
+                    else:
+                        cv = cvj
+                    f = cv / (np.sqrt(np.log(1.00 + cv ** 2)))
+
+                # 5 Xi = gauss and Xj = frechet
+
+                elif self.xvar[i]['vardist'] is 'gauss' and self.xvar[j]['vardist'] is 'frechet' \
+                        or self.xvar[i]['vardist'] is 'frechet' and self.xvar[j]['vardist'] is 'gauss':
+                    if self.xvar[i]['vardist'] is 'frechet':
+                        cv = cvi
+                    else:
+                        cv = cvj
+                    f = 1.030 + 0.238 * cv + 0.364 * cv ** 2
+
+                # 6 Xi = gauss and Xj = weibull
+
+                elif self.xvar[i]['vardist'] is 'gauss' and self.xvar[i]['vardist'] is 'weibull' \
+                        or self.xvar[i]['vardist'] is 'weibull' and self.xvar[j]['vardist'] is 'gauss':
+                    if self.xvar[i]['vardist'] is 'weibull':
+                        cv = cvi
+                    else:
+                        cv = cvj
+                    f = 1.031 + 0.195 * cv + 0.328 * cv ** 2
+
+                # Table 6: Xi  and Xj belongs to group 2 - f depends on ro
+
+                # 7 Xi = uniform and Xj = uniform
+
+                elif self.xvar[i]['vardist'] is 'uniform' and self.xvar[j]['vardist'] is 'uniform':
+                    f = 1.047 - 0.047 * ro ** 2
+
+                # 8 Xi = gumbel and Xj = gumbel
+
+                elif self.xvar[i]['vardist'] is 'gumbel' and self.xvar[j]['vardist'] is 'gumbel':
+                    f = 1.064 - 0.069 * ro + 0.005 * ro ** 2
+
+                # 9 Xi = uniform and Xj = gumbel
+
+                elif self.xvar[i]['vardist'] is 'uniform' and self.xvar[i]['vardist'] is 'gumbel' \
+                        or self.xvar[i]['vardist'] is 'gumbel' and self.xvar[j]['vardist'] is 'uniform':
+                    f = 1.055 + 0.015 * ro ** 2
+
+                # Table 7: Xi belongs to group 1 and Xj belongs to group 2 - f depends on ro and cvj
+
+                # 10 Xi = uniform and Xj = lognorm
+
+                elif self.xvar[i]['vardist'] is 'uniform' and self.xvar[i]['vardist'] is 'lognorm' \
+                        or self.xvar[i]['vardist'] is 'lognorm' and self.xvar[j]['vardist'] is 'uniform':
+                    if self.xvar[i]['vardist'] is 'lognorm':
+                        cv = cvi
+                    else:
+                        cv = cvj
+                    f = 1.019 - 0.014 * cv + 0.010 * ro ** 2 + 0.249 * cv ** 2
+
+                # 11 Xi = uniform and Xj = frechet
+
+                elif self.xvar[i]['vardist'] is 'uniform' and self.xvar[i]['vardist'] is 'frechet' \
+                        or self.xvar[i]['vardist'] is 'frechet' and self.xvar[j]['vardist'] is 'uniform':
+                    if self.xvar[i]['vardist'] is 'frechet':
+                        cv = cvi
+                    else:
+                        cv = cvj
+                    f = 1.033 - 0.030 * cv + 0.074 * ro ** 2 + 0.405 * cv ** 2
+
+                # 12 Xi = uniform and Xj = weibull
+
+                elif self.xvar[i]['vardist'] is 'uniform' and self.xvar[i]['vardist'] is 'weibull' \
+                        or self.xvar[i]['vardist'] is 'weibull' and self.xvar[j]['vardist'] is 'uniform':
+                    if self.xvar[i]['vardist'] is 'weibull':
+                        cv = cvi
+                    else:
+                        cv = cvj
+                    f = 1.061 - 0.237 * cv - 0.005 * ro ** 2 + 0.379 * cv ** 2
+
+                # 13 Xi = gumbel and Xj = lognorm
+
+                elif self.xvar[i]['vardist'] is 'gumbel' and self.xvar[i]['vardist'] is 'lognorm' \
+                        or self.xvar[i]['vardist'] is 'lognorm' and self.xvar[j]['vardist'] is 'gumbel':
+                    if self.xvar[i]['vardist'] is 'lognorm':
+                        cv = cvi
+                    else:
+                        cv = cvj
+                    f = 1.029 + 0.001 * ro + 0.014 * cv + 0.004 * ro ** 2 + 0.233 * cv ** 2 - 0.197 * ro * cv
+
+                # 14 Xi = gumbel and Xj = frechet
+
+                elif self.xvar[i]['vardist'] is 'gumbel' and self.xvar[i]['vardist'] is 'frechet' \
+                        or self.xvar[i]['vardist'] is 'frechet' and self.xvar[j]['vardist'] is 'gumbel':
+                    if self.xvar[i]['vardist'] is 'frechet':
+                        cv = cvi
+                    else:
+                        cv = cvj
+                    f = 1.056 - 0.060 * ro + 0.263 * cv + 0.020 * ro ** 2 + 0.383 * cv ** 2 - 0.332 * ro * cv
+
+                # 15 Xi = gumbel and Xj = weibull
+
+                elif self.xvar[i]['vardist'] is 'gumbel' and self.xvar[i]['vardist'] is 'weibull' \
+                        or self.xvar[i]['vardist'] is 'weibull' and self.xvar[j]['vardist'] is 'gumbel':
+                    if self.xvar[i]['vardist'] is 'weibull':
+                        cv = cvi
+                    else:
+                        cv = cvj
+                    f = 1.064 + 0.065 * ro - 0.210 * cv + 0.003 * ro ** 2 + 0.356 * cv ** 2 - 0.211 * ro * cv
+
+                # Table 8 both Xi and Xj belong to group 2: f depends on ro, cvi e cvj
+
+                # 16 Xi = lognorm and Xj = lognorm
+
+                elif self.xvar[i]['vardist'] is 'lognorm' and self.xvar[i]['vardist'] is 'lognorm':
+                    f = np.log(1.00 + ro * cvi * cvj)/(ro * np.sqrt(np.log(1.00 + cvi ** 2) * np.log(1.00 + cvj ** 2)))
+
+                # 17 Xi = gumbel and Xj = frechet
+
+                elif self.xvar[i]['vardist'] is 'lognorm' and self.xvar[i]['vardist'] is 'frechet' \
+                        or self.xvar[i]['vardist'] is 'frechet' and self.xvar[j]['vardist'] is 'lognorm':
+                    if self.xvar[i]['vardist'] is 'frechet':
+                        cvf = cvi
+                        cvl = cvj
+                    else:
+                        cvf = cvj
+                        cvl = cvi
+                    f = 1.026 + 0.082 * ro - 0.019 * cvl + 0.222 * cvf \
+                        + 0.018 * ro ** 2 + 0.288 * cvl ** 2 + 0.379 * cvf ** 2 \
+                        - 0.441 * ro * cvl + 0.126 * cvl * cvj - 0.277 * ro * cvf
+
+                # 18 Xi = lognorm and Xj = weibull
+
+                elif self.xvar[i]['vardist'] is 'lognorm' and self.xvar[i]['vardist'] is 'weibull' \
+                        or self.xvar[i]['vardist'] is 'weibull' and self.xvar[j]['vardist'] is 'lognorm':
+                    if self.xvar[i]['vardist'] is 'weibull':
+                        cvw = cvi
+                        cvl = cvj
+                    else:
+                        cvw = cvj
+                        cvl = cvi
+                    f = 1.031 + 0.052 * ro + 0.011 * cvl - 0.210 * cvw \
+                        + 0.002 * ro ** 2 + 0.220 * cvl ** 2 + 0.350 * cvw ** 2 \
+                        + 0.005 * ro * cvl + 0.009 * cvl * cvw - 0.174 * ro * cvw
+
+                # 19 Xi = frechet and Xj = frechet
+
+                elif self.xvar[i]['vardist'] is 'frechet' and self.xvar[i]['vardist'] is 'frechet':
+                    f = 1.086 + 0.054 * ro + 0.104 * (cvi + cvj) \
+                        - 0.055 * ro ** 2 + 0.662 * (cvi ** 2 + cvj ** 2)  \
+                        - 0.570 * ro * (cvi + cvj) + 0.203 * cvi * cvj \
+                        - 0.020 * ro ** 3 - 0.218 * (cvi ** 3 + cvj ** 3) \
+                        - 0.371 * ro * (cvi ** 2 + cvj ** 2) + 0.257 * ro ** 2 * (cvi + cvj) \
+                        + 0.141 * cvi * cvj * (cvi + cvj)
+
+                # 20 Xi = frechet and Xj = weibull
+
+                elif self.xvar[i]['vardist'] is 'frechet' and self.xvar[i]['vardist'] is 'weibull' \
+                        or self.xvar[i]['vardist'] is 'weibull' and self.xvar[j]['vardist'] is 'frechet':
+                    if self.xvar[i]['vardist'] is 'frechet':
+                        cvf = cvi
+                        cvw = cvj
+                    else:
+                        cvf = cvj
+                        cvw = cvi
+                    f = 1.065 + 0.146 * ro + 0.241 * cvf - 0.259 * cvw \
+                        + 0.013 * ro ** 2 + 0.372 * cvf ** 2 + 0.435 * cvw ** 2  \
+                        + 0.005 * ro * cvf + 0.034 * cvf * cvw - 0.481 * ro * cvw
+
+                # 20 Xi = weibull and Xj = weibull
+
+                elif self.xvar[i]['vardist'] is 'weibull' and self.xvar[i]['vardist'] is 'weibull':
+                    f = 1.063 - 0.004 * ro - 0.200 * (cvi + cvw) \
+                        - 0.001 * ro ** 2 + 0.337 * (cvi ** 2 + cvj ** 2)  \
+                        + 0.007 * ro * (cvi + cvj) - 0.007 * cvi * cvj
+
+                # Application of the correction factor f on the ro coefficient
+                ro = f * ro
+                Rz[i, j] = ro
+                Rz[j, i] = ro
+        print('Nataf correlation matrix:')
+        print(Rz)
+        return Rz
+
+
 
     def form(self, iHLRF):
         """
@@ -71,7 +311,7 @@ class Reliability():
             #
             # Normal distribution
             #
-            if namedist.lower() in ['norm', 'normal', 'gauss']:
+            if namedist.lower() == 'gauss':
                 mux = xpar1
                 sigmax = xpar2
                 muxneq = mux
@@ -79,7 +319,7 @@ class Reliability():
             #
             # Uniform or constant distribution
             #
-            elif namedist.lower() in ['uniform', 'uniforme', 'const']:
+            elif namedist.lower() == 'uniform':
                 a = xpar1
                 b = xpar2
                 c = (b - a)
@@ -91,7 +331,7 @@ class Reliability():
             #
             # Lognormal distribution
             #
-            elif namedist.lower() in ['lognormal', 'lognorm', 'log']:
+            elif namedist.lower() == 'lognorm':
                 mux = xpar1
                 sigmax = xpar2
                 zetax = np.sqrt(np.log(1. + (sigmax / mux) ** 2))
@@ -101,7 +341,7 @@ class Reliability():
             #
             # Gumbel distribution
             #
-            elif namedist.lower() in ['gumbel', 'extvalue1', 'evt1max']:
+            elif namedist.lower() == 'gumbel':
                 mux = xpar1
                 sigmax = xpar2
                 alphan = (np.pi / np.sqrt(6.00)) / (sigmax)
@@ -115,7 +355,7 @@ class Reliability():
             #
             # Frechet distribution
             #
-            elif namedist.lower() in ['frechet', 'extvalue2', 'evt2max']:
+            elif namedist.lower() == 'frechet':
                 mux = xpar1
                 sigmax = xpar2
                 deltax = sigmax / mux
@@ -132,7 +372,7 @@ class Reliability():
             #
             # Weibull distribution
             #
-            elif namedist.lower() in ['weibull', 'extvalue3', 'evt3min']:
+            elif namedist.lower() == 'weibull':
                 mux = xpar1
                 sigmax = xpar2
                 epsilon = xpar3
@@ -195,7 +435,8 @@ class Reliability():
         #
         # Correlation matrix is self.corrmatrix
         #
-        Rz = np.array(self.corrmatrix)
+        Rz = np.eye(self.n)
+        Rz = self.nataf()
         #
         # Cholesky decomposition of the correlation matrix
         #
@@ -373,7 +614,8 @@ class Reliability():
         #
         # Correlation matrix is self.corrmatrix
         #
-        Rz = np.array(self.corrmatrix)
+        Rz = np.eye(self.n)
+        Rz = self.nataf()
         #
         # Cholesky decomposition of the correlation matrix
         #
@@ -394,7 +636,7 @@ class Reliability():
 
             #
             namedist = var['vardist']
-            if namedist.lower() in ['norm', 'normal', 'gauss']:
+            if namedist.lower() == 'gauss':
                 mufx = float(var['varmean'])
                 sigmafx = float(var['varstd'])
                 muhx = float(var['varhmean'])
@@ -410,7 +652,7 @@ class Reliability():
             # *To do* Parameters for the sampling function hx for the uniform distribution
             # c = ?, d = ? ---> Verificar
             #
-            elif namedist.lower() in ['uniform', 'uniforme', 'const']:
+            elif namedist.lower() == 'uniform':
                 a = float(var['a'])
                 b = float(var['b'])
                 c = float(var['c'])
@@ -425,7 +667,7 @@ class Reliability():
             #
             # Lognormal distribution
             #
-            elif namedist.lower() in ['lognormal', 'lognorm', 'log']:
+            elif namedist.lower() == 'lognorm':
                 mufx = float(var['varmean'])
                 sigmafx = float(var['varstd'])
                 muhx = float(var['varhmean'])
@@ -443,7 +685,7 @@ class Reliability():
             #
             # Gumbel distribution
             #
-            elif namedist.lower() in ['gumbel', 'extvalue1', 'evt1max']:
+            elif namedist.lower() == 'gumbel':
                 mufx = float(var['varmean'])
                 sigmafx = float(var['varstd'])
                 muhx = float(var['varhmean'])
@@ -464,7 +706,7 @@ class Reliability():
             #
             # Frechet distribution
             #
-            elif namedist.lower() in ['frechet', 'extvalue2', 'evt2max']:
+            elif namedist.lower() == 'frechet':
                 mufx = float(var['varmean'])
                 sigmafx = float(var['varstd'])
                 muhx = float(var['varhmean'])
@@ -492,7 +734,7 @@ class Reliability():
             #
             # Weibull distribution
             #
-            elif namedist.lower() in ['weibull', 'extvalue3', 'evt3min']:
+            elif namedist.lower() == 'weibull':
                 mufx = float(var['varmean'])
                 sigmafx = float(var['varstd'])
                 epsilon = float(var['varinf'])
