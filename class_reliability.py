@@ -215,7 +215,7 @@ class Reliability():
                         cvl = cvi
                     f = 1.026 + 0.082 * ro - 0.019 * cvl + 0.222 * cvf \
                         + 0.018 * ro ** 2 + 0.288 * cvl ** 2 + 0.379 * cvf ** 2 \
-                        - 0.441 * ro * cvl + 0.126 * cvl * cvj - 0.277 * ro * cvf
+                        - 0.441 * ro * cvl + 0.126 * cvl * cvf - 0.277 * ro * cvf
 
                 # 18 Xi = lognorm and Xj = weibull
 
