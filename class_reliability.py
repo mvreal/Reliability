@@ -114,7 +114,7 @@ class Reliability():
                         cv = cvi
                     else:
                         cv = cvj
-                    f = 1.031 + 0.195 * cv + 0.328 * cv ** 2
+                    f = 1.031 - 0.195 * cv + 0.328 * cv ** 2
 
                 # Table 6: Xi  and Xj belongs to group 2 - f depends on ro
 
