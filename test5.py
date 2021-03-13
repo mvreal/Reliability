@@ -26,9 +26,9 @@ ti = time.time()
 # Random variables: name, probability distribution, mean and coefficient of variation
 
 xvar = [
-    {'varname': 'Y', 'vardist': 'normal', 'varmean': 40.00, 'varcov': 0.125, 'varhmean': 33.440343},
-    {'varname': 'Z', 'vardist': 'weibull', 'varmean': 50.00, 'varinf': 40.00, 'varcov': 0.05, 'varhmean': 47.287837},
-    {'varname': 'M', 'vardist': 'gumbel', 'varmean': 1000.00, 'varcov': 0.20, 'varhmean': 1580.821657}
+    {'varname': 'Y', 'vardist': 'normal', 'varmean': 40.00, 'varcov': 0.125},
+    {'varname': 'Z', 'vardist': 'weibull', 'varmean': 50.00, 'varinf': 40.00, 'varcov': 0.05},
+    {'varname': 'M', 'vardist': 'gumbel', 'varmean': 1000.00, 'varcov': 0.20}
 ]
 
 
@@ -41,7 +41,7 @@ corrmatrix = [[1.00, 0.40, 0.00],
 # FORM method
 #
 beam = Reliability(xvar, gfunction, None, corrmatrix)
-beam.mc(100_000, 1.00)
+beam.mc(1_000_000, 1.00)
 tf = time.time()
 ttotal = tf - ti
 print(f'Processing time = {ttotal}')

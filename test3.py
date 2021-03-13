@@ -27,7 +27,7 @@ ti = time.time()
 
 xvar = [
     {'varname': 'Y', 'vardist': 'lognormal', 'varmean': 40.00, 'varcov': 0.125},
-    {'varname': 'Z', 'vardist': 'weibull', 'varmean': 50.00, 'varcov': 0.05,'varinf':0.00},
+    {'varname': 'Z', 'vardist': 'weibull', 'varmean': 50.00, 'varcov': 0.05, 'varinf': 40.00},
     {'varname': 'M', 'vardist': 'gumbel', 'varmean': 1000.00, 'varcov': 0.20}
 ]
 
