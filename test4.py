@@ -26,9 +26,9 @@ ti = time.time()
 # Random variables: name, probability distribution, mean and coefficient of variation
 
 xvar = [
-    {'varname': 'Y', 'vardist': 'normal', 'varmean': 40.00, 'varcov': 0.125, 'varhmean': 33.440343},
-    {'varname': 'Z', 'vardist': 'weibull', 'varmean': 50.00, 'varinf': 40.00, 'varcov': 0.05, 'varhmean': 47.287837},
-    {'varname': 'M', 'vardist': 'gumbel', 'varmean': 1000.00, 'varcov': 0.20, 'varhmean': 1580.821657}
+    {'varname': 'Y', 'vardist': 'weibull', 'varmean': 40.00, 'varcov': 0.125, 'varinf': 20.00},
+    {'varname': 'Z', 'vardist': 'weibull', 'varmean': 50.00, 'varcov': 0.05, 'varinf': 40.00},
+    {'varname': 'M', 'vardist': 'gumbel', 'varmean': 1000.00, 'varcov': 0.20}
 ]
 
 
