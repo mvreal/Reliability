@@ -751,7 +751,7 @@ class Reliability():
                 kapah = scipy.optimize.newton(fkapa, kapa0, args=(deltahx, gsinal))
                 w1h = (muhx - epsilon) / gamma(1.00 + 1.00 / kapah) + epsilon
                 uk = norm.cdf(zk[:, i])
-                x[:, i] = (w1h - epsilon) * (np.log(1. - uk)) ** (1. / kapah)
+                x[:, i] = (w1h - epsilon) * (np.log(1./(1. - uk))) ** (1. / kapah) + epsilon
                 ynf = (x[:, i] - epsilon) / (w1f - epsilon)
                 ynh = (x[:, i] - epsilon) / (w1h - epsilon)
                 cdfx = weibull_min.cdf(ynf, kapaf)

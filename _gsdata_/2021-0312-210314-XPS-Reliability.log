@@ -1,0 +1,12 @@
+2021-03-12 21:03:14: -- Analysis Started by Analyze And Sync All
+2021-03-12 21:03:15: Changes: 6, Conflicts: 0, CopyTime: 0, CopyState: 0/0, Errors: 0, All: 50
+2021-03-12 21:03:15: Left to Right: Copy File: 6 
+2021-03-12 21:03:15: == Sync Started by Analyze And Sync All
+2021-03-12 21:03:15: Copy Over 'F:/Reliability/.idea/shelf/Uncommitted_changes_before_Update_at_09_03_2021_15_48__Default_Changelist_.xml' -> 'Q:/Reliability/.idea/shelf/Uncommitted_changes_before_Update_at_09_03_2021_15_48__Default_Changelist_.xml'
+2021-03-12 21:03:15: Copy Over 'F:/Reliability/.idea/workspace.xml' -> 'Q:/Reliability/.idea/workspace.xml'
+2021-03-12 21:03:15: Copy Over 'F:/Reliability/__pycache__/class_reliability.cpython-37.pyc' -> 'Q:/Reliability/__pycache__/class_reliability.cpython-37.pyc'
+2021-03-12 21:03:15: Copy Over 'F:/Reliability/class_reliability.py' -> 'Q:/Reliability/class_reliability.py'
+2021-03-12 21:03:15: Copy Over 'F:/Reliability/mcis_example7-9.py' -> 'Q:/Reliability/mcis_example7-9.py'
+2021-03-12 21:03:15: Copy Over 'F:/Reliability/test4.py' -> 'Q:/Reliability/test4.py'
+2021-03-12 21:03:15: == Sync Complete. Time: 00:00:00, Speed: 0 bytes/s, OK: 6, Errors: 0
+2021-03-12 21:03:15: 
