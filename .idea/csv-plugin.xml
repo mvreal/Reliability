@@ -10,6 +10,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\form-haldar-example8-3.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\mcis-haldar-example8-3.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\test3.py">
           <value>
             <Attribute>
