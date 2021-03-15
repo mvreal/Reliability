@@ -456,8 +456,8 @@ class Reliability():
         xk1 = np.copy(self.x0)
         #
         # Error tolerance for yk and g(x)
-        epsilon = 1e-3
-        delta = 1e-3 * np.abs(self.fel(xk1))
+        epsilon = 1e-6
+        delta = 1e-6 * np.abs(self.fel(xk1))
         # Initial values for errors and iteration counters
         erro1 = 1000.00
         erro2 = 1000.00
