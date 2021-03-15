@@ -31,15 +31,10 @@ xvar = [
 ]
 
 
-# Correlation matrix
-
-corrmatrix = [[1.00, 0.30],
-              [0.30, 1.00]]
+# SORM method
 #
-# FORM method
-#
-beam = Reliability(xvar, gfunction, None, corrmatrix)
-beam.form(iHLRF=True)
+beam = Reliability(xvar, gfunction, None, None)
+beam.sorm()
 tf = time.time()
 ttotal = tf - ti
 print(f'Processing time = {ttotal}')

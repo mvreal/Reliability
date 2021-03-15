@@ -587,9 +587,15 @@ class Reliability():
         #
         pf = norm.cdf(-beta)
         print('\nProbability of Failure Pf = {0:0.4e}'.format(pf))
-        return kiter, gxk, erro1, beta, xk, yk, alpha, gradxk
+        return beta, xk, alpha, normgradyk, sigmaxneqk
 
-    def sorm(self, beta, xk, alpha):
+
+
+    def sorm(self):
+        """
+        Second order reliability method = SORM
+
+        """
 
         #
         # GRAM-SCHMIDT transformation
@@ -635,34 +641,43 @@ class Reliability():
             if i == j:
                 x0 = np.copy(x)
                 x0[i] = a - h
-                g10 = g(x0)
+                g10 = self.fel(x0)
                 x0[i] = a
-                g00 = g(x0)
+                g00 = self.fel(x0)
                 x0[i] = a + h
-                g20 = g(x0)
+                g20 = self.fel(x0)
                 d2g = (g10 - 2. * g00 + g20) / h ** 2  # second order derivative: d2g/dxi2
             else:
                 x0 = np.copy(x)
                 x0[i] = a + h1
                 x0[j] = b + h2
-                g22 = g(x0)
+                g22 = self.fel(x0)
                 x0[i] = a + h1
                 x0[j] = b - h2
-                g21 = g(x0)
+                g21 = self.fel(x0)
                 x0[i] = a - h1
                 x0[j] = b + h2
-                g12 = g(x0)
+                g12 = self.fel(x0)
                 x0[i] = a - h1
                 x0[j] = b - h2
-                g11 = g(x0)
+                g11 = self.fel(x0)
                 d2g = (g22 - g21 - g12 + g11) / (4. * h1 * h2)  # second order derivative: d2g/dxidxj
             #
             return d2g
 
         #
-        # Penalty function m(y) for FORM-iHLRF algorithm
+        # First run FORM-iHLRF algorithm
         #
+        n = self.n
+        xk = np.zeros(n)
+        yk = np.zeros(n)
+        gradxk = np.zeros(n)
+        alpha = np.zeros(n)
+        beta = 0.00
+        kiter = 0
+        erro1 = 0.00
 
+        beta, xk, alpha, normgradyk, sigmaxneqk = self.form(iHLRF=True)
         #
         # Formulation of Second Order Reliability Method - SORM
         #
@@ -733,7 +748,7 @@ class Reliability():
         print('\npfSORM =', pfsorm)
         print('\nBetaSORM =', betasorm)
 
-    return
+        return
 
     def var_gen(self, ns, nsigma=1.00):
         """
