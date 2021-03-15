@@ -589,6 +589,152 @@ class Reliability():
         print('\nProbability of Failure Pf = {0:0.4e}'.format(pf))
         return kiter, gxk, erro1, beta, xk, yk, alpha, gradxk
 
+    def sorm(self, beta, xk, alpha):
+
+        #
+        # GRAM-SCHMIDT transformation
+        #
+        def gramschmidt(A, n):
+            rk = np.zeros(n)
+            rj = np.zeros(n)
+            rk0 = np.zeros(n)
+            #
+            R = np.zeros((n, n))
+            R[n - 1, :] = A[n - 1, :].copy()
+            for k in range(n - 2, -1, -1):
+                rk0 = A[k, :].copy()
+                rk0projection = np.zeros(n)
+                for j in range(n - 1, k, -1):
+                    rj = R[j, :].copy()
+                    projection = (rj.dot(rk0)) / (rj.dot(rj))
+                    rk0projection = rk0projection + projection * rj
+                rk = rk0 - rk0projection
+                R[k, :] = rk.copy()
+            for i in range(n):
+                R[i, :] = R[i, :] / np.linalg.norm(R[i, :])
+            #
+            return R
+
+        #
+        #
+        # Function to calculate the second order derivative: d2g/dxidxj
+        #
+        def second_order_derivative(x, i, j):
+            epsilon = 1.e-4  # tolerance for the increments
+            h1 = epsilon  # increments: h1 and h2, when i is not equal to j
+            h2 = epsilon  # different increments can be adopted
+            h = epsilon  # increment h
+            a = x[i]  # reference value for x[i]
+            b = x[j]  # reference value for x[j]
+            #
+            # Code: gmn where m and n are equal to:
+            # Index 0 = no increment is applied to the variables i and j
+            # Index 1 = a decrement equal to -h is applied to the variable i (or j)
+            # Index 2 = an incremente equal to +h is applied to the variable i (or j)
+            #
+            if i == j:
+                x0 = np.copy(x)
+                x0[i] = a - h
+                g10 = g(x0)
+                x0[i] = a
+                g00 = g(x0)
+                x0[i] = a + h
+                g20 = g(x0)
+                d2g = (g10 - 2. * g00 + g20) / h ** 2  # second order derivative: d2g/dxi2
+            else:
+                x0 = np.copy(x)
+                x0[i] = a + h1
+                x0[j] = b + h2
+                g22 = g(x0)
+                x0[i] = a + h1
+                x0[j] = b - h2
+                g21 = g(x0)
+                x0[i] = a - h1
+                x0[j] = b + h2
+                g12 = g(x0)
+                x0[i] = a - h1
+                x0[j] = b - h2
+                g11 = g(x0)
+                d2g = (g22 - g21 - g12 + g11) / (4. * h1 * h2)  # second order derivative: d2g/dxidxj
+            #
+            return d2g
+
+        #
+        # Penalty function m(y) for FORM-iHLRF algorithm
+        #
+
+        #
+        # Formulation of Second Order Reliability Method - SORM
+        #
+        print('\nSORM results:')
+        #
+        # Failure probability calculation
+        #
+        pfform = norm.cdf(-beta)
+        #
+        # Calculation of the Hessian Matrix
+        #
+        bmatrix = np.zeros((n, n))
+        dmatrix = np.zeros((n, n))
+        amatrix = np.eye(n)
+        hmatrix = np.zeros((n, n))
+
+        np.set_printoptions(precision=4)
+
+        #
+        # Calculation of the Hessian matrix D: d2g/dyidyj
+        #
+        for i in range(n):
+            for j in range(n):
+                dmatrix[i, j] = second_order_derivative(xk, i, j) * sigmaxneqk[i] * sigmaxneqk[j]
+
+        print('\nHessian matrix:')
+        print(dmatrix)
+
+        #
+        # Calculation of the matrix B
+        #
+        bmatrix = 1. / normgradyk * dmatrix
+        print('\nNorm of the gradient of g(y) =', normgradyk)
+        print('\nB matrix:')
+        print(bmatrix)
+
+        #
+        # Calculation of the orthogonal matrix H
+        #
+        amatrix[n - 1, :] = alpha.copy()
+        #
+        hmatrix = gramschmidt(amatrix, n)
+
+        print('\nH matrix:')
+
+        print(hmatrix)
+
+        #
+        # Calculation of the curvature matrix K
+        #
+        kmatrix = hmatrix.dot(bmatrix.dot(hmatrix.T))
+        print('\nK = curvatures matrix:')
+        print(kmatrix)
+
+        #
+        # Calculation of the failure probability using SORM Breitung equation
+        #
+        factor = 1.00
+        for i in range(n - 1):
+            factor = factor * 1. / np.sqrt(1.00 + beta * kmatrix[i, i])
+        pfsorm = pfform * factor
+        betasorm = -norm.ppf(pfsorm)
+        #
+        # Print the result
+        #
+        print('\npfFORM =', pfform)
+        print('\nfactor =', factor)
+        print('\npfSORM =', pfsorm)
+        print('\nBetaSORM =', betasorm)
+
+    return
+
     def var_gen(self, ns, nsigma=1.00):
         """
 

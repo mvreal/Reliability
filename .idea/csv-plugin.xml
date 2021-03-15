@@ -24,6 +24,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\sorm-haldar-example8-1.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\test3.py">
           <value>
             <Attribute>
