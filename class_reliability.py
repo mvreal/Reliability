@@ -29,6 +29,15 @@ class Reliability():
                 i += 1
                 # Mean value of the random variables x
                 self.x0[i] = float(var['varmean'])
+                # Tests if 'varhmean' key exists in var
+                if 'varhmean' in var:
+                    meanhx = float(var['varhmean'])
+                else:
+                    meanhx = float(var['varmean'])
+                    var.update({'varhmean': meanhx})
+                #
+                # Setting standard variable distribution names
+                #
                 if var['vardist'].lower() in ['norm', 'normal', 'gauss']:
                     var['vardist'] = 'gauss'
                 elif var['vardist'].lower() in ['uniform', 'uniforme', 'const']:
@@ -765,6 +774,7 @@ class Reliability():
         weight = np.ones(ns)
         fx = np.zeros(ns)
         hx = np.zeros(ns)
+        fxixj = np.ones(ns)
 
         #
         # Step 1 - Determination of equivalent correlation coefficients and
@@ -805,6 +815,7 @@ class Reliability():
                 hx = norm.pdf(x[:, i], muhx, sigmahx)
                 zf[:, i] = (x[:, i]-mufx)/sigmafx
                 weight = weight * ((fx/norm.pdf(zf[:, i], 0, 1)) / (hx/norm.pdf(zk[:, i], 0, 1)))
+                fxixj = fxixj * fx / norm.pdf(zf[:, i], 0, 1)
             #
             # Uniform or constant distribution
             #
@@ -822,7 +833,7 @@ class Reliability():
                 fx = uniform.pdf(x[:, i], a, b)
                 hx = uniform.pdf(x[:, i], a, b)
                 weight = weight * ((fx/norm.pdf(zf[:, i], 0, 1)) / (hx/norm.pdf(zk[:, i], 0, 1)))
-
+                fxixj = fxixj * fx / norm.pdf(zf[:, i], 0, 1)
             #
             # Lognormal distribution
             #
@@ -840,6 +851,7 @@ class Reliability():
                 fx = norm.pdf(np.log(x[:, i]), lambdafx, zetafx)
                 hx = norm.pdf(np.log(x[:, i]), lambdahx, zetahx)
                 weight = weight * ((fx/norm.pdf(zf[:, i], 0, 1)) / (hx/norm.pdf(zk[:, i], 0, 1)))
+                fxixj = fxixj * fx / norm.pdf(zf[:, i], 0, 1)
 
             #
             # Gumbel distribution
@@ -862,6 +874,8 @@ class Reliability():
                 fx = gumbel_r.pdf(x[:, i], ufn, betafn)
                 hx = gumbel_r.pdf(x[:, i], uhn, betahn)
                 weight = weight * ((fx/norm.pdf(zf[:, i], 0, 1)) / (hx/norm.pdf(zk[:, i], 0, 1)))
+                fxixj = fxixj * fx / norm.pdf(zf[:, i], 0, 1)
+
             #
             # Frechet distribution
             #
@@ -889,6 +903,8 @@ class Reliability():
                 fx = invweibull.pdf(ynf, kapaf) / vfn
                 hx = invweibull.pdf(ynh, kapah) / vhn
                 weight = weight * ((fx/norm.pdf(zf[:, i], 0, 1)) / (hx/norm.pdf(zk[:, i], 0, 1)))
+                fxixj = fxixj * fx / norm.pdf(zf[:, i], 0, 1)
+
             #
             #
             # Weibull distribution
@@ -918,6 +934,8 @@ class Reliability():
                 fx = weibull_min.pdf(ynf, kapaf) / (w1f - epsilon)
                 hx = weibull_min.pdf(ynh, kapah) / (w1h - epsilon)
                 weight = weight * ((fx/norm.pdf(zf[:, i], 0, 1)) / (hx/norm.pdf(zk[:, i], 0, 1)))
+                fxixj = fxixj * fx / norm.pdf(zf[:, i], 0, 1)
+
 
         norm_multivarf = multivariate_normal(mean=None, cov=Rz)
         phif = list(map(norm_multivarf.pdf, zf))
@@ -926,10 +944,9 @@ class Reliability():
         phih = list(map(norm_multivarh.pdf, zk))
         phih = np.array(phih)
         weight = weight * phif / phih
+        fxixj = fxixj * phif
 
-
-
-        return x, weight
+        return x, weight, fxixj
 
     def mc(self, ns, nsigma=1.00):
         #
@@ -940,25 +957,7 @@ class Reliability():
         nfail = 0
         niter = 0
         ns = int(ns)
-        mean_x = np.zeros(self.n)
-        std_x = np.zeros(self.n)
-        meanh_x = np.zeros(self.n)
-        stdh_x = np.zeros(self.n)
-        #
-        # Standard deviation multiplier for MC-IS
-        #
-        #
-        i = -1
-        for var in self.xvar:
-            i += 1
-            mean_x[i] = float(var['varmean'])
-            std_x[i] = float(var['varcov']) * float(var['varmean'])
-            if var.get('varhmean', None) == None:
-                var['varhmean'] = var['varmean']
-            meanh_x[i] = float(var['varhmean'])
-            stdh_x[i] = nsigma * std_x[i]
-
-        #
+          #
         #
         # Number of Monte Carlo simulations
         #
@@ -975,7 +974,7 @@ class Reliability():
         # Step 1 - Generation of the random numbers according to their appropriate distribution
         #
 
-        xp, wp = self.var_gen(ns, nsigma)
+        xp, wp, fx = self.var_gen(ns, nsigma)
 
         #
         #
@@ -1019,3 +1018,128 @@ class Reliability():
 
         return beta, pf, delta_pf,ttotal
 
+    def adaptative(self, nc, ns):
+        """
+        Monte Carlo Simulations with Importance Sampling (MC-IS)
+        Importance sampling with adaptative technique
+        Melchers, R.E. Search-based importance sampling.
+        Structural Safety, 9 (1990) 117-128
+
+        """
+
+       #
+        ti = time.time()
+        #
+        # Number of variables of the problem
+        #
+        nfail = 0
+        niter = 0
+        nc = int(nc)
+        ns = int(ns)
+        pfc = np.zeros(nc)
+        delta_pf = np.zeros(nc)
+        #
+        # Standard deviation multiplier for MC-IS
+        #
+        #
+        nsigma = 1.50
+
+        #
+        #
+        # Number of Monte Carlo simulations
+        #
+        #
+        # Matrix xp(ns, self.n) for ns Monte Carlo simulations and self.n random variables
+        #
+        xp = np.zeros((ns, self.n))
+        wp = np.ones(ns)
+        fx = np.ones(ns)
+        zf = np.zeros((ns, self.n))
+        zh = np.zeros((ns, self.n))
+        Rz = np.array(self.corrmatrix)
+
+        #
+        # Adaptative cycles
+        #
+
+        for icycle in range(nc):
+
+            #
+            # Monte Carlo Simulations
+            #
+
+            #
+            # Step 1 - Generation of the random numbers according to their appropriate distribution
+            #
+
+            xp, wp, fx = self.var_gen(ns, nsigma)
+
+            #
+            #
+            # Step 2 - Evaluation of the limit state function g(x)
+            #
+            gx = list(map(self.fel, xp))
+            gx = np.array(gx)
+
+            #
+            #
+            # Step 3 - Evaluation of the indicator function I[g(x)]
+            #
+            igx = np.where(gx <= 0.00, wp, 0)
+            nfail = sum(igx)
+
+            #
+            #  Step 4 - Select adaptative mean
+            #
+            if nfail == 0:
+                #
+                # No failures in ns simulations
+                #
+                imin = np.argmin(gx)
+                #
+                i = -1
+                for var in self.xvar:
+                    i += 1
+                    var['varhmean'] = xp[imin, i]
+                    print('Cycle =', icycle, self.xvar[i])
+                pfc[icycle] = 0.00
+
+            else:
+                #
+                # Ocurrence of nfail failures in ns simulations
+                #
+                imax = np.argmax(fx)
+                #
+                i = -1
+                for var in self.xvar:
+                    i += 1
+                    var['varhmean'] = xp[imax, i]
+                    print('Cycle =', icycle, self.xvar[i])
+                pfc[icycle] = nfail / ns
+
+        #
+        #  Step 6 - Evaluation of the error in the estimation of Pf
+        #
+            if pfc[icycle] > 0.00:
+                delta_pf[icycle] = 1. / (pfc[icycle] * np.sqrt(ns * (ns - 1))) * np.sqrt(
+                    sum((igx * wp) ** 2) - 1. / ns * (sum(igx * wp)) ** 2)
+            else:
+                delta_pf[icycle] = 0.00
+
+            print(f'Probability of failure pf ={pfc[icycle]}')
+
+        pf = pfc.mean()
+        cov_pf = np.linalg.norm(delta_pf)
+        beta = -norm.ppf(pf, 0, 1)
+        tf = time.time()
+        ttotal = tf - ti
+        #
+        print('*** Resultados do Método Monte Carlo ***')
+        print(f'\nReliability Index Beta = {beta}')
+        print(f'Probability of failure pf ={pf}')
+        print(f'COV of pf ={cov_pf}')
+        print('nimul = {0:0.4f} '.format(nc*ns))
+        print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
+        print(f'Processing time = {ttotal} s')
+
+        return beta, pf, delta_pf,ttotal
