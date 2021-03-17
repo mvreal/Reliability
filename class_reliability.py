@@ -10,6 +10,7 @@ from scipy import optimize
 import scipy.linalg
 from scipy.special import gamma
 import pandas as pd
+import matplotlib.pyplot as plt
 import time
 
 class Reliability():
@@ -53,6 +54,11 @@ class Reliability():
 
         if self.corrmatrix is None:
             self.corrmatrix = np.eye(self.n)
+            self.Rz = self.corrmatrix
+        else:
+            self.Rz = self.nataf()
+        print('Correlation Matrix after Nataf correction:')
+        print(self.Rz)
 #
 # Nataf correction of the correlation matrix
 #
@@ -64,7 +70,7 @@ class Reliability():
         Liu, P.-L. and Kiureghian, A.D. Multivariate distribution models with prescribed marginals and covariances
         Probabilistic Engineering Mechanics, 1986, Vol. 1, No.2, p. 105-112
         """
-        Rz = np.array(self.corrmatrix)
+        Rz1 = np.array(self.corrmatrix)
         for i in range(self.n):
             for j in range(i):
 
@@ -273,11 +279,11 @@ class Reliability():
 
                 # Application of the correction factor f on the ro coefficient
                 ro = f * ro
-                Rz[i, j] = ro
-                Rz[j, i] = ro
-        print('Nataf correlation matrix:')
-        print(Rz)
-        return Rz
+                Rz1[i, j] = ro
+                Rz1[j, i] = ro
+#        print('Nataf correlation matrix:')
+#        print(Rz1)
+        return Rz1
 
     def form(self, iHLRF):
         """
@@ -442,12 +448,10 @@ class Reliability():
         #
         # Correlation matrix is self.corrmatrix
         #
-        Rz = np.eye(self.n)
-        Rz = self.nataf()
         #
         # Cholesky decomposition of the correlation matrix
         #
-        L = scipy.linalg.cholesky(Rz, lower=True)
+        L = scipy.linalg.cholesky(self.Rz, lower=True)
         Jzy = np.copy(L)
         Jyz = np.linalg.inv(L)
         #
@@ -781,14 +785,9 @@ class Reliability():
         #          Jacobian matrix Jzy
         #
         #
-        # Correlation matrix is self.corrmatrix
-        #
-        Rz = np.eye(self.n)
-        Rz = self.nataf()
-        #
         # Cholesky decomposition of the correlation matrix
         #
-        L = scipy.linalg.cholesky(Rz, lower=True)
+        L = scipy.linalg.cholesky(self.Rz, lower=True)
         Jzy = np.copy(L)
         yk = np.random.normal(0.00, 1.00, [ns, self.n])
         zf = np.zeros((ns, self.n))
@@ -937,10 +936,10 @@ class Reliability():
                 fxixj = fxixj * fx / norm.pdf(zf[:, i], 0, 1)
 
 
-        norm_multivarf = multivariate_normal(mean=None, cov=Rz)
+        norm_multivarf = multivariate_normal(mean=None, cov=self.Rz)
         phif = list(map(norm_multivarf.pdf, zf))
         phif = np.array(phif)
-        norm_multivarh = multivariate_normal(mean=None, cov=Rz)
+        norm_multivarh = multivariate_normal(mean=None, cov=self.Rz)
         phih = list(map(norm_multivarh.pdf, zk))
         phih = np.array(phih)
         weight = weight * phif / phih
@@ -968,7 +967,6 @@ class Reliability():
         wp = np.ones(ns)
         zf = np.zeros((ns, self.n))
         zh = np.zeros((ns, self.n))
-        Rz = np.array(self.corrmatrix)
         #
         #
         # Step 1 - Generation of the random numbers according to their appropriate distribution
@@ -1037,7 +1035,12 @@ class Reliability():
         nc = int(nc)
         ns = int(ns)
         pfc = np.zeros(nc)
-        delta_pf = np.zeros(nc)
+        cov_pf = np.zeros(nc)
+        sum1 = 0.00
+        sum2 = 0.00
+        fxmax = 0.00
+        fxmax_cycle = np.zeros(nc)
+
         #
         # Standard deviation multiplier for MC-IS
         #
@@ -1056,13 +1059,13 @@ class Reliability():
         fx = np.ones(ns)
         zf = np.zeros((ns, self.n))
         zh = np.zeros((ns, self.n))
-        Rz = np.array(self.corrmatrix)
 
         #
         # Adaptative cycles
         #
 
         for icycle in range(nc):
+            kcycle = icycle + 1
 
             #
             # Monte Carlo Simulations
@@ -1087,6 +1090,9 @@ class Reliability():
             #
             igx = np.where(gx <= 0.00, wp, 0)
             nfail = sum(igx)
+            sum1 += nfail
+            sum2 += nfail ** 2
+            fxmax_cycle[icycle] = fx.max()
 
             #
             #  Step 4 - Select adaptative mean
@@ -1101,35 +1107,39 @@ class Reliability():
                 for var in self.xvar:
                     i += 1
                     var['varhmean'] = xp[imin, i]
-                    print('Cycle =', icycle, self.xvar[i])
-                pfc[icycle] = 0.00
 
             else:
                 #
                 # Ocurrence of nfail failures in ns simulations
                 #
-                imax = np.argmax(fx)
-                #
-                i = -1
-                for var in self.xvar:
-                    i += 1
-                    var['varhmean'] = xp[imax, i]
-                    print('Cycle =', icycle, self.xvar[i])
-                pfc[icycle] = nfail / ns
+                if fxmax_cycle[icycle] > 1.02 * fxmax:
+                    fxmax = fxmax_cycle[icycle]
+                    imax = np.argmax(fx)
+                    #
+                    i = -1
+                    for var in self.xvar:
+                        i += 1
+                        var['varhmean'] = xp[imax, i]
+
 
         #
         #  Step 6 - Evaluation of the error in the estimation of Pf
         #
-            if pfc[icycle] > 0.00:
-                delta_pf[icycle] = 1. / (pfc[icycle] * np.sqrt(ns * (ns - 1))) * np.sqrt(
-                    sum((igx * wp) ** 2) - 1. / ns * (sum(igx * wp)) ** 2)
+
+            nsc = ns * kcycle
+            pf = sum1 / nsc
+            pfc[icycle] = pf
+            if pf > 0.00 and kcycle > 1:
+                cov_pf[icycle] = 1./(pf * np.sqrt(nsc * (nsc - 1))) * np.sqrt(sum2 - 1. / nsc * sum1 ** 2)
             else:
-                delta_pf[icycle] = 0.00
+                cov_pf[icycle] = 0.00
+            delta_pf = cov_pf[icycle]
+            # Probability of failure in this cycle
+            print('Cycle =', kcycle, self.xvar)
+            print(f'Probability of failure pf ={pf}')
+            print(f'Coefficient of variation of pf ={delta_pf}')
 
-            print(f'Probability of failure pf ={pfc[icycle]}')
 
-        pf = pfc.mean()
-        cov_pf = np.linalg.norm(delta_pf)
         beta = -norm.ppf(pf, 0, 1)
         tf = time.time()
         ttotal = tf - ti
@@ -1137,9 +1147,30 @@ class Reliability():
         print('*** Resultados do Método Monte Carlo ***')
         print(f'\nReliability Index Beta = {beta}')
         print(f'Probability of failure pf ={pf}')
-        print(f'COV of pf ={cov_pf}')
+        print(f'COV of pf ={delta_pf}')
         print('nimul = {0:0.4f} '.format(nc*ns))
         print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
         print(f'Processing time = {ttotal} s')
 
-        return beta, pf, delta_pf,ttotal
+        # Plot results:
+        cycle = np.arange(0, nc, 1)
+
+        plt.figure(figsize=(8.5, 6))
+        plt.plot(cycle, pfc)
+        plt.xlabel("Cycle")
+        plt.ylabel("Pf")
+        plt.show()
+
+        plt.figure(figsize=(8.5, 6))
+        plt.plot(cycle, cov_pf)
+        plt.xlabel("Cycle")
+        plt.ylabel("CoV Pf")
+        plt.show()
+
+        plt.figure(figsize=(8.5, 6))
+        plt.plot(cycle, fxmax_cycle)
+        plt.xlabel("Cycle")
+        plt.ylabel("fX(x) - max")
+        plt.show()
+
+        return beta, pf, cov_pf, ttotal
