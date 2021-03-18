@@ -15,12 +15,12 @@ import time
 
 class Reliability():
 
-    def __init__(self, xvar, gx, x0=None, corrmatrix=None):
+    def __init__(self, xvar, gx, x0=None, Rz=None):
         self.xvar = xvar
         self.n = len(xvar)
         self.fel = gx
         self.x0 = x0
-        self.corrmatrix = corrmatrix
+        self.Rz = Rz
         if x0 is None:
             # Original mean of the variables x
             #
@@ -52,9 +52,8 @@ class Reliability():
                 elif var['vardist'].lower() in ['weibull', 'extvalue3', 'evt3min']:
                     var['vardist'] = 'weibull'
 
-        if self.corrmatrix is None:
-            self.corrmatrix = np.eye(self.n)
-            self.Rz = self.corrmatrix
+        if self.Rz is None:
+            self.Rz = np.eye(self.n)
         else:
             self.Rz = self.nataf()
         print('Correlation Matrix after Nataf correction:')
@@ -70,13 +69,13 @@ class Reliability():
         Liu, P.-L. and Kiureghian, A.D. Multivariate distribution models with prescribed marginals and covariances
         Probabilistic Engineering Mechanics, 1986, Vol. 1, No.2, p. 105-112
         """
-        Rz1 = np.array(self.corrmatrix)
+        Rz1 = np.array(self.Rz)
         for i in range(self.n):
             for j in range(i):
 
                 # Variables parameters
                 f = 1.00
-                ro = self.corrmatrix[i][j]
+                ro = self.Rz[i][j]
                 cvi = float(self.xvar[i]['varcov'])
                 cvj = float(self.xvar[j]['varcov'])
 
@@ -763,10 +762,10 @@ class Reliability():
 
         return
 
-    def var_gen(self, ns, nsigma=1.00):
+    def var_gen(self, icycle, ns, uk_cycle, nsigma=1.00):
         """
 
-           Algorithm Monte Carlo Method: importance sampling.
+           Random variables generator for the Monte Carlo Simulation methods
 
         """
 
@@ -779,6 +778,9 @@ class Reliability():
         fx = np.zeros(ns)
         hx = np.zeros(ns)
         fxixj = np.ones(ns)
+        yk = np.zeros((ns, self.n))
+
+
 
         #
         # Step 1 - Determination of equivalent correlation coefficients and
@@ -789,7 +791,12 @@ class Reliability():
         #
         L = scipy.linalg.cholesky(self.Rz, lower=True)
         Jzy = np.copy(L)
-        yk = np.random.normal(0.00, 1.00, [ns, self.n])
+
+        #
+        # Generation of Gaussian random numbers
+        #
+
+        yk = norm.ppf(uk_cycle)
         zf = np.zeros((ns, self.n))
         zk = np.dot(Jzy, yk.T).T
 
@@ -935,7 +942,6 @@ class Reliability():
                 weight = weight * ((fx/norm.pdf(zf[:, i], 0, 1)) / (hx/norm.pdf(zk[:, i], 0, 1)))
                 fxixj = fxixj * fx / norm.pdf(zf[:, i], 0, 1)
 
-
         norm_multivarf = multivariate_normal(mean=None, cov=self.Rz)
         phif = list(map(norm_multivarf.pdf, zf))
         phif = np.array(phif)
@@ -947,85 +953,16 @@ class Reliability():
 
         return x, weight, fxixj
 
-    def mc(self, ns, nsigma=1.00):
-        #
-        ti = time.time()
-        #
-        # Number of variables of the problem
-        #
-        nfail = 0
-        niter = 0
-        ns = int(ns)
-          #
-        #
-        # Number of Monte Carlo simulations
-        #
-        #
-        # Matrix xp(ns, self.n) for ns Monte Carlo simulations and self.n random variables
-        #
-        xp = np.zeros((ns, self.n))
-        wp = np.ones(ns)
-        zf = np.zeros((ns, self.n))
-        zh = np.zeros((ns, self.n))
-        #
-        #
-        # Step 1 - Generation of the random numbers according to their appropriate distribution
-        #
-
-        xp, wp, fx = self.var_gen(ns, nsigma)
-
-        #
-        #
-        # Step 2 - Evaluation of the limit state function g(x)
-        #
-        gx = list(map(self.fel, xp))
-        gx = np.array(gx)
-
-        #
-        #
-        # Step 3 - Evaluation of the indicator function I[g(x)]
-        #
-        igx = np.where(gx <= 0.00, wp, 0)
-        nfail = sum(igx)
-
-        #
-        #  Step 4 - Evaluation of the failure probability Pf
-        #
-        pf = nfail / ns
-        beta = -norm.ppf(pf)
-
-        #
-        #  Step 6 - Evaluation of the error in the estimation of Pf
-        #
-        if pf > 0.00:
-            delta_pf = 1. / (pf * np.sqrt(ns * (ns - 1))) * np.sqrt(
-                sum((igx * wp) ** 2) - 1. / ns * (sum(igx * wp)) ** 2)
-        else:
-            delta_pf = 9999
-
-        tf = time.time()
-        ttotal = tf - ti
-        #
-        print('*** Resultados do Método Monte Carlo ***')
-        print(f'\nReliability Index Beta = {beta}')
-        print(f'Probability of failure pf ={pf}')
-        print(f'COV of pf ={delta_pf}')
-        print('nimul = {0:0.4f} '.format(ns))
-        print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
-        print(f'Processing time = {ttotal} s')
-
-        return beta, pf, delta_pf,ttotal
-
-    def adaptative(self, nc, ns):
+    def mc(self, nc, ns, nsigma=1.00):
         """
-        Monte Carlo Simulations with Importance Sampling (MC-IS)
-        Importance sampling with adaptative technique
-        Melchers, R.E. Search-based importance sampling.
-        Structural Safety, 9 (1990) 117-128
+        Monte Carlo Simulation Method
+        nc Cycles
+        ns Simulations
+        Brute force = no adaptive technique
 
         """
-
-       #
+        #
+        #
         ti = time.time()
         #
         # Number of variables of the problem
@@ -1036,16 +973,19 @@ class Reliability():
         ns = int(ns)
         pfc = np.zeros(nc)
         cov_pf = np.zeros(nc)
+        pf_mean = np.zeros(nc)
         sum1 = 0.00
         sum2 = 0.00
         fxmax = 0.00
         fxmax_cycle = np.zeros(nc)
+        uk_cycle = np.zeros((ns, self.n))
+
 
         #
         # Standard deviation multiplier for MC-IS
         #
         #
-        nsigma = 1.50
+        nsigma = 1.00
 
         #
         #
@@ -1061,7 +1001,7 @@ class Reliability():
         zh = np.zeros((ns, self.n))
 
         #
-        # Adaptative cycles
+        # Adaptive cycles
         #
 
         for icycle in range(nc):
@@ -1070,13 +1010,22 @@ class Reliability():
             #
             # Monte Carlo Simulations
             #
+            #
+            # Generation of uniform random numbers
+            #
+            index = icycle % 2
+            uk_new = np.random.rand(ns, self.n)
+            if index == 0:
+                uk_cycle = uk_new.copy()
+            else:
+                uk_cycle = 1.00 - uk_cycle
 
+            #
             #
             # Step 1 - Generation of the random numbers according to their appropriate distribution
             #
 
-            xp, wp, fx = self.var_gen(ns, nsigma)
-
+            xp, wp, fx = self.var_gen(icycle, ns, uk_cycle, nsigma)
             #
             #
             # Step 2 - Evaluation of the limit state function g(x)
@@ -1090,8 +1039,153 @@ class Reliability():
             #
             igx = np.where(gx <= 0.00, wp, 0)
             nfail = sum(igx)
-            sum1 += nfail
-            sum2 += nfail ** 2
+            pfc[icycle] = nfail/ns
+            sum1 += pfc[icycle]
+            sum2 += pfc[icycle] ** 2
+            fxmax_cycle[icycle] = fx.max()
+
+
+            #
+            #  Step 6 - Evaluation of the error in the estimation of Pf
+            #
+
+            pf_mean[icycle] = sum1 / kcycle
+            pf = pf_mean[icycle]
+            if pf > 0.00 and kcycle > 1:
+                cov_pf[icycle] = 1. / (pf * np.sqrt(kcycle * (kcycle - 1))) * np.sqrt(sum2 - 1. / kcycle * sum1 ** 2)
+            else:
+                cov_pf[icycle] = 0.00
+            delta_pf = cov_pf[icycle]
+            # Probability of failure in this cycle
+            print('Cycle =', kcycle, self.xvar)
+            print(f'Probability of failure pf ={pf}')
+            print(f'Coefficient of variation of pf ={delta_pf}')
+
+        pf = pfc.mean()
+        sigma_pf = pfc.std()
+        delta_pf = sigma_pf/pf
+        beta = -norm.ppf(pf, 0, 1)
+        tf = time.time()
+        ttotal = tf - ti
+        #
+        print('*** Resultados do Método Monte Carlo ***')
+        print(f'\nReliability Index Beta = {beta}')
+        print(f'Probability of failure pf ={pf}')
+        print(f'COV of pf ={delta_pf}')
+        print('nimul = {0:0.4f} '.format(nc * ns))
+        print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
+        print(f'Processing time = {ttotal} s')
+
+        # Plot results:
+        cycle = np.arange(0, nc, 1)
+
+        plt.figure(figsize=(8.5, 6))
+        plt.plot(cycle, pf_mean)
+        plt.xlabel("Cycle")
+        plt.ylabel("Pf")
+        plt.show()
+
+        plt.figure(figsize=(8.5, 6))
+        plt.plot(cycle, cov_pf)
+        plt.xlabel("Cycle")
+        plt.ylabel("CoV Pf")
+        plt.show()
+
+        plt.figure(figsize=(8.5, 6))
+        plt.plot(cycle, fxmax_cycle)
+        plt.xlabel("Cycle")
+        plt.ylabel("fX(x) - max")
+        plt.show()
+
+        return beta, pf, cov_pf, ttotal
+
+    def adaptive(self, nc, ns, nsigma=1.50):
+        """
+        Monte Carlo Simulations with Importance Sampling (MC-IS)
+        Importance sampling with adaptative technique
+        Melchers, R.E. Search-based importance sampling.
+        Structural Safety, 9 (1990) 117-128
+
+        """
+        #
+        #
+        ti = time.time()
+        #
+        # Number of variables of the problem
+        #
+        nfail = 0
+        niter = 0
+        nc = int(nc)
+        ns = int(ns)
+        pfc = np.zeros(nc)
+        cov_pf = np.zeros(nc)
+        pf_mean = np.zeros(nc)
+        sum1 = 0.00
+        sum2 = 0.00
+        fxmax = 0.00
+        fxmax_cycle = np.zeros(nc)
+        uk_cycle = np.zeros((ns, self.n))
+
+        #
+        # Standard deviation multiplier for MC-IS
+        #
+        #
+
+        #
+        #
+        # Number of Monte Carlo simulations
+        #
+        #
+        # Matrix xp(ns, self.n) for ns Monte Carlo simulations and self.n random variables
+        #
+        xp = np.zeros((ns, self.n))
+        wp = np.ones(ns)
+        fx = np.ones(ns)
+        zf = np.zeros((ns, self.n))
+        zh = np.zeros((ns, self.n))
+
+        #
+        # Adaptive cycles
+        #
+
+        for icycle in range(nc):
+            kcycle = icycle + 1
+
+            #
+            # Monte Carlo Simulations
+            #
+            #
+            # Generation of uniform random numbers
+            #
+            index = icycle % 2
+            uk_new = np.random.rand(ns, self.n)
+            if index == 0:
+                uk_cycle = uk_new.copy()
+            else:
+                uk_cycle = 1.00 - uk_cycle
+
+            #
+            #
+            # Step 1 - Generation of the random numbers according to their appropriate distribution
+            #
+
+            xp, wp, fx = self.var_gen(icycle, ns, uk_cycle, nsigma)
+            #
+            #
+            # Step 2 - Evaluation of the limit state function g(x)
+            #
+            gx = list(map(self.fel, xp))
+            gx = np.array(gx)
+
+            #
+            #
+            # Step 3 - Evaluation of the indicator function I[g(x)]
+            #
+            igx = np.where(gx <= 0.00, wp, 0)
+            nfail = sum(igx)
+            pfc[icycle] = nfail / ns
+            sum1 += pfc[icycle]
+            sum2 += pfc[icycle] ** 2
             fxmax_cycle[icycle] = fx.max()
 
             #
@@ -1121,16 +1215,14 @@ class Reliability():
                         i += 1
                         var['varhmean'] = xp[imax, i]
 
+            #
+            #  Step 6 - Evaluation of the error in the estimation of Pf
+            #
 
-        #
-        #  Step 6 - Evaluation of the error in the estimation of Pf
-        #
-
-            nsc = ns * kcycle
-            pf = sum1 / nsc
-            pfc[icycle] = pf
+            pf_mean[icycle] = sum1 / kcycle
+            pf = pf_mean[icycle]
             if pf > 0.00 and kcycle > 1:
-                cov_pf[icycle] = 1./(pf * np.sqrt(nsc * (nsc - 1))) * np.sqrt(sum2 - 1. / nsc * sum1 ** 2)
+                cov_pf[icycle] = 1. / (pf * np.sqrt(kcycle * (kcycle - 1))) * np.sqrt(sum2 - 1. / kcycle * sum1 ** 2)
             else:
                 cov_pf[icycle] = 0.00
             delta_pf = cov_pf[icycle]
@@ -1139,7 +1231,9 @@ class Reliability():
             print(f'Probability of failure pf ={pf}')
             print(f'Coefficient of variation of pf ={delta_pf}')
 
-
+        pf = pfc.mean()
+        sigma_pf = pfc.std()
+        delta_pf = sigma_pf / pf /np.sqrt(nc)
         beta = -norm.ppf(pf, 0, 1)
         tf = time.time()
         ttotal = tf - ti
@@ -1148,7 +1242,7 @@ class Reliability():
         print(f'\nReliability Index Beta = {beta}')
         print(f'Probability of failure pf ={pf}')
         print(f'COV of pf ={delta_pf}')
-        print('nimul = {0:0.4f} '.format(nc*ns))
+        print('nimul = {0:0.4f} '.format(nc * ns))
         print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
         print(f'Processing time = {ttotal} s')
 
@@ -1156,7 +1250,7 @@ class Reliability():
         cycle = np.arange(0, nc, 1)
 
         plt.figure(figsize=(8.5, 6))
-        plt.plot(cycle, pfc)
+        plt.plot(cycle, pf_mean)
         plt.xlabel("Cycle")
         plt.ylabel("Pf")
         plt.show()

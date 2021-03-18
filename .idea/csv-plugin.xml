@@ -101,6 +101,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\mc_example7-3.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\mcis-haldar-example8-3.py">
           <value>
             <Attribute>

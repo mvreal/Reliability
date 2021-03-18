@@ -36,7 +36,7 @@ xvar = [
 # MCS method
 #
 column = Reliability(xvar, gfunction)
-column.mc(1e6, 1.00)
+column.mc(20, 5000, 1.00)
 tf = time.time()
 ttotal = tf - ti
 print(f'Processing time = {ttotal}')

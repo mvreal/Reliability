@@ -35,7 +35,7 @@ xvar = [
 # MC-IS adaptative method
 #
 beam = Reliability(xvar, gfunction)
-beam.adaptative(20, 1000)
+beam.adaptive(50, 5000, 1.50)
 tf = time.time()
 ttotal = tf - ti
 print(f'Processing time = {ttotal}')
