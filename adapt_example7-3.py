@@ -36,7 +36,7 @@ xvar = [
 # MC-IS adaptative method
 #
 column = Reliability(xvar, gfunction, None, None)
-column.adaptive(20, 5000, 1.50)
+column.adaptive(20, 5000, 0.01, 1.50)
 tf = time.time()
 ttotal = tf - ti
 print(f'Processing time = {ttotal}')

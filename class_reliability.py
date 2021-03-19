@@ -953,7 +953,7 @@ class Reliability():
 
         return x, weight, fxixj
 
-    def mc(self, nc, ns, nsigma=1.00):
+    def mc(self, nc, ns, delta_lim, nsigma=1.00):
         """
         Monte Carlo Simulation Method
         nc Cycles
@@ -1060,10 +1060,10 @@ class Reliability():
             print('Cycle =', kcycle, self.xvar)
             print(f'Probability of failure pf ={pf}')
             print(f'Coefficient of variation of pf ={delta_pf}')
+            if delta_pf < delta_lim and kcycle > 2:
+                break
 
-        pf = pfc.mean()
-        sigma_pf = pfc.std()
-        delta_pf = sigma_pf/pf
+
         beta = -norm.ppf(pf, 0, 1)
         tf = time.time()
         ttotal = tf - ti
@@ -1079,27 +1079,21 @@ class Reliability():
         # Plot results:
         cycle = np.arange(0, nc, 1)
 
-        plt.figure(figsize=(8.5, 6))
+        plt.figure(1, figsize=(8.5, 6))
         plt.plot(cycle, pf_mean)
         plt.xlabel("Cycle")
         plt.ylabel("Pf")
         plt.show()
 
-        plt.figure(figsize=(8.5, 6))
+        plt.figure(2, figsize=(8.5, 6))
         plt.plot(cycle, cov_pf)
         plt.xlabel("Cycle")
         plt.ylabel("CoV Pf")
         plt.show()
 
-        plt.figure(figsize=(8.5, 6))
-        plt.plot(cycle, fxmax_cycle)
-        plt.xlabel("Cycle")
-        plt.ylabel("fX(x) - max")
-        plt.show()
-
         return beta, pf, cov_pf, ttotal
 
-    def adaptive(self, nc, ns, nsigma=1.50):
+    def adaptive(self, nc, ns, delta_lim, nsigma=1.50):
         """
         Monte Carlo Simulations with Importance Sampling (MC-IS)
         Importance sampling with adaptative technique
@@ -1226,14 +1220,15 @@ class Reliability():
             else:
                 cov_pf[icycle] = 0.00
             delta_pf = cov_pf[icycle]
+            nc_final = icycle
             # Probability of failure in this cycle
             print('Cycle =', kcycle, self.xvar)
             print(f'Probability of failure pf ={pf}')
             print(f'Coefficient of variation of pf ={delta_pf}')
+            if delta_pf < delta_lim and kcycle > 2:
+                break
 
-        pf = pfc.mean()
-        sigma_pf = pfc.std()
-        delta_pf = sigma_pf / pf /np.sqrt(nc)
+
         beta = -norm.ppf(pf, 0, 1)
         tf = time.time()
         ttotal = tf - ti
@@ -1249,22 +1244,16 @@ class Reliability():
         # Plot results:
         cycle = np.arange(0, nc, 1)
 
-        plt.figure(figsize=(8.5, 6))
+        plt.figure(1, figsize=(8.5, 6))
         plt.plot(cycle, pf_mean)
         plt.xlabel("Cycle")
         plt.ylabel("Pf")
         plt.show()
 
-        plt.figure(figsize=(8.5, 6))
+        plt.figure(2, figsize=(8.5, 6))
         plt.plot(cycle, cov_pf)
         plt.xlabel("Cycle")
         plt.ylabel("CoV Pf")
-        plt.show()
-
-        plt.figure(figsize=(8.5, 6))
-        plt.plot(cycle, fxmax_cycle)
-        plt.xlabel("Cycle")
-        plt.ylabel("fX(x) - max")
         plt.show()
 
         return beta, pf, cov_pf, ttotal

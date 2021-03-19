@@ -38,6 +38,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\adapt_example7-8.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\adapt_example7-9.py">
           <value>
             <Attribute>
@@ -87,6 +94,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\example7-8.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\example7-9.py">
           <value>
             <Attribute>
@@ -102,6 +116,48 @@
           </value>
         </entry>
         <entry key="\mc_example7-3.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\mc_example7-4.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\mc_example7-5.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\mc_example7-6.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\mc_example7-7.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\mc_example7-8.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\mc_example7-9.py">
           <value>
             <Attribute>
               <option name="separator" value="," />

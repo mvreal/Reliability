@@ -41,7 +41,7 @@ corrmatrix = [[1.00, 0.40, 0.00],
 # MC-IS adaptative method
 #
 beam = Reliability(xvar, gfunction, None, corrmatrix)
-beam.adaptative(50, 1000)
+beam.adaptive(20, 5000, 0.01, 1.50)
 tf = time.time()
 ttotal = tf - ti
 print(f'Processing time = {ttotal}')

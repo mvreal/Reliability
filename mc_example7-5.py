@@ -43,7 +43,7 @@ corrmatrix = [[1.00, 0.80, 0.00, 0.00],
 # MCS method
 #
 column = Reliability(xvar, gfunction, None, corrmatrix)
-column.mc(1e6, 1.00)
+column.mc(20, 5000, 0.01, 1.00)
 tf = time.time()
 ttotal = tf - ti
 print(f'Processing time = {ttotal}')
