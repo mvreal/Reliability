@@ -1072,7 +1072,7 @@ class Reliability():
         print(f'\nReliability Index Beta = {beta}')
         print(f'Probability of failure pf ={pf}')
         print(f'COV of pf ={delta_pf}')
-        print('nimul = {0:0.4f} '.format(nc * ns))
+        print('nimul = {0:0.4f} '.format(kcycle * ns))
         print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
         print(f'Processing time = {ttotal} s')
 
@@ -1237,7 +1237,7 @@ class Reliability():
         print(f'\nReliability Index Beta = {beta}')
         print(f'Probability of failure pf ={pf}')
         print(f'COV of pf ={delta_pf}')
-        print('nimul = {0:0.4f} '.format(nc * ns))
+        print('nimul = {0:0.4f} '.format(kcycle * ns))
         print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
         print(f'Processing time = {ttotal} s')
 
