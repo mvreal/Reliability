@@ -83,28 +83,28 @@ class Reliability():
 
                 # 1 Xi = gauss and Xj = gauss
 
-                if self.xvar[i]['vardist'] is 'gauss' and self.xvar[j]['vardist'] is 'gauss':
+                if self.xvar[i]['vardist'] == 'gauss' and self.xvar[j]['vardist'] == 'gauss':
                     f = 1.000
 
                 # 2 Xi = gauss and Xj = uniform
 
-                elif self.xvar[i]['vardist'] is 'gauss' and self.xvar[j]['vardist'] is 'uniform' \
-                        or self.xvar[i]['vardist'] is 'uniform' and self.xvar[j]['vardist'] is 'gauss':
+                elif self.xvar[i]['vardist'] == 'gauss' and self.xvar[j]['vardist'] == 'uniform' \
+                        or self.xvar[i]['vardist'] == 'uniform' and self.xvar[j]['vardist'] == 'gauss':
                     f = 1.023
 
                 # 3 Xi = gauss and Xj = gumbel
 
-                elif self.xvar[i]['vardist'] is 'gauss' and self.xvar[j]['vardist'] is 'gumbel' \
-                        or self.xvar[i]['vardist'] is 'gumbel' and self.xvar[j]['vardist'] is 'gauss':
+                elif self.xvar[i]['vardist'] == 'gauss' and self.xvar[j]['vardist'] == 'gumbel' \
+                        or self.xvar[i]['vardist'] == 'gumbel' and self.xvar[j]['vardist'] == 'gauss':
                     f = 1.031
 
                 # Table 5: Xi is gauss and Xj belongs to group 2 - f depends on cvj
 
                 # 4 Xi = gauss and Xj = lognorm
 
-                elif self.xvar[i]['vardist'] is 'gauss' and self.xvar[j]['vardist'] is 'lognorm' \
-                        or self.xvar[i]['vardist'] is 'lognorm' and self.xvar[j]['vardist'] is 'gauss':
-                    if self.xvar[i]['vardist'] is 'lognorm':
+                elif self.xvar[i]['vardist'] == 'gauss' and self.xvar[j]['vardist'] == 'lognorm' \
+                        or self.xvar[i]['vardist'] == 'lognorm' and self.xvar[j]['vardist'] == 'gauss':
+                    if self.xvar[i]['vardist'] == 'lognorm':
                         cv = cvi
                     else:
                         cv = cvj
@@ -112,9 +112,9 @@ class Reliability():
 
                 # 5 Xi = gauss and Xj = frechet
 
-                elif self.xvar[i]['vardist'] is 'gauss' and self.xvar[j]['vardist'] is 'frechet' \
-                        or self.xvar[i]['vardist'] is 'frechet' and self.xvar[j]['vardist'] is 'gauss':
-                    if self.xvar[i]['vardist'] is 'frechet':
+                elif self.xvar[i]['vardist'] == 'gauss' and self.xvar[j]['vardist'] == 'frechet' \
+                        or self.xvar[i]['vardist'] == 'frechet' and self.xvar[j]['vardist'] == 'gauss':
+                    if self.xvar[i]['vardist'] == 'frechet':
                         cv = cvi
                     else:
                         cv = cvj
@@ -122,9 +122,9 @@ class Reliability():
 
                 # 6 Xi = gauss and Xj = weibull
 
-                elif self.xvar[i]['vardist'] is 'gauss' and self.xvar[i]['vardist'] is 'weibull' \
-                        or self.xvar[i]['vardist'] is 'weibull' and self.xvar[j]['vardist'] is 'gauss':
-                    if self.xvar[i]['vardist'] is 'weibull':
+                elif self.xvar[i]['vardist'] == 'gauss' and self.xvar[i]['vardist'] == 'weibull' \
+                        or self.xvar[i]['vardist'] == 'weibull' and self.xvar[j]['vardist'] == 'gauss':
+                    if self.xvar[i]['vardist'] == 'weibull':
                         cv = cvi
                     else:
                         cv = cvj
@@ -134,27 +134,27 @@ class Reliability():
 
                 # 7 Xi = uniform and Xj = uniform
 
-                elif self.xvar[i]['vardist'] is 'uniform' and self.xvar[j]['vardist'] is 'uniform':
+                elif self.xvar[i]['vardist'] == 'uniform' and self.xvar[j]['vardist'] == 'uniform':
                     f = 1.047 - 0.047 * ro ** 2
 
                 # 8 Xi = gumbel and Xj = gumbel
 
-                elif self.xvar[i]['vardist'] is 'gumbel' and self.xvar[j]['vardist'] is 'gumbel':
+                elif self.xvar[i]['vardist'] == 'gumbel' and self.xvar[j]['vardist'] == 'gumbel':
                     f = 1.064 - 0.069 * ro + 0.005 * ro ** 2
 
                 # 9 Xi = uniform and Xj = gumbel
 
-                elif self.xvar[i]['vardist'] is 'uniform' and self.xvar[j]['vardist'] is 'gumbel' \
-                        or self.xvar[i]['vardist'] is 'gumbel' and self.xvar[j]['vardist'] is 'uniform':
+                elif self.xvar[i]['vardist'] == 'uniform' and self.xvar[j]['vardist'] == 'gumbel' \
+                        or self.xvar[i]['vardist'] == 'gumbel' and self.xvar[j]['vardist'] == 'uniform':
                     f = 1.055 + 0.015 * ro ** 2
 
                 # Table 7: Xi belongs to group 1 and Xj belongs to group 2 - f depends on ro and cvj
 
                 # 10 Xi = uniform and Xj = lognorm
 
-                elif self.xvar[i]['vardist'] is 'uniform' and self.xvar[j]['vardist'] is 'lognorm' \
-                        or self.xvar[i]['vardist'] is 'lognorm' and self.xvar[j]['vardist'] is 'uniform':
-                    if self.xvar[i]['vardist'] is 'lognorm':
+                elif self.xvar[i]['vardist'] == 'uniform' and self.xvar[j]['vardist'] == 'lognorm' \
+                        or self.xvar[i]['vardist'] == 'lognorm' and self.xvar[j]['vardist'] == 'uniform':
+                    if self.xvar[i]['vardist'] == 'lognorm':
                         cv = cvi
                     else:
                         cv = cvj
@@ -162,9 +162,9 @@ class Reliability():
 
                 # 11 Xi = uniform and Xj = frechet
 
-                elif self.xvar[i]['vardist'] is 'uniform' and self.xvar[j]['vardist'] is 'frechet' \
-                        or self.xvar[i]['vardist'] is 'frechet' and self.xvar[j]['vardist'] is 'uniform':
-                    if self.xvar[i]['vardist'] is 'frechet':
+                elif self.xvar[i]['vardist'] == 'uniform' and self.xvar[j]['vardist'] == 'frechet' \
+                        or self.xvar[i]['vardist'] == 'frechet' and self.xvar[j]['vardist'] == 'uniform':
+                    if self.xvar[i]['vardist'] == 'frechet':
                         cv = cvi
                     else:
                         cv = cvj
@@ -172,9 +172,9 @@ class Reliability():
 
                 # 12 Xi = uniform and Xj = weibull
 
-                elif self.xvar[i]['vardist'] is 'uniform' and self.xvar[j]['vardist'] is 'weibull' \
-                        or self.xvar[i]['vardist'] is 'weibull' and self.xvar[j]['vardist'] is 'uniform':
-                    if self.xvar[i]['vardist'] is 'weibull':
+                elif self.xvar[i]['vardist'] == 'uniform' and self.xvar[j]['vardist'] == 'weibull' \
+                        or self.xvar[i]['vardist'] == 'weibull' and self.xvar[j]['vardist'] == 'uniform':
+                    if self.xvar[i]['vardist'] == 'weibull':
                         cv = cvi
                     else:
                         cv = cvj
@@ -182,9 +182,9 @@ class Reliability():
 
                 # 13 Xi = gumbel and Xj = lognorm
 
-                elif self.xvar[i]['vardist'] is 'gumbel' and self.xvar[j]['vardist'] is 'lognorm' \
-                        or self.xvar[i]['vardist'] is 'lognorm' and self.xvar[j]['vardist'] is 'gumbel':
-                    if self.xvar[i]['vardist'] is 'lognorm':
+                elif self.xvar[i]['vardist'] == 'gumbel' and self.xvar[j]['vardist'] == 'lognorm' \
+                        or self.xvar[i]['vardist'] == 'lognorm' and self.xvar[j]['vardist'] == 'gumbel':
+                    if self.xvar[i]['vardist'] == 'lognorm':
                         cv = cvi
                     else:
                         cv = cvj
@@ -192,9 +192,9 @@ class Reliability():
 
                 # 14 Xi = gumbel and Xj = frechet
 
-                elif self.xvar[i]['vardist'] is 'gumbel' and self.xvar[j]['vardist'] is 'frechet' \
-                        or self.xvar[i]['vardist'] is 'frechet' and self.xvar[j]['vardist'] is 'gumbel':
-                    if self.xvar[i]['vardist'] is 'frechet':
+                elif self.xvar[i]['vardist'] == 'gumbel' and self.xvar[j]['vardist'] == 'frechet' \
+                        or self.xvar[i]['vardist'] == 'frechet' and self.xvar[j]['vardist'] == 'gumbel':
+                    if self.xvar[i]['vardist'] == 'frechet':
                         cv = cvi
                     else:
                         cv = cvj
@@ -202,9 +202,9 @@ class Reliability():
 
                 # 15 Xi = gumbel and Xj = weibull
 
-                elif self.xvar[i]['vardist'] is 'gumbel' and self.xvar[j]['vardist'] is 'weibull' \
-                        or self.xvar[i]['vardist'] is 'weibull' and self.xvar[j]['vardist'] is 'gumbel':
-                    if self.xvar[i]['vardist'] is 'weibull':
+                elif self.xvar[i]['vardist'] == 'gumbel' and self.xvar[j]['vardist'] == 'weibull' \
+                        or self.xvar[i]['vardist'] == 'weibull' and self.xvar[j]['vardist'] == 'gumbel':
+                    if self.xvar[i]['vardist'] == 'weibull':
                         cv = cvi
                     else:
                         cv = cvj
@@ -214,14 +214,14 @@ class Reliability():
 
                 # 16 Xi = lognorm and Xj = lognorm
 
-                elif self.xvar[i]['vardist'] is 'lognorm' and self.xvar[j]['vardist'] is 'lognorm':
+                elif self.xvar[i]['vardist'] == 'lognorm' and self.xvar[j]['vardist'] == 'lognorm':
                     f = np.log(1.00 + ro * cvi * cvj)/(ro * np.sqrt(np.log(1.00 + cvi ** 2) * np.log(1.00 + cvj ** 2)))
 
                 # 17 Xi = lognorm and Xj = frechet
 
-                elif self.xvar[i]['vardist'] is 'lognorm' and self.xvar[j]['vardist'] is 'frechet' \
-                        or self.xvar[i]['vardist'] is 'frechet' and self.xvar[j]['vardist'] is 'lognorm':
-                    if self.xvar[i]['vardist'] is 'frechet':
+                elif self.xvar[i]['vardist'] == 'lognorm' and self.xvar[j]['vardist'] == 'frechet' \
+                        or self.xvar[i]['vardist'] == 'frechet' and self.xvar[j]['vardist'] == 'lognorm':
+                    if self.xvar[i]['vardist'] == 'frechet':
                         cvf = cvi
                         cvl = cvj
                     else:
@@ -233,9 +233,9 @@ class Reliability():
 
                 # 18 Xi = lognorm and Xj = weibull
 
-                elif self.xvar[i]['vardist'] is 'lognorm' and self.xvar[j]['vardist'] is 'weibull' \
-                        or self.xvar[i]['vardist'] is 'weibull' and self.xvar[j]['vardist'] is 'lognorm':
-                    if self.xvar[i]['vardist'] is 'weibull':
+                elif self.xvar[i]['vardist'] == 'lognorm' and self.xvar[j]['vardist'] == 'weibull' \
+                        or self.xvar[i]['vardist'] == 'weibull' and self.xvar[j]['vardist'] == 'lognorm':
+                    if self.xvar[i]['vardist'] == 'weibull':
                         cvw = cvi
                         cvl = cvj
                     else:
@@ -247,7 +247,7 @@ class Reliability():
 
                 # 19 Xi = frechet and Xj = frechet
 
-                elif self.xvar[i]['vardist'] is 'frechet' and self.xvar[j]['vardist'] is 'frechet':
+                elif self.xvar[i]['vardist'] == 'frechet' and self.xvar[j]['vardist'] == 'frechet':
                     f = 1.086 + 0.054 * ro + 0.104 * (cvi + cvj) \
                         - 0.055 * ro ** 2 + 0.662 * (cvi ** 2 + cvj ** 2)  \
                         - 0.570 * ro * (cvi + cvj) + 0.203 * cvi * cvj \
@@ -257,9 +257,9 @@ class Reliability():
 
                 # 20 Xi = frechet and Xj = weibull
 
-                elif self.xvar[i]['vardist'] is 'frechet' and self.xvar[j]['vardist'] is 'weibull' \
-                        or self.xvar[i]['vardist'] is 'weibull' and self.xvar[j]['vardist'] is 'frechet':
-                    if self.xvar[i]['vardist'] is 'frechet':
+                elif self.xvar[i]['vardist'] == 'frechet' and self.xvar[j]['vardist'] == 'weibull' \
+                        or self.xvar[i]['vardist'] == 'weibull' and self.xvar[j]['vardist'] == 'frechet':
+                    if self.xvar[i]['vardist'] == 'frechet':
                         cvf = cvi
                         cvw = cvj
                     else:
@@ -271,7 +271,7 @@ class Reliability():
 
                 # 20 Xi = weibull and Xj = weibull
 
-                elif self.xvar[i]['vardist'] is 'weibull' and self.xvar[j]['vardist'] is 'weibull':
+                elif self.xvar[i]['vardist'] == 'weibull' and self.xvar[j]['vardist'] == 'weibull':
                     f = 1.063 - 0.004 * ro - 0.200 * (cvi + cvj) \
                         - 0.001 * ro ** 2 + 0.337 * (cvi ** 2 + cvj ** 2)  \
                         + 0.007 * ro * (cvi + cvj) - 0.007 * cvi * cvj
@@ -1225,7 +1225,7 @@ class Reliability():
             print('Cycle =', kcycle, self.xvar)
             print(f'Probability of failure pf ={pf}')
             print(f'Coefficient of variation of pf ={delta_pf}')
-            if delta_pf < delta_lim and kcycle > 2:
+            if delta_pf < delta_lim and kcycle > 3:
                 break
 
 
@@ -1242,16 +1242,16 @@ class Reliability():
         print(f'Processing time = {ttotal} s')
 
         # Plot results:
-        cycle = np.arange(0, nc, 1)
+        cycle = np.arange(0, kcycle, 1)
 
         plt.figure(1, figsize=(8.5, 6))
-        plt.plot(cycle, pf_mean)
+        plt.plot(cycle, pf_mean[:kcycle])
         plt.xlabel("Cycle")
         plt.ylabel("Pf")
         plt.show()
 
         plt.figure(2, figsize=(8.5, 6))
-        plt.plot(cycle, cov_pf)
+        plt.plot(cycle, cov_pf[:kcycle])
         plt.xlabel("Cycle")
         plt.ylabel("CoV Pf")
         plt.show()
