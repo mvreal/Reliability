@@ -13,6 +13,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import time
 
+
 class Reliability():
 
     def __init__(self, xvar, gx, x0=None, Rz=None):
@@ -601,8 +602,6 @@ class Reliability():
         print('\nProbability of Failure Pf = {0:0.4e}'.format(pf))
         return beta, xk, alpha, normgradyk, sigmaxneqk
 
-
-
     def sorm(self):
         """
         Second order reliability method = SORM
@@ -980,7 +979,6 @@ class Reliability():
         fxmax_cycle = np.zeros(nc)
         uk_cycle = np.zeros((ns, self.n))
 
-
         #
         # Standard deviation multiplier for MC-IS
         #
@@ -1044,7 +1042,6 @@ class Reliability():
             sum2 += pfc[icycle] ** 2
             fxmax_cycle[icycle] = fx.max()
 
-
             #
             #  Step 6 - Evaluation of the error in the estimation of Pf
             #
@@ -1062,7 +1059,6 @@ class Reliability():
             print(f'Coefficient of variation of pf ={delta_pf}')
             if delta_pf < delta_lim and kcycle > 3:
                 break
-
 
         beta = -norm.ppf(pf, 0, 1)
         tf = time.time()
@@ -1228,7 +1224,6 @@ class Reliability():
             if delta_pf < delta_lim and kcycle > 3:
                 break
 
-
         beta = -norm.ppf(pf, 0, 1)
         tf = time.time()
         ttotal = tf - ti
@@ -1257,3 +1252,4 @@ class Reliability():
         plt.show()
 
         return beta, pf, cov_pf, ttotal
+
