@@ -1060,7 +1060,7 @@ class Reliability():
             print('Cycle =', kcycle, self.xvar)
             print(f'Probability of failure pf ={pf}')
             print(f'Coefficient of variation of pf ={delta_pf}')
-            if delta_pf < delta_lim and kcycle > 2:
+            if delta_pf < delta_lim and kcycle > 3:
                 break
 
 
@@ -1077,16 +1077,16 @@ class Reliability():
         print(f'Processing time = {ttotal} s')
 
         # Plot results:
-        cycle = np.arange(0, nc, 1)
+        cycle = np.arange(0, kcycle, 1)
 
         plt.figure(1, figsize=(8.5, 6))
-        plt.plot(cycle, pf_mean)
+        plt.plot(cycle, pf_mean[:kcycle])
         plt.xlabel("Cycle")
         plt.ylabel("Pf")
         plt.show()
 
         plt.figure(2, figsize=(8.5, 6))
-        plt.plot(cycle, cov_pf)
+        plt.plot(cycle, cov_pf[:kcycle])
         plt.xlabel("Cycle")
         plt.ylabel("CoV Pf")
         plt.show()

@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d78a2238-3565-4360-b232-3a30c08b226d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/csv-plugin.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/csv-plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/csv-plugin.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/adapt_example7-3.py" beforeDir="false" afterPath="$PROJECT_DIR$/adapt_example7-3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/class_reliability.py" beforeDir="false" afterPath="$PROJECT_DIR$/class_reliability.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mc_example7-3.py" beforeDir="false" afterPath="$PROJECT_DIR$/mc_example7-3.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -25,7 +27,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
-  <component name="RunManager" selected="Python.mc_example7-3">
+  <component name="RunManager" selected="Python.adapt_example7-3">
     <configuration name="adapt_example7-3" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Reliability" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -70,8 +72,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.mc_example7-3" />
         <item itemvalue="Python.adapt_example7-3" />
+        <item itemvalue="Python.mc_example7-3" />
       </list>
     </recent_temporary>
   </component>
@@ -96,5 +98,6 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
 </project>
