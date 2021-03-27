@@ -966,8 +966,6 @@ class Reliability():
         #
         # Number of variables of the problem
         #
-        nfail = 0
-        niter = 0
         nc = int(nc)
         ns = int(ns)
         pfc = np.zeros(nc)
@@ -975,7 +973,6 @@ class Reliability():
         pf_mean = np.zeros(nc)
         sum1 = 0.00
         sum2 = 0.00
-        fxmax = 0.00
         fxmax_cycle = np.zeros(nc)
         uk_cycle = np.zeros((ns, self.n))
 
@@ -1077,12 +1074,14 @@ class Reliability():
 
         plt.figure(1, figsize=(8.5, 6))
         plt.plot(cycle, pf_mean[:kcycle])
+        plt.title("Convergence of Probability of Failure")
         plt.xlabel("Cycle")
         plt.ylabel("Pf")
         plt.show()
 
         plt.figure(2, figsize=(8.5, 6))
         plt.plot(cycle, cov_pf[:kcycle])
+        plt.title("CoV of the Probability of Failure")
         plt.xlabel("Cycle")
         plt.ylabel("CoV Pf")
         plt.show()
@@ -1216,9 +1215,8 @@ class Reliability():
             else:
                 cov_pf[icycle] = 0.00
             delta_pf = cov_pf[icycle]
-            nc_final = icycle
             # Probability of failure in this cycle
-            print('Cycle =', kcycle, self.xvar)
+            print('Cycle =', kcycle)
             print(f'Probability of failure pf ={pf}')
             print(f'Coefficient of variation of pf ={delta_pf}')
             if delta_pf < delta_lim and kcycle > 3:
@@ -1241,12 +1239,14 @@ class Reliability():
 
         plt.figure(1, figsize=(8.5, 6))
         plt.plot(cycle, pf_mean[:kcycle])
+        plt.title("Convergence of Probability of Failure")
         plt.xlabel("Cycle")
         plt.ylabel("Pf")
         plt.show()
 
         plt.figure(2, figsize=(8.5, 6))
         plt.plot(cycle, cov_pf[:kcycle])
+        plt.title("CoV of the Probability of Failure")
         plt.xlabel("Cycle")
         plt.ylabel("CoV Pf")
         plt.show()
@@ -1375,7 +1375,7 @@ class Reliability():
             delta_pf = cov_pf[icycle]
             nc_final = icycle
             # Probability of failure in this cycle
-            print('Cycle =', kcycle, self.xvar)
+            print('Cycle =', kcycle)
             print(f'Probability of failure pf ={pf}')
             print(f'Coefficient of variation of pf ={delta_pf}')
             if delta_pf < delta_lim and kcycle > 3:
@@ -1398,12 +1398,14 @@ class Reliability():
 
         plt.figure(1, figsize=(8.5, 6))
         plt.plot(cycle, pf_mean[:kcycle])
+        plt.title("Convergence of Probability of Failure")
         plt.xlabel("Cycle")
         plt.ylabel("Pf")
         plt.show()
 
         plt.figure(2, figsize=(8.5, 6))
         plt.plot(cycle, cov_pf[:kcycle])
+        plt.title("CoV of the Probability of Failure")
         plt.xlabel("Cycle")
         plt.ylabel("CoV Pf")
         plt.show()

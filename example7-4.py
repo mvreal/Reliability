@@ -4,9 +4,7 @@ Reliabilty Analysis
 Example 7.4 - Nonlinear limit state function with  normal independent variables
 @author: MVREAL
 """
-import numpy as np
 from class_reliability import *
-import time
 
 #
 # Step 0 - Beam: g(Y, Z, M) = Y*Z-M = 0
@@ -36,7 +34,4 @@ xvar = [
 #
 beam = Reliability(xvar, gfunction)
 beam.form(iHLRF=True)
-tf = time.time()
-ttotal = tf - ti
-print(f'Processing time = {ttotal}')
 #
