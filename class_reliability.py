@@ -1253,3 +1253,159 @@ class Reliability():
 
         return beta, pf, cov_pf, ttotal
 
+    def bucher(self, nc, ns, delta_lim, nsigma=1.50):
+        """
+        Monte Carlo Simulations with Importance Sampling (MC-IS)
+        Importance sampling with adaptive technique
+        BUCHER, C.G. Adaptive sampling – an iterative fast Monte Carlo procedure. Structural
+        safety, v. 5, n. 2, p. 119-126, 1988.
+
+        """
+        #
+        #
+        ti = time.time()
+        #
+        # Number of variables of the problem
+        #
+        nc = int(nc)
+        ns = int(ns)
+        xm = np.zeros(self.n)
+        sum_xwig = np.zeros(self.n)
+        sum_wig = 0.00
+        pfc = np.zeros(nc)
+        cov_pf = np.zeros(nc)
+        pf_mean = np.zeros(nc)
+        sum1 = 0.00
+        sum2 = 0.00
+        uk_cycle = np.zeros((ns, self.n))
+
+        #
+        #
+        # Number of Monte Carlo simulations
+        #
+        #
+        # Matrix xp(ns, self.n) for ns Monte Carlo simulations and self.n random variables
+        #
+        xp = np.zeros((ns, self.n))
+        wp = np.ones(ns)
+        fx = np.ones(ns)
+
+        #
+        # Adaptive cycles
+        #
+
+        for icycle in range(nc):
+            kcycle = icycle + 1
+
+            #
+            # Monte Carlo Simulations
+            #
+            #
+            # Generation of uniform random numbers
+            #
+            index = icycle % 2
+            uk_new = np.random.rand(ns, self.n)
+            if index == 0:
+                uk_cycle = uk_new.copy()
+            else:
+                uk_cycle = 1.00 - uk_cycle
+
+            #
+            #
+            # Step 1 - Generation of the random numbers according to their appropriate distribution
+            #
+
+            xp, wp, fx = self.var_gen(icycle, ns, uk_cycle, nsigma)
+            #
+            #
+            # Step 2 - Evaluation of the limit state function g(x)
+            #
+            gx = list(map(self.fel, xp))
+            gx = np.array(gx)
+
+            #
+            #
+            # Step 3 - Evaluation of the indicator function I[g(x)]
+            #
+            igx = np.where(gx <= 0.00, wp, 0)
+            nfail = sum(igx)
+            pfc[icycle] = nfail / ns
+            sum1 += pfc[icycle]
+            sum2 += pfc[icycle] ** 2
+            wig = np.copy(igx)
+
+            #
+            #  Step 4 - Select adaptive mean
+            #
+            if nfail == 0:
+                #
+                # No failures in ns simulations
+                #
+                imin = np.argmin(gx)
+                #
+                i = -1
+                for var in self.xvar:
+                    i += 1
+                    xm[i] = xp[imin, i]
+                    var['varhmean'] = xm[i]
+
+            else:
+                #
+                # Ocurrence of nfail failures in ns simulations
+                #
+                #
+                i = -1
+                for var in self.xvar:
+                    i += 1
+                    sum_xwig[i] += sum(xp[:, i] * wig[:])
+                    sum_wig += sum(wig)
+                    xm[i] = sum_xwig[i] / sum_wig
+                    var['varhmean'] = xm[i]
+
+            #
+            #  Step 6 - Evaluation of the error in the estimation of Pf
+            #
+
+            pf_mean[icycle] = sum1 / kcycle
+            pf = pf_mean[icycle]
+            if pf > 0.00 and kcycle > 1:
+                cov_pf[icycle] = 1. / (pf * np.sqrt(kcycle * (kcycle - 1))) * np.sqrt(sum2 - 1. / kcycle * sum1 ** 2)
+            else:
+                cov_pf[icycle] = 0.00
+            delta_pf = cov_pf[icycle]
+            nc_final = icycle
+            # Probability of failure in this cycle
+            print('Cycle =', kcycle, self.xvar)
+            print(f'Probability of failure pf ={pf}')
+            print(f'Coefficient of variation of pf ={delta_pf}')
+            if delta_pf < delta_lim and kcycle > 3:
+                break
+
+        beta = -norm.ppf(pf, 0, 1)
+        tf = time.time()
+        ttotal = tf - ti
+        #
+        print('*** Resultados do Método Monte Carlo ***')
+        print(f'\nReliability Index Beta = {beta}')
+        print(f'Probability of failure pf ={pf}')
+        print(f'COV of pf ={delta_pf}')
+        print('nimul = {0:0.4f} '.format(kcycle * ns))
+        print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
+        print(f'Processing time = {ttotal} s')
+
+        # Plot results:
+        cycle = np.arange(0, kcycle, 1)
+
+        plt.figure(1, figsize=(8.5, 6))
+        plt.plot(cycle, pf_mean[:kcycle])
+        plt.xlabel("Cycle")
+        plt.ylabel("Pf")
+        plt.show()
+
+        plt.figure(2, figsize=(8.5, 6))
+        plt.plot(cycle, cov_pf[:kcycle])
+        plt.xlabel("Cycle")
+        plt.ylabel("CoV Pf")
+        plt.show()
+
+        return beta, pf, cov_pf, ttotal
