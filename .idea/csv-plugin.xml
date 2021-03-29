@@ -59,6 +59,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\mc_example7-4.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
       </map>
     </option>
   </component>
