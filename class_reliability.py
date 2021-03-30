@@ -1353,12 +1353,12 @@ class Reliability():
                 #
                 # Ocurrence of nfail failures in ns simulations
                 #
+                sum_xwig += np.dot(wig.T, xp)
+                sum_wig += sum(wig)
                 #
                 i = -1
                 for var in self.xvar:
                     i += 1
-                    sum_xwig[i] += sum(xp[:, i] * wig[:])
-                    sum_wig += sum(wig)
                     xm[i] = sum_xwig[i] / sum_wig
                     var['varhmean'] = xm[i]
 

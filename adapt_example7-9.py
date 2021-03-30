@@ -4,9 +4,7 @@ Reliabilty Analysis
 Example 7.9 - Nonlinear limit state function with non-normal correlated variables
 @author: MVREAL
 """
-import numpy as np
 from class_reliability import *
-import time
 
 #
 # Step 0 - Column: g(Y, Z, M) = Y*Z-M = 0
@@ -19,7 +17,6 @@ def gfunction(x):
     return g
 
 
-ti = time.time()
 #
 # Data input
 #
@@ -41,8 +38,5 @@ corrmatrix = [[1.00, 0.40, 0.00],
 # MC-IS adaptative method
 #
 beam = Reliability(xvar, gfunction, None, corrmatrix)
-beam.adaptive(20, 5000, 0.01, 1.50)
-tf = time.time()
-ttotal = tf - ti
-print(f'Processing time = {ttotal}')
+beam.adaptive(100, 5000, 0.03, 1.50)
 #

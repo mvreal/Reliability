@@ -4,9 +4,7 @@ Reliabilty Analysis
 Example 7.7 - Linear limit state function with non-normal independent variables
 @author: MVREAL
 """
-import numpy as np
 from class_reliability import *
-import time
 
 #
 # Step 0 - Column: g(R, G, Q, W) = R-G-Q-W = 0
@@ -19,7 +17,6 @@ def gfunction(x):
     return g
 
 
-ti = time.time()
 #
 # Data input
 #
@@ -37,7 +34,4 @@ xvar = [
 #
 column = Reliability(xvar, gfunction)
 column.form(iHLRF=True)
-tf = time.time()
-ttotal = tf - ti
-print(f'Processing time = {ttotal}')
 #

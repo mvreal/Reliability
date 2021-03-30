@@ -35,8 +35,8 @@ corrmatrix = [[1.00, 0.40, 0.00],
               [0.40, 1.00, 0.00],
               [0.00, 0.00, 1.00]]
 #
-# MCS method
+# MC-IS adaptative method
 #
 beam = Reliability(xvar, gfunction, None, corrmatrix)
-beam.mc(100, 5000, 0.03, 1.00)
+beam.bucher(100, 5000, 0.03, 1.50)
 #

@@ -33,5 +33,5 @@ xvar = [
 # MC-IS adaptative method
 #
 beam = Reliability(xvar, gfunction)
-beam.bucher(50, 5000, 0.01, 1.50)
+beam.bucher(100, 5000, 0.01, 1.50)
 #

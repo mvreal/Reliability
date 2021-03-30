@@ -33,5 +33,5 @@ xvar = [
 # MC-IS adaptative method
 #
 column = Reliability(xvar, gfunction)
-column.adaptive(100, 5000, 0.03, 1.5)
+column.bucher(100, 5000, 0.03, 1.5)
 #
