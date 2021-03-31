@@ -38,5 +38,5 @@ corrmatrix = [[1.00, 0.40, 0.00],
 # MC-IS adaptative method
 #
 beam = Reliability(xvar, gfunction, None, corrmatrix)
-beam.adaptive(100, 5000, 0.03, 1.50)
+beam.adaptive(100, 5000, 0.02, 1.50)
 #
