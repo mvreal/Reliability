@@ -3,6 +3,13 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
+        <entry key="\adapt-melchers89.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\adapt_example7-3.py">
           <value>
             <Attribute>
@@ -39,6 +46,13 @@
           </value>
         </entry>
         <entry key="\adapt_example7-9.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\buch-melchers89.py">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -157,6 +171,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\mc-melchers89.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\mc_example7-3.py">
           <value>
             <Attribute>
@@ -196,6 +217,13 @@
           <value>
             <Attribute>
               <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\melchers89.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
             </Attribute>
           </value>
         </entry>
