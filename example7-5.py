@@ -41,5 +41,5 @@ corrmatrix = [[1.00, 0.80, 0.00, 0.00],
 # FORM method
 #
 column = Reliability(xvar, gfunction, None, corrmatrix)
-column.form(iHLRF=False)
+column.form(iHLRF=False, toler=1e-6)
 #

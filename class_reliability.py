@@ -285,7 +285,7 @@ class Reliability():
 #        print(Rz1)
         return Rz1
 
-    def form(self, iHLRF):
+    def form(self, iHLRF, toler=1.e-3):
         """
 
                Algorithm FORM-iHLRF.
@@ -469,8 +469,8 @@ class Reliability():
         xk1 = np.copy(self.x0)
         #
         # Error tolerance for yk and g(x)
-        epsilon = 1e-6
-        delta = 1e-6 * np.abs(self.fel(xk1))
+        epsilon = toler
+        delta = toler * np.abs(self.fel(xk1))
         # Initial values for errors and iteration counters
         erro1 = 1000.00
         erro2 = 1000.00
@@ -688,7 +688,7 @@ class Reliability():
         kiter = 0
         erro1 = 0.00
 
-        beta, xk, alpha, normgradyk, sigmaxneqk = self.form(iHLRF=True)
+        beta, xk, alpha, normgradyk, sigmaxneqk = self.form(iHLRF=True, toler=1.e-3)
         #
         # Formulation of Second Order Reliability Method - SORM
         #

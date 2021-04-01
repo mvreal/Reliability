@@ -2,13 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d78a2238-3565-4360-b232-3a30c08b226d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/adapt-melchers89.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/buch-melchers89.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mc-melchers89.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/melchers89.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/csv-plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/csv-plugin.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/class_reliability.py" beforeDir="false" afterPath="$PROJECT_DIR$/class_reliability.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example7-3.py" beforeDir="false" afterPath="$PROJECT_DIR$/example7-3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example7-4.py" beforeDir="false" afterPath="$PROJECT_DIR$/example7-4.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example7-5.py" beforeDir="false" afterPath="$PROJECT_DIR$/example7-5.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example7-6.py" beforeDir="false" afterPath="$PROJECT_DIR$/example7-6.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example7-7.py" beforeDir="false" afterPath="$PROJECT_DIR$/example7-7.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example7-8.py" beforeDir="false" afterPath="$PROJECT_DIR$/example7-8.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example7-9.py" beforeDir="false" afterPath="$PROJECT_DIR$/example7-9.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/form-haldar-example8-3.py" beforeDir="false" afterPath="$PROJECT_DIR$/form-haldar-example8-3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/melchers89.py" beforeDir="false" afterPath="$PROJECT_DIR$/melchers89.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,15 +31,15 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/example7-5.py" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="F:\Reliability" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.buch-melchers89">
-    <configuration name="adapt-melchers89" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.form-haldar-example8-3">
+    <configuration name="example7-6" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Reliability" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -47,7 +51,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/adapt-melchers89.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/example7-6.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -56,7 +60,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="buch-melchers89" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="example7-7" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Reliability" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -68,7 +72,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/buch-melchers89.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/example7-7.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -77,7 +81,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="buch_example7-9" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="example7-8" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Reliability" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -89,7 +93,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/buch_example7-9.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/example7-8.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -98,7 +102,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="mc-melchers89" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="example7-9" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Reliability" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -110,7 +114,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/mc-melchers89.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/example7-9.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -119,7 +123,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="melchers89" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="form-haldar-example8-3" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Reliability" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -131,7 +135,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/melchers89.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/form-haldar-example8-3.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -142,11 +146,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.buch-melchers89" />
-        <item itemvalue="Python.adapt-melchers89" />
-        <item itemvalue="Python.mc-melchers89" />
-        <item itemvalue="Python.melchers89" />
-        <item itemvalue="Python.buch_example7-9" />
+        <item itemvalue="Python.form-haldar-example8-3" />
+        <item itemvalue="Python.example7-9" />
+        <item itemvalue="Python.example7-8" />
+        <item itemvalue="Python.example7-7" />
+        <item itemvalue="Python.example7-6" />
       </list>
     </recent_temporary>
   </component>

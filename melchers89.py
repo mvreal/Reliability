@@ -35,5 +35,5 @@ xvar = [
 # FORM method
 #
 test = Reliability(xvar, gfunction)
-test.form(iHLRF=True)
+test.form(iHLRF=True, toler=1.e-6)
 #

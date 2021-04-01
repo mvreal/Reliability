@@ -33,5 +33,5 @@ xvar = [
 # FORM method
 #
 column = Reliability(xvar, gfunction)
-column.form(iHLRF=True)
+column.form(iHLRF=True, toler=1.e-6)
 #
