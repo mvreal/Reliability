@@ -761,7 +761,7 @@ class Reliability():
 
         return
 
-    def var_gen(self, icycle, ns, uk_cycle, nsigma=1.00):
+    def var_gen(self, ns, uk_cycle, nsigma=1.00):
         """
 
            Random variables generator for the Monte Carlo Simulation methods
@@ -1020,7 +1020,7 @@ class Reliability():
             # Step 1 - Generation of the random numbers according to their appropriate distribution
             #
 
-            xp, wp, fx = self.var_gen(icycle, ns, uk_cycle, nsigma)
+            xp, wp, fx = self.var_gen(ns, uk_cycle, nsigma)
             #
             #
             # Step 2 - Evaluation of the limit state function g(x)
@@ -1158,7 +1158,7 @@ class Reliability():
             # Step 1 - Generation of the random numbers according to their appropriate distribution
             #
 
-            xp, wp, fx = self.var_gen(icycle, ns, uk_cycle, nsigma)
+            xp, wp, fx = self.var_gen(ns, uk_cycle, nsigma)
             #
             #
             # Step 2 - Evaluation of the limit state function g(x)
@@ -1315,7 +1315,7 @@ class Reliability():
             # Step 1 - Generation of the random numbers according to their appropriate distribution
             #
 
-            xp, wp, fx = self.var_gen(icycle, ns, uk_cycle, nsigma)
+            xp, wp, fx = self.var_gen(ns, uk_cycle, nsigma)
             #
             #
             # Step 2 - Evaluation of the limit state function g(x)

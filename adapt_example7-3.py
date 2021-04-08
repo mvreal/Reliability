@@ -34,5 +34,5 @@ xvar = [
 # MC-IS adaptative method
 #
 column = Reliability(xvar, gfunction, None, None)
-column.adaptive(50, 10000, 0.01, 1.50)
+column.adaptive(50, 10000, 0.02, 1.50)
 #

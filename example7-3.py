@@ -12,11 +12,7 @@ from class_reliability import *
 
 
 def gfunction(x):
-    a = 1.00
-    b = 1.00
-    c = 1.00
-    d = 1.00
-    g = a * x[0]- b *x[1]- c * x[2]- d * x[3]
+    g = x[0] - x[1] - x[2] - x[3]
     return g
 
 #
