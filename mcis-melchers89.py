@@ -25,11 +25,11 @@ def gfunction(x):
 
 
 xvar = [
-    {'varname': 'X1', 'vardist': 'lognormal', 'varmean': 0.0988, 'varcov': 0.08666},
-    {'varname': 'X2', 'vardist': 'lognormal', 'varmean': 10.6489, 'varcov': 0.18652},
-    {'varname': 'X3', 'vardist': 'frechet', 'varmean': 63.0, 'varcov': 0.16},
-    {'varname': 'X4', 'vardist': 'normal', 'varmean': 0.672, 'varcov': 0.10},
-    {'varname': 'X5', 'vardist': 'normal', 'varmean': 38.0, 'varcov': 0.10}
+    {'varname': 'X1', 'vardist': 'lognormal', 'varmean': 0.0988, 'varhmean': 0.095759, 'varcov': 0.08666},
+    {'varname': 'X2', 'vardist': 'lognormal', 'varmean': 10.6489, 'varhmean': 11.871692, 'varcov': 0.18652},
+    {'varname': 'X3', 'vardist': 'frechet', 'varmean': 63.0, 'varhmean': 89.110336, 'varcov': 0.16},
+    {'varname': 'X4', 'vardist': 'normal', 'varmean': 0.672,'varhmean': 0.695869, 'varcov': 0.10},
+    {'varname': 'X5', 'vardist': 'normal', 'varmean': 38.0, 'varhmean': 36.546130, 'varcov': 0.10}
 ]
 #
 # FORM method
