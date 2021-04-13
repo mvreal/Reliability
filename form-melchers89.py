@@ -35,5 +35,5 @@ xvar = [
 # FORM method
 #
 test = Reliability(xvar, gfunction)
-test.bucher(100, 5000, 0.02, 1.50)
+test.form(iHLRF=True, toler=1.e-6)
 #
