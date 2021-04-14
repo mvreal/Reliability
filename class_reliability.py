@@ -31,6 +31,15 @@ class Reliability():
                 i += 1
                 # Mean value of the random variables x
                 self.x0[i] = float(var['varmean'])
+                var['varhmean'] = float(var['varmean'])
+        else:
+            i = -1
+            for var in self.xvar:
+                i += 1
+                # Mean value of the random variables x
+                var['varhmean'] = self.x0[i]
+
+
 
         #
         # Setting variables initial values
@@ -964,7 +973,7 @@ class Reliability():
 
         return x, weight, fxixj
 
-    def mc(self, nc, ns, delta_lim, nsigma=1.00):
+    def mc(self, nc, ns, delta_lim, nsigma=1.00, igraph=True):
         """
         Monte Carlo Simulation Method
         nc Cycles
@@ -1070,6 +1079,7 @@ class Reliability():
                 break
 
         beta = -norm.ppf(pf, 0, 1)
+        nsimul = kcycle * ns
         tf = time.time()
         ttotal = tf - ti
         #
@@ -1077,30 +1087,31 @@ class Reliability():
         print(f'\nReliability Index Beta = {beta}')
         print(f'Probability of failure pf ={pf}')
         print(f'COV of pf ={delta_pf}')
-        print('nimul = {0:0.4f} '.format(kcycle * ns))
+        print('nimul = {0:0.4f} '.format(nsimul))
         print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
         print(f'Processing time = {ttotal} s')
 
-        # Plot results:
-        cycle = np.arange(0, kcycle, 1)
+        if igraph:
+            # Plot results:
+            cycle = np.arange(0, kcycle, 1)
 
-        plt.figure(1, figsize=(8.5, 6))
-        plt.plot(cycle, pf_mean[:kcycle])
-        plt.title("Convergence of Probability of Failure")
-        plt.xlabel("Cycle")
-        plt.ylabel("Pf")
-        plt.show()
+            plt.figure(1, figsize=(8.5, 6))
+            plt.plot(cycle, pf_mean[:kcycle])
+            plt.title("Convergence of Probability of Failure")
+            plt.xlabel("Cycle")
+            plt.ylabel("Pf")
+            plt.show()
 
-        plt.figure(2, figsize=(8.5, 6))
-        plt.plot(cycle, cov_pf[:kcycle])
-        plt.title("CoV of the Probability of Failure")
-        plt.xlabel("Cycle")
-        plt.ylabel("CoV Pf")
-        plt.show()
+            plt.figure(2, figsize=(8.5, 6))
+            plt.plot(cycle, cov_pf[:kcycle])
+            plt.title("CoV of the Probability of Failure")
+            plt.xlabel("Cycle")
+            plt.ylabel("CoV Pf")
+            plt.show()
 
-        return beta, pf, cov_pf, ttotal
+        return beta, pf, delta_pf, nsimul, ttotal
 
-    def adaptive(self, nc, ns, delta_lim, nsigma=1.50):
+    def adaptive(self, nc, ns, delta_lim, nsigma=1.50, igraph=True):
         """
         Monte Carlo Simulations with Importance Sampling (MC-IS)
         Importance sampling with adaptative technique
@@ -1235,6 +1246,7 @@ class Reliability():
                 break
 
         beta = -norm.ppf(pf, 0, 1)
+        nsimul = kcycle * ns
         tf = time.time()
         ttotal = tf - ti
         #
@@ -1242,30 +1254,31 @@ class Reliability():
         print(f'\nReliability Index Beta = {beta}')
         print(f'Probability of failure pf ={pf}')
         print(f'COV of pf ={delta_pf}')
-        print('nimul = {0:0.4f} '.format(kcycle * ns))
+        print('nimul = {0:0.4f} '.format(nsimul))
         print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
         print(f'Processing time = {ttotal} s')
 
-        # Plot results:
-        cycle = np.arange(0, kcycle, 1)
+        if igraph:
+            # Plot results:
+            cycle = np.arange(0, kcycle, 1)
 
-        plt.figure(1, figsize=(8.5, 6))
-        plt.plot(cycle, pf_mean[:kcycle])
-        plt.title("Convergence of Probability of Failure")
-        plt.xlabel("Cycle")
-        plt.ylabel("Pf")
-        plt.show()
+            plt.figure(1, figsize=(8.5, 6))
+            plt.plot(cycle, pf_mean[:kcycle])
+            plt.title("Convergence of Probability of Failure")
+            plt.xlabel("Cycle")
+            plt.ylabel("Pf")
+            plt.show()
 
-        plt.figure(2, figsize=(8.5, 6))
-        plt.plot(cycle, cov_pf[:kcycle])
-        plt.title("CoV of the Probability of Failure")
-        plt.xlabel("Cycle")
-        plt.ylabel("CoV Pf")
-        plt.show()
+            plt.figure(2, figsize=(8.5, 6))
+            plt.plot(cycle, cov_pf[:kcycle])
+            plt.title("CoV of the Probability of Failure")
+            plt.xlabel("Cycle")
+            plt.ylabel("CoV Pf")
+            plt.show()
 
-        return beta, pf, cov_pf, ttotal
+        return beta, pf, delta_pf, nsimul, ttotal
 
-    def bucher(self, nc, ns, delta_lim, nsigma=1.50):
+    def bucher(self, nc, ns, delta_lim, nsigma=1.50, igraph=True):
         """
         Monte Carlo Simulations with Importance Sampling (MC-IS)
         Importance sampling with adaptive technique
@@ -1394,6 +1407,7 @@ class Reliability():
                 break
 
         beta = -norm.ppf(pf, 0, 1)
+        nsimul = kcycle * ns
         tf = time.time()
         ttotal = tf - ti
         #
@@ -1401,30 +1415,31 @@ class Reliability():
         print(f'\nReliability Index Beta = {beta}')
         print(f'Probability of failure pf ={pf}')
         print(f'COV of pf ={delta_pf}')
-        print('nimul = {0:0.4f} '.format(kcycle * ns))
+        print('nimul = {0:0.4f} '.format(nsimul))
         print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
         print(f'Processing time = {ttotal} s')
 
-        # Plot results:
-        cycle = np.arange(0, kcycle, 1)
+        if igraph:
+            # Plot results:
+            cycle = np.arange(0, kcycle, 1)
 
-        plt.figure(1, figsize=(8.5, 6))
-        plt.plot(cycle, pf_mean[:kcycle])
-        plt.title("Convergence of Probability of Failure")
-        plt.xlabel("Cycle")
-        plt.ylabel("Pf")
-        plt.show()
+            plt.figure(1, figsize=(8.5, 6))
+            plt.plot(cycle, pf_mean[:kcycle])
+            plt.title("Convergence of Probability of Failure")
+            plt.xlabel("Cycle")
+            plt.ylabel("Pf")
+            plt.show()
 
-        plt.figure(2, figsize=(8.5, 6))
-        plt.plot(cycle, cov_pf[:kcycle])
-        plt.title("CoV of the Probability of Failure")
-        plt.xlabel("Cycle")
-        plt.ylabel("CoV Pf")
-        plt.show()
+            plt.figure(2, figsize=(8.5, 6))
+            plt.plot(cycle, cov_pf[:kcycle])
+            plt.title("CoV of the Probability of Failure")
+            plt.xlabel("Cycle")
+            plt.ylabel("CoV Pf")
+            plt.show()
 
-        return beta, pf, cov_pf, ttotal
+        return beta, pf, delta_pf, nsimul, ttotal
 
-    def multig_mc(self, ng, nc, ns, delta_lim, nsigma=1.00):
+    def multig_mc(self, ng, nc, ns, delta_lim, nsigma=1.00, igraph=True):
         """
         Monte Carlo Simulation Method
         nc Cycles
@@ -1533,6 +1548,7 @@ class Reliability():
                 break
 
         beta = -norm.ppf(pf, 0, 1)
+        nsimul = kcycle * ns
         tf = time.time()
         ttotal = tf - ti
         #
@@ -1540,25 +1556,26 @@ class Reliability():
         print(f'\nReliability Index Beta = {beta}')
         print(f'Probability of failure pf ={pf}')
         print(f'COV of pf ={delta_pf}')
-        print('nimul = {0:0.4f} '.format(kcycle * ns))
+        print('nimul = {0:0.4f} '.format(nsimul))
         print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
         print(f'Processing time = {ttotal} s')
 
-        # Plot results:
-        cycle = np.arange(0, kcycle, 1)
+        if igraph:
+            # Plot results:
+            cycle = np.arange(0, kcycle, 1)
 
-        plt.figure(1, figsize=(8.5, 6))
-        plt.plot(cycle, pf_mean[:kcycle])
-        plt.title("Convergence of Probability of Failure")
-        plt.xlabel("Cycle")
-        plt.ylabel("Pf")
-        plt.show()
+            plt.figure(1, figsize=(8.5, 6))
+            plt.plot(cycle, pf_mean[:kcycle])
+            plt.title("Convergence of Probability of Failure")
+            plt.xlabel("Cycle")
+            plt.ylabel("Pf")
+            plt.show()
 
-        plt.figure(2, figsize=(8.5, 6))
-        plt.plot(cycle, cov_pf[:kcycle])
-        plt.title("CoV of the Probability of Failure")
-        plt.xlabel("Cycle")
-        plt.ylabel("CoV Pf")
-        plt.show()
+            plt.figure(2, figsize=(8.5, 6))
+            plt.plot(cycle, cov_pf[:kcycle])
+            plt.title("CoV of the Probability of Failure")
+            plt.xlabel("Cycle")
+            plt.ylabel("CoV Pf")
+            plt.show()
 
-        return beta, pf, cov_pf, ttotal
+        return beta, pf, delta_pf, nsimul, ttotal

@@ -3,7 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="d78a2238-3565-4360-b232-3a30c08b226d" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/buch-melchers90b.py" beforeDir="false" afterPath="$PROJECT_DIR$/buch-melchers90b.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/class_reliability.py" beforeDir="false" afterPath="$PROJECT_DIR$/class_reliability.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mc_example1_melchers90.py" beforeDir="false" afterPath="$PROJECT_DIR$/mc_example1_melchers90.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,7 +30,7 @@
       <recent name="F:\Reliability" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.buch-melchers90b">
+  <component name="RunManager" selected="Python.mc_example1_melchers90">
     <configuration name="buch-melchers90b" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Reliability" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -137,11 +138,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.mc_example1_melchers90" />
+        <item itemvalue="Python.class_reliability" />
         <item itemvalue="Python.buch-melchers90b" />
         <item itemvalue="Python.form-melchers90b" />
-        <item itemvalue="Python.class_reliability" />
         <item itemvalue="Python.mc_example2_melchers90" />
-        <item itemvalue="Python.mc_example1_melchers90" />
       </list>
     </recent_temporary>
   </component>
