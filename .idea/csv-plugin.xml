@@ -59,6 +59,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\buch-melchers90b.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\buch_example7-3.py">
           <value>
             <Attribute>
@@ -185,7 +192,35 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\form-melchers90a.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\form-melchers90b.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\mc-melchers89.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\mc_example1_melchers90.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\mc_example2_melchers90.py">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -245,6 +280,13 @@
           <value>
             <Attribute>
               <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\multig_mc-melchers90.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>

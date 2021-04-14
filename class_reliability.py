@@ -31,27 +31,34 @@ class Reliability():
                 i += 1
                 # Mean value of the random variables x
                 self.x0[i] = float(var['varmean'])
-                # Tests if 'varhmean' key exists in var
-                if 'varhmean' in var:
-                    meanhx = float(var['varhmean'])
-                else:
-                    meanhx = float(var['varmean'])
-                    var.update({'varhmean': meanhx})
-                #
-                # Setting standard variable distribution names
-                #
-                if var['vardist'].lower() in ['norm', 'normal', 'gauss']:
-                    var['vardist'] = 'gauss'
-                elif var['vardist'].lower() in ['uniform', 'uniforme', 'const']:
-                    var['vardist'] = 'uniform'
-                elif var['vardist'].lower() in ['lognormal', 'lognorm', 'log']:
-                    var['vardist'] = 'lognorm'
-                elif var['vardist'].lower() in ['gumbel', 'extvalue1', 'evt1max']:
-                    var['vardist'] = 'gumbel'
-                elif var['vardist'].lower() in ['frechet', 'extvalue2', 'evt2max']:
-                    var['vardist'] = 'frechet'
-                elif var['vardist'].lower() in ['weibull', 'extvalue3', 'evt3min']:
-                    var['vardist'] = 'weibull'
+
+        #
+        # Setting variables initial values
+        #
+        i = -1
+        for var in self.xvar:
+            i += 1
+            # Tests if 'varhmean' key exists in var
+            if 'varhmean' in var:
+                meanhx = float(var['varhmean'])
+            else:
+                meanhx = float(var['varmean'])
+                var.update({'varhmean': meanhx})
+            #
+            # Setting standard variable distribution names
+            #
+            if var['vardist'].lower() in ['norm', 'normal', 'gauss']:
+                var['vardist'] = 'gauss'
+            elif var['vardist'].lower() in ['uniform', 'uniforme', 'const']:
+                var['vardist'] = 'uniform'
+            elif var['vardist'].lower() in ['lognormal', 'lognorm', 'log']:
+                var['vardist'] = 'lognorm'
+            elif var['vardist'].lower() in ['gumbel', 'extvalue1', 'evt1max']:
+                var['vardist'] = 'gumbel'
+            elif var['vardist'].lower() in ['frechet', 'extvalue2', 'evt2max']:
+                var['vardist'] = 'frechet'
+            elif var['vardist'].lower() in ['weibull', 'extvalue3', 'evt3min']:
+                var['vardist'] = 'weibull'
 
         if self.Rz is None:
             self.Rz = np.eye(self.n)
@@ -431,7 +438,11 @@ class Reliability():
             # Mean value of the random variables x
             mux0.append(float(var['varmean']))
             # Standard deviation of the random variables x
-            sigmax0.append(float(var['varcov']) * float(var['varmean']))
+            if var['varstd'] == 0.00:
+                sigmax0.append(float(var['varcov']) * float(var['varmean']))
+            else:
+                sigmax0.append(float(var['varstd']))
+
         #
         # Conversion to array format
         #
@@ -804,7 +815,8 @@ class Reliability():
         i = -1
         for var in self.xvar:
             i += 1
-            var['varstd'] = float(var['varcov']) * float(var['varmean'])
+            if var['varstd'] == 0.00:
+                var['varstd'] = float(var['varcov']) * float(var['varmean'])
             print(self.xvar[i])
             #
 
@@ -1376,6 +1388,145 @@ class Reliability():
             nc_final = icycle
             # Probability of failure in this cycle
             print('Cycle =', kcycle)
+            print(f'Probability of failure pf ={pf}')
+            print(f'Coefficient of variation of pf ={delta_pf}')
+            if delta_pf < delta_lim and kcycle > 3:
+                break
+
+        beta = -norm.ppf(pf, 0, 1)
+        tf = time.time()
+        ttotal = tf - ti
+        #
+        print('*** Resultados do Método Monte Carlo ***')
+        print(f'\nReliability Index Beta = {beta}')
+        print(f'Probability of failure pf ={pf}')
+        print(f'COV of pf ={delta_pf}')
+        print('nimul = {0:0.4f} '.format(kcycle * ns))
+        print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
+        print(f'Processing time = {ttotal} s')
+
+        # Plot results:
+        cycle = np.arange(0, kcycle, 1)
+
+        plt.figure(1, figsize=(8.5, 6))
+        plt.plot(cycle, pf_mean[:kcycle])
+        plt.title("Convergence of Probability of Failure")
+        plt.xlabel("Cycle")
+        plt.ylabel("Pf")
+        plt.show()
+
+        plt.figure(2, figsize=(8.5, 6))
+        plt.plot(cycle, cov_pf[:kcycle])
+        plt.title("CoV of the Probability of Failure")
+        plt.xlabel("Cycle")
+        plt.ylabel("CoV Pf")
+        plt.show()
+
+        return beta, pf, cov_pf, ttotal
+
+    def multig_mc(self, ng, nc, ns, delta_lim, nsigma=1.00):
+        """
+        Monte Carlo Simulation Method
+        nc Cycles
+        ns Simulations
+        Brute force = no adaptive technique
+
+        """
+        #
+        #
+        ti = time.time()
+        #
+        # Number of variables of the problem
+        #
+        nc = int(nc)
+        ns = int(ns)
+        ng = int(ng)
+        pfc = np.zeros(nc)
+        cov_pf = np.zeros(nc)
+        pf_mean = np.zeros(nc)
+        sum1 = 0.00
+        sum2 = 0.00
+        fxmax_cycle = np.zeros(nc)
+        uk_cycle = np.zeros((ns, self.n))
+        gx = np.zeros((ns, ng))
+
+        #
+        # Standard deviation multiplier for MC-IS
+        #
+        #
+        nsigma = 1.00
+
+        #
+        #
+        # Number of Monte Carlo simulations
+        #
+        #
+        # Matrix xp(ns, self.n) for ns Monte Carlo simulations and self.n random variables
+        #
+        xp = np.zeros((ns, self.n))
+        wp = np.ones(ns)
+        fx = np.ones(ns)
+        zf = np.zeros((ns, self.n))
+        zh = np.zeros((ns, self.n))
+        igx = np.zeros(ns)
+
+        #
+        # Adaptive cycles
+        #
+
+        for icycle in range(nc):
+            kcycle = icycle + 1
+
+            #
+            # Monte Carlo Simulations
+            #
+            #
+            # Generation of uniform random numbers
+            #
+            index = icycle % 2
+            uk_new = np.random.rand(ns, self.n)
+            if index == 0:
+                uk_cycle = uk_new.copy()
+            else:
+                uk_cycle = 1.00 - uk_cycle
+
+            #
+            #
+            # Step 1 - Generation of the random numbers according to their appropriate distribution
+            #
+
+            xp, wp, fx = self.var_gen(ns, uk_cycle, nsigma)
+            #
+            #
+            # Step 2 - Evaluation of the limit state function g(x)
+            #
+            gx = self.fel(xp, ng, ns)
+
+            #
+            #
+            # Step 3 - Evaluation of the indicator function I[g(x)]
+            #
+            for ig in range(ng):
+                igx[:] = np.where(gx[:, ig] <= 0.00, wp, 0)
+            nfail = sum(igx)
+            pfc[icycle] = nfail/ns
+            sum1 += pfc[icycle]
+            sum2 += pfc[icycle] ** 2
+            fxmax_cycle[icycle] = fx.max()
+
+            #
+            #  Step 6 - Evaluation of the error in the estimation of Pf
+            #
+
+            pf_mean[icycle] = sum1 / kcycle
+            pf = pf_mean[icycle]
+            if pf > 0.00 and kcycle > 1:
+                cov_pf[icycle] = 1. / (pf * np.sqrt(kcycle * (kcycle - 1))) * np.sqrt(sum2 - 1. / kcycle * sum1 ** 2)
+            else:
+                cov_pf[icycle] = 0.00
+            delta_pf = cov_pf[icycle]
+            # Probability of failure in this cycle
+            print('Cycle =', kcycle, self.xvar)
             print(f'Probability of failure pf ={pf}')
             print(f'Coefficient of variation of pf ={delta_pf}')
             if delta_pf < delta_lim and kcycle > 3:
