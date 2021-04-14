@@ -27,10 +27,10 @@ def gfunction(x):
 # Random variables: name, probability distribution, mean and coefficient of variation
 
 xvar = [
-    {'varname': 'X1', 'vardist': 'normal', 'varmean': 0.00, 'varstd': 1.00, 'varhmean': 0.0000},
+    {'varname': 'X1', 'vardist': 'normal', 'varmean': 0.00, 'varstd': 1.00, 'varhmean': -1.9149},
     {'varname': 'X2', 'vardist': 'normal', 'varmean': 0.00, 'varstd': 1.00, 'varhmean': 0.0000},
     {'varname': 'X3', 'vardist': 'normal', 'varmean': 0.00, 'varstd': 1.00, 'varhmean': 0.0000},
-    {'varname': 'X4', 'vardist': 'normal', 'varmean': 0.00, 'varstd': 1.00, 'varhmean': 0.0000},
+    {'varname': 'X4', 'vardist': 'normal', 'varmean': 0.00, 'varstd': 1.00, 'varhmean': 1.9149},
 ]
 #
 # FORM method
