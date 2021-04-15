@@ -49,16 +49,16 @@ beta, x0, alpha, normgradyk, sigmaxneqk = test.form(iHLRF=False, toler=1.e-3)
 #
 # MC method
 #
-test = Reliability(xvar, gfunction1, x0)
-beta1, pf1, cov_pf1, nsimul1, ttotal1 = test.adaptive(40, 200, 0.05, 1.50, igraph=False)
-print('Beta1 =', beta1,'pf1 =', pf1,'cov_pf1 =', cov_pf1, 'nsimul1 =', nsimul1, 'ttotal1 =', ttotal1)
+test = Reliability(xvar, gfunction1, x0, None)
+beta1, pf1, cov_pf1, nsimul1, ttotal1 = test.bucher(100, 5000, 0.05, 1.50, igraph=False)
+print('Beta1 =', beta1, 'pf1 =', pf1, 'cov_pf1 =', cov_pf1, 'nsimul1 =', nsimul1, 'ttotal1 =', ttotal1)
 
 #
 
 #
 # FORM method for gfunction2
 #
-x0 = [1.00, 0.00, 0.00, -1.00]
+x0 = [3.00, 0.00, 0.00, -3.00]
 test = Reliability(xvar, gfunction2, x0, None)
 beta, x0, alpha, normgradyk, sigmaxneqk = test.form(iHLRF=True, toler=1.e-3)
 #
@@ -68,10 +68,24 @@ beta, x0, alpha, normgradyk, sigmaxneqk = test.form(iHLRF=True, toler=1.e-3)
 #
 # MC method
 #
-test = Reliability(xvar, gfunction2, x0)
-beta2, pf2, cov_pf2, nsimul2, ttotal2 = test.adaptive(40, 200, 0.05, 1.50, igraph=False)
-print('Beta2 =', beta2,'pf2 =', pf1,'cov_pf2 =', cov_pf2, 'nsimul2 =', nsimul2, 'ttotal2 =', ttotal2)
+test = Reliability(xvar, gfunction2, x0, None)
+beta2, pf2, cov_pf2, nsimul2, ttotal2 = test.bucher(100, 5000, 0.05, 1.50, igraph=False)
+print('Beta2 =', beta2, 'pf2 =', pf2,'cov_pf2 =', cov_pf2, 'nsimul2 =', nsimul2, 'ttotal2 =', ttotal2)
 
 #
 pff = 0.5*pf1 + 0.5*pf2
+print('Final results:')
+print('pf1 =', pf1)
+print('cov_pf1 =', cov_pf1)
+print('nsimul1 =', nsimul1)
+print('pf2 =', pf2)
+print('cov_pf2 =', cov_pf2)
+print('nsimul2 =', nsimul2)
 print('pff =', pff)
+
+pf = np.array([pf1, pf2])
+
+pfinf = pf.max()
+pfsup = pf.sum()
+print('pfinf =', pfinf)
+print('pfsup =', pfsup)

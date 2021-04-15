@@ -38,9 +38,6 @@ class Reliability():
                 i += 1
                 # Mean value of the random variables x
                 var['varhmean'] = self.x0[i]
-
-
-
         #
         # Setting variables initial values
         #
@@ -53,6 +50,11 @@ class Reliability():
             else:
                 meanhx = float(var['varmean'])
                 var.update({'varhmean': meanhx})
+            # Tests if 'varstd' key exists in var
+            if 'varstd' in var:
+                var['varcov'] = float(var['varstd'] / var['varmean'])
+            else:
+                var['varstd'] = float(var['varcov'] * var['varmean'])
             #
             # Setting standard variable distribution names
             #
