@@ -52,6 +52,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\alpha_test.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\buch-melchers89.py">
           <value>
             <Attribute>
@@ -284,6 +291,13 @@
           </value>
         </entry>
         <entry key="\mc_example7-9.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\mc_example7_beck.py">
           <value>
             <Attribute>
               <option name="separator" value="," />

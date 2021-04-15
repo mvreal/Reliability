@@ -1,9 +1,9 @@
 """
-Created on Tue Apr 12 14:29:00 2021
+Created on Tue Apr 15 11:13:00 2021
 Reliabilty Analysis
-Example Melchers - 1990
-MELCHERS, R.E. Search based importance sampling.
-Structural Safety, 9(1990) 117-128
+Example Beck - 2019
+BECK, A.T. Confiabilidade e Segurança das Estruturas.
+Elsevier, ISBN 978-85-352-8895-7.
 @author: MVREAL
 """
 from class_reliability import *
@@ -14,20 +14,39 @@ from class_reliability import *
 
 
 def gfunction1(x):
+    r1 = 4.00
+    a1 = np.pi * r1 ** 2
+    v = 300
+    k = 1 / 2
+    h = k * v
+    le = np.sqrt(v ** 2 + h ** 2)
 
-    g = x[0] + 2 * x[2] + 2 * x[3] + x[4] - 5 * x[5] - 5 * x[6]
+    g = a1*x[0] / 1000 - le / (2 * v) * (x[2] - x[3] / k)
 
     return g
 
-def gfunction2(x):
 
-    g = x[1] + 2 * x[2] + x[3] - 5 * x[6]
+def gfunction2(x):
+    r2 = 5.20
+    i2 = (np.pi * r2 ** 4) / 4
+    v = 300
+    k = 1 / 2
+    h = k * v
+    le = np.sqrt(v ** 2 + h ** 2)
+
+    g = np.pi ** 2 * x[1] * i2 / le ** 2 - le / (2 * v) * (+x[2] + x[3] / k)
 
     return g
 
 def gfunction3(x):
+    r1 = 4.00
+    i1 = (np.pi * r1 ** 4) / 4
+    v = 300
+    k = 1 / 2
+    h = k * v
+    le = np.sqrt(v ** 2 + h ** 2)
 
-    g = x[0] + 2 * x[1] + x[3] + x[4] - 5 * x[5]
+    g = np.pi ** 2 * x[1] * i1 / le ** 2 - le / (2 * v) * (-x[2] + x[3] / k)
 
     return g
 
@@ -35,19 +54,18 @@ def gfunction3(x):
 #
 # Data input
 #
-alpha = np.zeros((3, 7))
-beta = np.zeros(3)
+ng = 3
+nvar = 4
+alpha = np.zeros((ng, nvar))
+beta = np.zeros(ng)
 # Random variables: name, probability distribution, mean and coefficient of variation
 
 
 xvar = [
-    {'varname': 'X1', 'vardist': 'lognormal', 'varmean': 60.00, 'varcov': 0.10},
-    {'varname': 'X2', 'vardist': 'lognormal', 'varmean': 60.00, 'varcov': 0.10},
-    {'varname': 'X3', 'vardist': 'lognormal', 'varmean': 60.00, 'varcov': 0.10},
-    {'varname': 'X4', 'vardist': 'lognormal', 'varmean': 60.00, 'varcov': 0.10},
-    {'varname': 'X5', 'vardist': 'lognormal', 'varmean': 60.00, 'varcov': 0.10},
-    {'varname': 'X6', 'vardist': 'gumbel', 'varmean': 20.00, 'varcov': 0.30},
-    {'varname': 'X7', 'vardist': 'gumbel', 'varmean': 25.00, 'varcov': 0.30},
+    {'varname': 'S', 'vardist': 'normal', 'varmean': 24.5643, 'varcov': 0.10},
+    {'varname': 'E', 'vardist': 'normal', 'varmean': 70.00, 'varcov': 0.03},
+    {'varname': 'H', 'vardist': 'normal', 'varmean': 2.00, 'varcov': 0.20},
+    {'varname': 'V', 'vardist': 'normal', 'varmean': 1.00, 'varcov': 0.20},
 ]
 #
 # FORM method for gfunction1
@@ -94,10 +112,10 @@ print(('alpha2 =', alpha2))
 ro = np.dot(alpha, alpha.T)
 print('ro =', ro)
 
-pa = np.zeros((3, 3))
-pb = np.zeros((3, 3))
-for i in range(3):
-    for j in range(3):
+pa = np.zeros((ng, ng))
+pb = np.zeros((ng, ng))
+for i in range(ng):
+    for j in range(ng):
         if i != j:
             pa[i, j] = norm.cdf(-beta[i]) * norm.cdf(-((beta[j]-ro[i, j]*beta[i])/np.sqrt(1.-ro[i, j]**2)))
             pb[i, j] = norm.cdf(-beta[j]) * norm.cdf(-((beta[i]-ro[i, j]*beta[j])/np.sqrt(1.-ro[i, j]**2)))
@@ -105,10 +123,10 @@ for i in range(3):
 print('pa =', pa)
 print('pb =', pb)
 
-pfij_inf = np.zeros((3, 3))
-pfij_sup = np.zeros((3, 3))
-for i in range(3):
-    for j in range(3):
+pfij_inf = np.zeros((ng, ng))
+pfij_sup = np.zeros((ng, ng))
+for i in range(ng):
+    for j in range(ng):
         if i != j:
             if ro[i, j] >= 0.00:
                 pfij_inf[i, j] = pa[i, j] + pb[i, j]

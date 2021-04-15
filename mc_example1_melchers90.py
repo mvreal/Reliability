@@ -15,17 +15,21 @@ from class_reliability import *
 
 def gfunction1(x):
 
+    g = 3 * x[0] * x[3] - x[1] ** 2 * x[2] + 11.00
+    return g
+
+def gfunction2(x):
+
     g = x[0] + x[1] - x[2] - x[3] + 6.00
     return g
 
 
-def gfunction2(x):
-
-    g = 3 * x[0] * x[3] - x[1] ** 2 * x[2] + 11.00
-    return g
 #
 # Data input
 #
+alpha = np.zeros((2, 4))
+beta = np.zeros(2)
+
 # Random variables: name, probability distribution, mean and coefficient of variation
 
 
@@ -38,54 +42,67 @@ xvar = [
 #
 # FORM method for gfunction1
 #
-x0 = [0.00, 0.00, 0.00, 0.00]
+x0 = [-1, 0, 0, 1]
 test = Reliability(xvar, gfunction1, x0, None)
-beta, x0, alpha, normgradyk, sigmaxneqk = test.form(iHLRF=False, toler=1.e-3)
-#
-# MC method for gfunction1
-#
-
-
-#
-# MC method
-#
-test = Reliability(xvar, gfunction1, x0, None)
-beta1, pf1, cov_pf1, nsimul1, ttotal1 = test.bucher(100, 5000, 0.05, 1.50, igraph=False)
-print('Beta1 =', beta1, 'pf1 =', pf1, 'cov_pf1 =', cov_pf1, 'nsimul1 =', nsimul1, 'ttotal1 =', ttotal1)
+beta[0], x0, alpha[0, :], normgradyk, sigmaxneqk = test.form(iHLRF=False, toler=1.e-3)
 
 #
 
 #
 # FORM method for gfunction2
 #
-x0 = [3.00, 0.00, 0.00, -3.00]
-test = Reliability(xvar, gfunction2, x0, None)
-beta, x0, alpha, normgradyk, sigmaxneqk = test.form(iHLRF=True, toler=1.e-3)
-#
-# MC method for gfunction1
-#
+test = Reliability(xvar, gfunction2, None, None)
+beta[1], x0, alpha[1, :], normgradyk, sigmaxneqk = test.form(iHLRF=True, toler=1.e-3)
 
 #
-# MC method
-#
-test = Reliability(xvar, gfunction2, x0, None)
-beta2, pf2, cov_pf2, nsimul2, ttotal2 = test.bucher(100, 5000, 0.05, 1.50, igraph=False)
-print('Beta2 =', beta2, 'pf2 =', pf2,'cov_pf2 =', cov_pf2, 'nsimul2 =', nsimul2, 'ttotal2 =', ttotal2)
 
+pf = norm.cdf(-beta)
 #
-pff = 0.5*pf1 + 0.5*pf2
 print('Final results:')
-print('pf1 =', pf1)
-print('cov_pf1 =', cov_pf1)
-print('nsimul1 =', nsimul1)
-print('pf2 =', pf2)
-print('cov_pf2 =', cov_pf2)
-print('nsimul2 =', nsimul2)
-print('pff =', pff)
+print('pf1 =', pf[0])
+print('pf2 =', pf[1])
 
-pf = np.array([pf1, pf2])
 
 pfinf = pf.max()
 pfsup = pf.sum()
 print('pfinf =', pfinf)
 print('pfsup =', pfsup)
+
+print('beta =', beta)
+
+print('alpha =', alpha)
+alpha_sign = np.sign(alpha)
+alpha2 = alpha_sign * alpha ** 2
+print(('alpha2 =', alpha2))
+
+ro = np.dot(alpha, alpha.T)
+print('ro =', ro)
+
+pa = np.zeros((2, 2))
+pb = np.zeros((2, 2))
+for i in range(2):
+    for j in range(2):
+        if i != j:
+            pa[i, j] = norm.cdf(-beta[i]) * norm.cdf(-((beta[j]-ro[i, j]*beta[i])/np.sqrt(1.-ro[i, j]**2)))
+            pb[i, j] = norm.cdf(-beta[j]) * norm.cdf(-((beta[i]-ro[i, j]*beta[j])/np.sqrt(1.-ro[i, j]**2)))
+
+print('pa =', pa)
+print('pb =', pb)
+
+pfij_inf = np.zeros((2, 2))
+pfij_sup = np.zeros((2, 2))
+for i in range(2):
+    for j in range(2):
+        if i != j:
+            if ro[i, j] >= 0.00:
+                pfij_inf[i, j] = pa[i, j] + pb[i, j]
+                pfij_sup[i, j] = np.max([pa[i, j], pb[i, j]])
+            else:
+                pfij_inf[i, j] = np.min([pa[i, j], pb[i, j]])
+                pfij_sup[i, j] = 0.00
+
+
+pf_inf = pf[0] + np.max([0.00, pf[1] - pfij_inf[1, 0]])
+pf_sup = sum(pf) - pfij_sup[1, 0]
+print('pf_inf =', pf_inf)
+print('pf_sup =', pf_sup)
