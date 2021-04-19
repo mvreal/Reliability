@@ -318,6 +318,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\multig_example7_beck.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\multig_mc-melchers90.py">
           <value>
             <Attribute>

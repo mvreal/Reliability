@@ -1441,3 +1441,95 @@ class Reliability():
 
         return beta, pf, delta_pf, nsimul, ttotal
 
+    def multig(self, ng, xvar, glist):
+        """
+        Solution of the problem of the reliability of serial system with multiple limit state functions
+        According to:
+        BECK, A.T.
+        Confiabilidade e Segurança das Estruturas
+        Rio de Janeiro, Elsevier, 2019.
+        """
+        beta = np.zeros(ng)
+        nvar = int(len(xvar))
+        alpha = np.zeros((ng, nvar))
+        pf = np.zeros(ng)
+        pa = np.zeros((ng, ng))
+        pb = np.zeros((ng, ng))
+        pfij_inf = np.zeros((ng, ng))
+        pfij_sup = np.zeros((ng, ng))
+
+        i = -1
+        for gfunction in glist:
+            i += 1
+            #
+            # FORM method for  the multiple g(x) functions
+            #
+            test = Reliability(xvar, gfunction, None, None)
+            beta[i], x0, alpha[i, :], normgradyk, sigmaxneqk = test.form(iHLRF=True, toler=1.e-3)
+            pf[i] = norm.cdf(-beta[i])
+        #
+        # Print the initial results
+        #
+        print('Initial results:')
+        print('pf1 =', pf[0])
+        print('pf2 =', pf[1])
+        print('pf3 =', pf[2])
+
+        pfinf = pf.max()
+        pfsup = pf.sum()
+        print('pfinf =', pfinf)
+        print('pfsup =', pfsup)
+
+        print('beta =', beta)
+
+        print('alpha =', alpha)
+        alpha_sign = np.sign(alpha)
+        alpha2 = alpha_sign * alpha ** 2
+        print(('alpha2 =', alpha2))
+
+        #
+        # Calculation of the correlation coefficients between the limit state functions
+        #
+
+        ro = np.dot(alpha, alpha.T)
+        print('ro =', ro)
+
+        #
+        # Calculation of the p(Aij) and p(Bij) matrices
+        #
+
+        for i in range(ng):
+            for j in range(ng):
+                if i != j:
+                    pa[i, j] = norm.cdf(-beta[i]) * norm.cdf(
+                        -((beta[j] - ro[i, j] * beta[i]) / np.sqrt(1. - ro[i, j] ** 2)))
+                    pb[i, j] = norm.cdf(-beta[j]) * norm.cdf(
+                        -((beta[i] - ro[i, j] * beta[j]) / np.sqrt(1. - ro[i, j] ** 2)))
+
+        print('pa =', pa)
+        print('pb =', pb)
+
+        #
+        # Calculation of the terms P(Fi.Fj)sup and P(Fi.Fj)inf
+        #
+
+        for i in range(ng):
+            for j in range(ng):
+                if i != j:
+                    if ro[i, j] >= 0.00:
+                        pfij_inf[i, j] = pa[i, j] + pb[i, j]
+                        pfij_sup[i, j] = np.max([pa[i, j], pb[i, j]])
+                    else:
+                        pfij_inf[i, j] = np.min([pa[i, j], pb[i, j]])
+                        pfij_sup[i, j] = 0.00
+
+        #
+        # Calculation of inferior and superior limits for the probability of failure of the system
+        #
+
+        pf_inf = pf[0] + np.max([0.00, pf[1] - pfij_inf[1, 0]]) + np.max(
+            [0.00, pf[2] - pfij_inf[2, 0] - pfij_inf[2, 1]])
+        pf_sup = sum(pf) - pfij_sup[1, 0] - np.max([pfij_sup[2, 0], pfij_sup[2, 1]])
+        print('pf_inf =', pf_inf)
+        print('pf_sup =', pf_sup)
+

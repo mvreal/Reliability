@@ -15,15 +15,17 @@ from class_reliability import *
 
 def gfunction1(x):
 
+    g = x[1] + 2 * x[2] + x[3] - 5 * x[6]
+
+    return g
+
+
+def gfunction2(x):
+
     g = x[0] + 2 * x[2] + 2 * x[3] + x[4] - 5 * x[5] - 5 * x[6]
 
     return g
 
-def gfunction2(x):
-
-    g = x[1] + 2 * x[2] + x[3] - 5 * x[6]
-
-    return g
 
 def gfunction3(x):
 
