@@ -54,6 +54,5 @@ xvar = [
 # multig method
 #
 glist = [gfunction1, gfunction2, gfunction3]
-ng = int(len(glist))
-test = Reliability(xvar, gfunction1, None, None)
-test.multig(ng, xvar, glist)
+test = Reliability(xvar, glist, None, None)
+test.multig(xvar, glist)

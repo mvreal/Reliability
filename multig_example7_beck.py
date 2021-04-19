@@ -64,6 +64,5 @@ xvar = [
     {'varname': 'V', 'vardist': 'normal', 'varmean': 1.00, 'varcov': 0.20},
 ]
 glist = [gR1, gE1, gE2]
-ng = int(len(glist))
-test = Reliability(xvar, gR1, None, None)
-test.multig(ng, xvar, glist)
+test = Reliability(xvar, glist, None, None)
+test.multig(xvar, glist)

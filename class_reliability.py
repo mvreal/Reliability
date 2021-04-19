@@ -1441,7 +1441,7 @@ class Reliability():
 
         return beta, pf, delta_pf, nsimul, ttotal
 
-    def multig(self, ng, xvar, glist):
+    def multig(self, xvar, glist):
         """
         Solution of the problem of the reliability of serial system with multiple limit state functions
         According to:
@@ -1449,8 +1449,9 @@ class Reliability():
         Confiabilidade e Segurança das Estruturas
         Rio de Janeiro, Elsevier, 2019.
         """
-        beta = np.zeros(ng)
+        ng = int(len(glist))
         nvar = int(len(xvar))
+        beta = np.zeros(ng)
         alpha = np.zeros((ng, nvar))
         pf = np.zeros(ng)
         pa = np.zeros((ng, ng))
