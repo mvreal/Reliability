@@ -1566,6 +1566,10 @@ class Reliability():
         print(('alpha2 =', alpha2))
         print('pf_inf =', pf_inf)
         print('pf_sup =', pf_sup)
+        beta_sup = -norm.ppf(pf_inf)
+        beta_inf = -norm.ppf(pf_sup)
+        print('beta_inf =', beta_inf)
+        print('beta_sup =', beta_sup)
 
 
 
