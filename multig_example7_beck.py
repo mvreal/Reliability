@@ -13,7 +13,7 @@ from class_reliability import *
 #
 
 
-def gfunction1(x):
+def gR1(x):
     r1 = 4.00
     a1 = np.pi * r1 ** 2
     v = 300
@@ -25,20 +25,7 @@ def gfunction1(x):
 
     return g
 
-
-def gfunction2(x):
-    r2 = 5.20
-    i2 = (np.pi * r2 ** 4) / 4
-    v = 300
-    k = 1 / 2
-    h = k * v
-    le = np.sqrt(v ** 2 + h ** 2)
-
-    g = np.pi ** 2 * x[1] * i2 / le ** 2 - le / (2 * v) * (+x[2] + x[3] / k)
-
-    return g
-
-def gfunction3(x):
+def gE1(x):
     r1 = 4.00
     i1 = (np.pi * r1 ** 4) / 4
     v = 300
@@ -50,6 +37,18 @@ def gfunction3(x):
 
     return g
 
+
+def gE2(x):
+    r2 = 5.20
+    i2 = (np.pi * r2 ** 4) / 4
+    v = 300
+    k = 1 / 2
+    h = k * v
+    le = np.sqrt(v ** 2 + h ** 2)
+
+    g = np.pi ** 2 * x[1] * i2 / le ** 2 - le / (2 * v) * (+x[2] + x[3] / k)
+
+    return g
 
 #
 # Data input
@@ -64,7 +63,7 @@ xvar = [
     {'varname': 'H', 'vardist': 'normal', 'varmean': 2.00, 'varcov': 0.20},
     {'varname': 'V', 'vardist': 'normal', 'varmean': 1.00, 'varcov': 0.20},
 ]
-glist = [gfunction1, gfunction2, gfunction3]
+glist = [gR1, gE1, gE2]
 ng = int(len(glist))
-test = Reliability(xvar, gfunction1, None, None)
+test = Reliability(xvar, gR1, None, None)
 test.multig(ng, xvar, glist)

@@ -1471,9 +1471,7 @@ class Reliability():
         # Print the initial results
         #
         print('Initial results:')
-        print('pf1 =', pf[0])
-        print('pf2 =', pf[1])
-        print('pf3 =', pf[2])
+        print('pf =', pf)
 
         pfinf = pf.max()
         pfsup = pf.sum()
@@ -1486,6 +1484,18 @@ class Reliability():
         alpha_sign = np.sign(alpha)
         alpha2 = alpha_sign * alpha ** 2
         print(('alpha2 =', alpha2))
+
+        #
+        # Sort arrays pf, beta, alpha, alpha2, glist in decrescent order of probability of failure
+        #
+        glist = np.array(glist)
+        ig = (-pf).argsort()
+        pf = pf[ig]
+        beta = beta[ig]
+        alpha = alpha[ig, :]
+        alpha2 = alpha2[ig, :]
+        glist = glist[ig]
+
 
         #
         # Calculation of the correlation coefficients between the limit state functions
@@ -1526,10 +1536,35 @@ class Reliability():
         #
         # Calculation of inferior and superior limits for the probability of failure of the system
         #
+        #
+        # Inferior limit: pf_inf
+        #
+        pf_inf = pf[0]
+        for i in range(1, ng, 1):
+            pfi_inf = pf[i]
+            for j in range(0, i, 1):
+                pfi_inf -= pfij_inf[i, j]
+            pf_inf += np.max([0, pfi_inf])
 
-        pf_inf = pf[0] + np.max([0.00, pf[1] - pfij_inf[1, 0]]) + np.max(
-            [0.00, pf[2] - pfij_inf[2, 0] - pfij_inf[2, 1]])
-        pf_sup = sum(pf) - pfij_sup[1, 0] - np.max([pfij_sup[2, 0], pfij_sup[2, 1]])
+        #
+        # Superior limit: pf_sup
+        #
+        pf_sup = sum(pf)
+        for i in range(1, ng, 1):
+            pf_sup -= np.max(pfij_sup[i, 0:i], axis=0)
+
+        #
+        # Print final results
+        #
+        print('Final results:')
+        glist = list(glist)
+        print('g list =', glist)
+        print('pf =', pf)
+        print('beta =', beta)
+        print('alpha =', alpha)
+        print(('alpha2 =', alpha2))
         print('pf_inf =', pf_inf)
         print('pf_sup =', pf_sup)
+
+
 

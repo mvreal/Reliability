@@ -13,7 +13,7 @@ from class_reliability import *
 #
 
 
-def gfunction1(x):
+def gR1(x):
     r1 = 4.00
     a1 = np.pi * r1 ** 2
     v = 300
@@ -26,7 +26,7 @@ def gfunction1(x):
     return g
 
 
-def gfunction2(x):
+def gE2(x):
     r2 = 5.20
     i2 = (np.pi * r2 ** 4) / 4
     v = 300
@@ -38,7 +38,7 @@ def gfunction2(x):
 
     return g
 
-def gfunction3(x):
+def gE1(x):
     r1 = 4.00
     i1 = (np.pi * r1 ** 4) / 4
     v = 300
@@ -70,7 +70,7 @@ xvar = [
 #
 # FORM method for gfunction1
 #
-test = Reliability(xvar, gfunction1, None, None)
+test = Reliability(xvar, gR1, None, None)
 beta[0], x0, alpha[0, :], normgradyk, sigmaxneqk = test.form(iHLRF=False, toler=1.e-3)
 
 #
@@ -78,7 +78,7 @@ beta[0], x0, alpha[0, :], normgradyk, sigmaxneqk = test.form(iHLRF=False, toler=
 #
 # FORM method for gfunction2
 #
-test = Reliability(xvar, gfunction2, None, None)
+test = Reliability(xvar, gE2, None, None)
 beta[1], x0, alpha[1, :], normgradyk, sigmaxneqk = test.form(iHLRF=True, toler=1.e-3)
 
 #
@@ -86,7 +86,7 @@ beta[1], x0, alpha[1, :], normgradyk, sigmaxneqk = test.form(iHLRF=True, toler=1
 #
 # FORM method for gfunction3
 #
-test = Reliability(xvar, gfunction3, None, None)
+test = Reliability(xvar, gE1, None, None)
 beta[2], x0, alpha[2, :], normgradyk, sigmaxneqk = test.form(iHLRF=True, toler=1.e-3)
 
 pf = norm.cdf(-beta)
