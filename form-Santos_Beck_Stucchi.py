@@ -70,5 +70,5 @@ xvar = [
 # MCS method
 #
 beam = Reliability(xvar, gfunction, None, None)
-beam.bucher(100, 5_000, 0.05, 2.00)
+beam.form(iHLRF=True, toler=1.e-3)
 #
