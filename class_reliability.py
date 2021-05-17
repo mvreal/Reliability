@@ -1095,7 +1095,7 @@ class Reliability():
 
         if igraph:
             # Plot results:
-            cycle = np.arange(0, kcycle, 1)
+            cycle = np.arange(1, kcycle + 1, 1)
 
             plt.figure(1, figsize=(8.5, 6))
             plt.plot(cycle, pf_mean[:kcycle])
@@ -1262,7 +1262,7 @@ class Reliability():
 
         if igraph:
             # Plot results:
-            cycle = np.arange(0, kcycle, 1)
+            cycle = np.arange(1, kcycle+1, 1)
 
             plt.figure(1, figsize=(8.5, 6))
             plt.plot(cycle, pf_mean[:kcycle])
@@ -1423,7 +1423,7 @@ class Reliability():
 
         if igraph:
             # Plot results:
-            cycle = np.arange(0, kcycle, 1)
+            cycle = np.arange(1, kcycle+1, 1)
 
             plt.figure(1, figsize=(8.5, 6))
             plt.plot(cycle, pf_mean[:kcycle])
