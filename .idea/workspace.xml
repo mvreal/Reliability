@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d78a2238-3565-4360-b232-3a30c08b226d" name="Default Changelist" comment="beta_inf and beta_sup included">
-      <change afterPath="$PROJECT_DIR$/form-Santos_Beck_Stucchi.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/form-Santos_Beck_Stucchi.py" beforeDir="false" afterPath="$PROJECT_DIR$/form-Santos_Beck_Stucchi.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mc-Santos_Beck_Stucchi.py" beforeDir="false" afterPath="$PROJECT_DIR$/mc-Santos_Beck_Stucchi.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -38,7 +38,7 @@
       <recent name="F:\Reliability" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.mc-Santos_Beck_Stucchi">
+  <component name="RunManager" selected="Python.form-Santos_Beck_Stucchi">
     <configuration name="form-Santos_Beck_Stucchi" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Reliability" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -146,8 +146,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.mc-Santos_Beck_Stucchi" />
         <item itemvalue="Python.form-Santos_Beck_Stucchi" />
+        <item itemvalue="Python.mc-Santos_Beck_Stucchi" />
         <item itemvalue="Python.mc_example7-9" />
         <item itemvalue="Python.multig_example7_beck" />
         <item itemvalue="Python.multig_example2_melchers90" />
@@ -188,16 +188,5 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="beta_inf and beta_sup included" />
     <option name="LAST_COMMIT_MESSAGE" value="beta_inf and beta_sup included" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/mc-Santos_Beck_Stucchi.py</url>
-          <line>13</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

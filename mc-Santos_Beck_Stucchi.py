@@ -21,7 +21,7 @@ def gfunction(x):
     thetaR = x[7]
     thetaS = x[8]
     # Parâmetro geométrico da viga
-    As1 = 0.00015;  # Área de aço da seção transversal da viga (m2)
+    As1 = 0.00050;  # Área de aço da seção transversal da viga (m2)
     # Função de estado limite g(x)=MR - MS = 0
     MR = thetaR * 1000. * As1 * fy * (
                 h - dl - 0.5 * (As1 * fy / (0.85 * fc * b)))  # Momento de flexão resistente interno
@@ -31,17 +31,17 @@ def gfunction(x):
     return gx
 
 # Parâmetro geométrico da viga
-As1 = 0.00015;    # Área de aço da seção transversal da viga (m2)
+As1 = 0.00050;    # Área de aço da seção transversal da viga (m2)
 #
 # Momento de cálculo
 #
-Md = 29.36 # kN.m
+Md = 92.00 # kN.m
 #
 # Coeficientes de segurança
 #
 gamag = 1.40
 gamaq = 1.40
-k = 0.50
+k = 0.2163
 # carga permanente:Distribuição normal
 gk = Md / (gamag + gamaq * (k / (1 - k)))  # Unidades: kN.m
 gm = gk  # Unidades: kN.m
@@ -59,7 +59,7 @@ xvar = [
     {'varname': 'h', 'vardist': 'normal', 'varmean': 0.50, 'varcov': 0.045},
     {'varname': 'dl', 'vardist': 'lognormal', 'varmean': 0.039, 'varcov': 0.2821},
     {'varname': 'fc', 'vardist': 'normal', 'varmean': 1.17*25, 'varcov': 0.15},
-    {'varname': 'fy', 'vardist': 'lognormal', 'varmean': 1.08*500, 'varcov': 0.05},
+    {'varname': 'fy', 'vardist': 'normal', 'varmean': 1.08*500, 'varcov': 0.05},
     {'varname': 'g', 'vardist': 'normal', 'varmean': gm, 'varcov': Vg},
     {'varname': 'q', 'vardist': 'gumbel', 'varmean': qm, 'varcov': Vq},
     {'varname': 'thetaR', 'vardist': 'lognormal', 'varmean': 1.00, 'varcov': 0.05},
