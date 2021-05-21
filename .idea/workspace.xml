@@ -2,9 +2,69 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d78a2238-3565-4360-b232-3a30c08b226d" name="Default Changelist" comment="beta_inf and beta_sup included">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/adapt-melchers89.py" beforeDir="false" afterPath="$PROJECT_DIR$/adapt-melchers89.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/adapt_example7-3.py" beforeDir="false" afterPath="$PROJECT_DIR$/adapt_example7-3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/adapt_example7-4.py" beforeDir="false" afterPath="$PROJECT_DIR$/adapt_example7-4.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/adapt_example7-5.py" beforeDir="false" afterPath="$PROJECT_DIR$/adapt_example7-5.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/adapt_example7-6.py" beforeDir="false" afterPath="$PROJECT_DIR$/adapt_example7-6.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/adapt_example7-7.py" beforeDir="false" afterPath="$PROJECT_DIR$/adapt_example7-7.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/adapt_example7-8.py" beforeDir="false" afterPath="$PROJECT_DIR$/adapt_example7-8.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/adapt_example7-9.py" beforeDir="false" afterPath="$PROJECT_DIR$/adapt_example7-9.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bridge1.py" beforeDir="false" afterPath="$PROJECT_DIR$/bridge1.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buch-melchers89.py" beforeDir="false" afterPath="$PROJECT_DIR$/buch-melchers89.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buch-melchers90b.py" beforeDir="false" afterPath="$PROJECT_DIR$/buch-melchers90b.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buch_example7-3.py" beforeDir="false" afterPath="$PROJECT_DIR$/buch_example7-3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buch_example7-4.py" beforeDir="false" afterPath="$PROJECT_DIR$/buch_example7-4.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buch_example7-5.py" beforeDir="false" afterPath="$PROJECT_DIR$/buch_example7-5.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buch_example7-6.py" beforeDir="false" afterPath="$PROJECT_DIR$/buch_example7-6.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buch_example7-7.py" beforeDir="false" afterPath="$PROJECT_DIR$/buch_example7-7.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buch_example7-8.py" beforeDir="false" afterPath="$PROJECT_DIR$/buch_example7-8.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buch_example7-9.py" beforeDir="false" afterPath="$PROJECT_DIR$/buch_example7-9.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/class_reliability.py" beforeDir="false" afterPath="$PROJECT_DIR$/realpy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example7-3.py" beforeDir="false" afterPath="$PROJECT_DIR$/example7-3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example7-4.py" beforeDir="false" afterPath="$PROJECT_DIR$/example7-4.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example7-5.py" beforeDir="false" afterPath="$PROJECT_DIR$/example7-5.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example7-6.py" beforeDir="false" afterPath="$PROJECT_DIR$/example7-6.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example7-7.py" beforeDir="false" afterPath="$PROJECT_DIR$/example7-7.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example7-8.py" beforeDir="false" afterPath="$PROJECT_DIR$/example7-8.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example7-9.py" beforeDir="false" afterPath="$PROJECT_DIR$/example7-9.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/form-Santos_Beck_Stucchi.py" beforeDir="false" afterPath="$PROJECT_DIR$/form-Santos_Beck_Stucchi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/form-haldar-example8-3.py" beforeDir="false" afterPath="$PROJECT_DIR$/form-haldar-example8-3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/form-melchers89.py" beforeDir="false" afterPath="$PROJECT_DIR$/form-melchers89.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/form-melchers90a.py" beforeDir="false" afterPath="$PROJECT_DIR$/form-melchers90a.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/form-melchers90b.py" beforeDir="false" afterPath="$PROJECT_DIR$/form-melchers90b.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/g1_example2_melchers90.py" beforeDir="false" afterPath="$PROJECT_DIR$/g1_example2_melchers90.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/g2_example2_melchers90.py" beforeDir="false" afterPath="$PROJECT_DIR$/g2_example2_melchers90.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/g3_example2_melchers90.py" beforeDir="false" afterPath="$PROJECT_DIR$/g3_example2_melchers90.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mc-Santos_Beck_Stucchi.py" beforeDir="false" afterPath="$PROJECT_DIR$/mc-Santos_Beck_Stucchi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mc-melchers89.py" beforeDir="false" afterPath="$PROJECT_DIR$/mc-melchers89.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mc_example1_melchers90.py" beforeDir="false" afterPath="$PROJECT_DIR$/mc_example1_melchers90.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mc_example2_melchers90.py" beforeDir="false" afterPath="$PROJECT_DIR$/mc_example2_melchers90.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mc_example7-3.py" beforeDir="false" afterPath="$PROJECT_DIR$/mc_example7-3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mc_example7-4.py" beforeDir="false" afterPath="$PROJECT_DIR$/mc_example7-4.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mc_example7-5.py" beforeDir="false" afterPath="$PROJECT_DIR$/mc_example7-5.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mc_example7-6.py" beforeDir="false" afterPath="$PROJECT_DIR$/mc_example7-6.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mc_example7-7.py" beforeDir="false" afterPath="$PROJECT_DIR$/mc_example7-7.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mc_example7-8.py" beforeDir="false" afterPath="$PROJECT_DIR$/mc_example7-8.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mc_example7-9.py" beforeDir="false" afterPath="$PROJECT_DIR$/mc_example7-9.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mc_example7_beck.py" beforeDir="false" afterPath="$PROJECT_DIR$/mc_example7_beck.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mc_is_example7-6.py" beforeDir="false" afterPath="$PROJECT_DIR$/mc_is_example7-6.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mcis-haldar-example8-3.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcis-haldar-example8-3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mcis-melchers89.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcis-melchers89.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mcis_example7-7.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcis_example7-7.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mcis_example7-8.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcis_example7-8.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mcis_example7-9.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcis_example7-9.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/melchers89.py" beforeDir="false" afterPath="$PROJECT_DIR$/melchers89.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multig_example1_melchers90.py" beforeDir="false" afterPath="$PROJECT_DIR$/multig_example1_melchers90.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multig_example2_melchers90.py" beforeDir="false" afterPath="$PROJECT_DIR$/multig_example2_melchers90.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multig_example7_beck.py" beforeDir="false" afterPath="$PROJECT_DIR$/multig_example7_beck.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sorm-choi-example4-8.py" beforeDir="false" afterPath="$PROJECT_DIR$/sorm-choi-example4-8.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sorm-example8-1-haldar.py" beforeDir="false" afterPath="$PROJECT_DIR$/sorm-example8-1-haldar.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test1.py" beforeDir="false" afterPath="$PROJECT_DIR$/test1.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test2.py" beforeDir="false" afterPath="$PROJECT_DIR$/test2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test3.py" beforeDir="false" afterPath="$PROJECT_DIR$/test3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test4.py" beforeDir="false" afterPath="$PROJECT_DIR$/test4.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test5.py" beforeDir="false" afterPath="$PROJECT_DIR$/test5.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

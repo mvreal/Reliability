@@ -5,7 +5,7 @@ Example 7.8 - Nonlinear limit state function with non-normal independent variabl
 @author: MVREAL
 """
 import numpy as np
-from class_reliability import *
+from realpy import *
 import time
 
 #

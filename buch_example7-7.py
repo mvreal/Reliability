@@ -4,7 +4,7 @@ Reliabilty Analysis
 Example 7.7 - Linear limit state function with non-normal independent variables
 @author: MVREAL
 """
-from class_reliability import *
+from realpy import *
 
 #
 # Step 0 - Column: g(R, G, Q, W) = R-G-Q-W = 0

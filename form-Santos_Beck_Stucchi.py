@@ -7,7 +7,7 @@ Revista IBRACON de Estruturas e Materiais, 7(5), 723–746.
 https://doi.org/10.1590/s1983-41952014000500002
 """
 import numpy as np
-from class_reliability import *
+from realpy import *
 import pandas as pd
 
 #

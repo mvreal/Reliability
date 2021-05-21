@@ -6,7 +6,7 @@ BECK, A.T. Confiabilidade e Segurança das Estruturas.
 Elsevier, ISBN 978-85-352-8895-7.
 @author: MVREAL
 """
-from class_reliability import *
+from realpy import *
 
 #
 # Step 0 - Limit state funcion

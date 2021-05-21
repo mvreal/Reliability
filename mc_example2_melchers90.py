@@ -6,7 +6,7 @@ MELCHERS, R.E. Search based importance sampling.
 Structural Safety, 9(1990) 117-128
 @author: MVREAL
 """
-from class_reliability import *
+from realpy import *
 
 #
 # Step 0 - Limit state funcion

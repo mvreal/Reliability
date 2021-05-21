@@ -5,7 +5,7 @@ Example 7.6 - Nonlinear limit state function with normal correlated variables
 @author: MVREAL
 """
 import numpy as np
-from class_reliability import *
+from realpy import *
 import time
 
 #

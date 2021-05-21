@@ -4,7 +4,7 @@ Reliabilty Analysis
 @author: MVREAL
 """
 import numpy as np
-from class_reliability import *
+from realpy import *
 import time
 
 #

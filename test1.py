@@ -5,7 +5,7 @@ Example 7.3 - Linear limit state function with normal independent variables
 @author: MVREAL
 """
 import numpy as np
-from class_reliability import *
+from realpy import *
 import time
 
 #

@@ -9,7 +9,7 @@ Structural Safety, 9(1990) 117-128
 Equation 7a
 
 """
-from class_reliability import *
+from realpy import *
 
 #
 # Step 0 - Limit state funcion

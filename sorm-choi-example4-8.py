@@ -5,7 +5,7 @@ Example 4.8 - Choi et al. Reliability based structural design p. 132.
 @author: MVREAL
 """
 import numpy as np
-from class_reliability import *
+from realpy import *
 import time
 
 #

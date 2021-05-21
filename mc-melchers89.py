@@ -6,7 +6,7 @@ MELCHERS, R.E. Importance sampling in structural systems.
 Structural Safety, 6(1989) 3-10
 @author: MVREAL
 """
-from class_reliability import *
+from realpy import *
 
 #
 # Step 0 - Limit state funcion
