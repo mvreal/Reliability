@@ -13,24 +13,31 @@ import time
 #
 
 
-def gfunction(x):
 
-    g = x[0]-x[1]-x[2]-x[3]
+
+def gfunction(x, d):
+
+    g = d[0] * x[0] - d[1] * x[1] - d[2] * x[2] - d[3] * x[3]
     return g
 
 
-ti = time.time()
-#
 # Data input
 #
 # Random variables: name, probability distribution, mean and coefficient of variation
-
 
 xvar = [
     {'varname': 'R', 'vardist': 'normal', 'varmean': 975.00, 'varcov': 0.15},
     {'varname': 'G', 'vardist': 'normal', 'varmean': 200.00, 'varcov': 0.07},
     {'varname': 'Q', 'vardist': 'normal', 'varmean': 300.00, 'varcov': 0.12},
     {'varname': 'w', 'vardist': 'normal', 'varmean': 150.00, 'varcov': 0.20}
+]
+# Design variables
+
+dvar = [
+    {'varname': 'factor1', 'varvalue': 1.00},
+    {'varname': 'factor2', 'varvalue': 1.00},
+    {'varname': 'factor3', 'varvalue': 1.00},
+    {'varname': 'factor4', 'varvalue': 1.00}
 ]
 
 # Correlation matrix
@@ -42,9 +49,7 @@ corrmatrix = [[1.00, 0.80, 0.00, 0.00],
 
 # MC-IS adaptative method
 #
-column = Reliability(xvar, gfunction, None, corrmatrix)
+column = Reliability(xvar, dvar, gfunction, None, corrmatrix)
 column.adaptive(20, 5000, 0.01, 1.50)
-tf = time.time()
-ttotal = tf - ti
-print(f'Processing time = {ttotal}')
+
 #

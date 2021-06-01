@@ -67,7 +67,10 @@ class Reliability():
                 var.update({'varhmean': meanhx})
             # Tests if 'varstd' key exists in var
             if 'varstd' in var:
-                var['varcov'] = float(var['varstd'] / var['varmean'])
+                if var['varmean'] > 0:
+                    var['varcov'] = float(var['varstd'] / var['varmean'])
+                else:
+                    var['varcov'] = 1.00
             else:
                 var['varstd'] = float(var['varcov'] * var['varmean'])
             #
@@ -1035,6 +1038,10 @@ class Reliability():
         zf = np.zeros((ns, self.nxvar))
         zh = np.zeros((ns, self.nxvar))
 
+        # Matrix dmatrix(ns, self.ndvar) for ns Monte Carlo simulations and self.ndvar design variables
+
+        dmatrix = np.array([self.d.T] * ns)
+
         #
         # Adaptive cycles
         #
@@ -1065,7 +1072,7 @@ class Reliability():
             #
             # Step 2 - Evaluation of the limit state function g(x)
             #
-            gx = list(map(self.fel, xp))
+            gx = list(map(self.fel, xp, dmatrix))
             gx = np.array(gx)
 
             #
@@ -1175,6 +1182,10 @@ class Reliability():
         zf = np.zeros((ns, self.nxvar))
         zh = np.zeros((ns, self.nxvar))
 
+        # Matrix dmatrix(ns, self.ndvar) for ns Monte Carlo simulations and self.ndvar design variables
+
+        dmatrix = np.array([self.d.T] * ns)
+
         #
         # Adaptive cycles
         #
@@ -1205,7 +1216,7 @@ class Reliability():
             #
             # Step 2 - Evaluation of the limit state function g(x)
             #
-            gx = list(map(self.fel, xp))
+            gx = list(map(self.fel, xp, dmatrix))
             gx = np.array(gx)
 
             #
@@ -1334,6 +1345,10 @@ class Reliability():
         wp = np.ones(ns)
         fx = np.ones(ns)
 
+        # Matrix dmatrix(ns, self.ndvar) for ns Monte Carlo simulations and self.ndvar design variables
+
+        dmatrix = np.array([self.d.T] * ns)
+
         #
         # Adaptive cycles
         #
@@ -1364,7 +1379,7 @@ class Reliability():
             #
             # Step 2 - Evaluation of the limit state function g(x)
             #
-            gx = list(map(self.fel, xp))
+            gx = list(map(self.fel, xp, dmatrix))
             gx = np.array(gx)
 
             #

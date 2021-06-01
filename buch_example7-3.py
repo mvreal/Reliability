@@ -12,9 +12,9 @@ from realpy import *
 #
 
 
-def gfunction(x):
+def gfunction(x, d):
 
-    g = x[0]-x[1]-x[2]-x[3]
+    g = d[0] * x[0] - d[1] * x[1] - d[2] * x[2] - d[3] * x[3]
     return g
 
 
@@ -30,9 +30,18 @@ xvar = [
     {'varname': 'Q', 'vardist': 'normal', 'varmean': 300.00, 'varcov': 0.12},
     {'varname': 'w', 'vardist': 'normal', 'varmean': 150.00, 'varcov': 0.20}
 ]
+# Design variables
+
+dvar = [
+    {'varname': 'factor1', 'varvalue': 1.00},
+    {'varname': 'factor2', 'varvalue': 1.00},
+    {'varname': 'factor3', 'varvalue': 1.00},
+    {'varname': 'factor4', 'varvalue': 1.00}
+]
+
 #
 # MC-IS adaptative method
 #
-column = Reliability(xvar, gfunction, None, None)
+column = Reliability(xvar, dvar, gfunction, None, None)
 column.bucher(100, 5000, 0.02, 1.50)
 #

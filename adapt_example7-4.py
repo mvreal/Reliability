@@ -12,9 +12,9 @@ from realpy import *
 #
 
 
-def gfunction(x):
+def gfunction(x, d):
 
-    g = x[0]*x[1]-x[2]
+    g = d[0]*x[0]*x[1]-d[1]*x[2]
     return g
 
 
@@ -30,8 +30,15 @@ xvar = [
     {'varname': 'M', 'vardist': 'normal', 'varmean': 1000.00, 'varcov': 0.20}
 ]
 
+# Design variables
+
+dvar = [
+    {'varname': 'gamma1', 'varvalue': 1.00},
+    {'varname': 'gamma2', 'varvalue': 1.00}
+]
+
 # MC-IS adaptative method
 #
-beam = Reliability(xvar, gfunction)
+beam = Reliability(xvar, dvar, gfunction)
 beam.adaptive(100, 5000, 0.03, 1.50)
 #
