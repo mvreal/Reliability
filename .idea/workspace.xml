@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d78a2238-3565-4360-b232-3a30c08b226d" name="Default Changelist" comment="beta_inf and beta_sup included">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Resultado.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Resultado.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/form-Santos_Beck_Stucchi.py" beforeDir="false" afterPath="$PROJECT_DIR$/form-Santos_Beck_Stucchi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resultados.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Resultados.xlsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
