@@ -13,9 +13,9 @@ import time
 #
 
 
-def gfunction(x):
+def gfunction(x, d):
 
-    g = x[0] ** 4 + 2 * x[1] ** 4 - 20.00
+    g = d[0] * x[0] ** 4 + 2 * d[1] * x[1] ** 4 - 20.00
     return g
 
 
@@ -23,6 +23,14 @@ ti = time.time()
 #
 # Data input
 #
+
+# Design variables
+
+dvar = [
+    {'varname': 'gamma1', 'varvalue': 1.00},
+    {'varname': 'gamma2', 'varvalue': 1.00}
+]
+
 # Random variables: name, probability distribution, mean and coefficient of variation
 
 xvar = [
@@ -33,8 +41,8 @@ xvar = [
 #
 # SORM method
 #
-test = Reliability(xvar, gfunction, None, None)
-test.sorm()
+test = Reliability(xvar, dvar, gfunction, None, None)
+test.sorm(iHLRF=True, toler=1.e-6)
 tf = time.time()
 ttotal = tf - ti
 print(f'Processing time = {ttotal}')

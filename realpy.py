@@ -16,17 +16,32 @@ import time
 
 class Reliability():
 
-    def __init__(self, xvar, gx, x0=None, Rz=None):
+    def __init__(self, xvar, dvar, gx, x0=None, Rz=None):
         self.xvar = xvar
-        self.n = len(xvar)
+        self.dvar = dvar
+        self.nxvar = len(xvar)
+        self.ndvar = len(dvar)
         self.fel = gx
         self.x0 = x0
         self.Rz = Rz
+        #
+        # Initial values of the design variables
+        #
+        i = -1
+        self.d = np.zeros(self.ndvar)
+        for var in self.dvar:
+            i += 1
+            # Mean value of the random variables x
+            self.d[i] = float(var['varvalue'])
+        #
+        # Initial values of the aleatory variables
+        #
         if x0 is None:
+            #
             # Original mean of the variables x
             #
             i = -1
-            self.x0 = np.zeros(self.n)
+            self.x0 = np.zeros(self.nxvar)
             for var in self.xvar:
                 i += 1
                 # Mean value of the random variables x
@@ -72,7 +87,7 @@ class Reliability():
                 var['vardist'] = 'weibull'
 
         if self.Rz is None:
-            self.Rz = np.eye(self.n)
+            self.Rz = np.eye(self.nxvar)
         else:
             self.Rz = self.nataf()
         print('Correlation Matrix after Nataf correction:')
@@ -89,7 +104,7 @@ class Reliability():
         Probabilistic Engineering Mechanics, 1986, Vol. 1, No.2, p. 105-112
         """
         Rz1 = np.array(self.Rz)
-        for i in range(self.n):
+        for i in range(self.nxvar):
             for j in range(i):
 
                 # Variables parameters
@@ -429,8 +444,8 @@ class Reliability():
         # Number of variables of the problem
 
         # Equivalent normal mean and standard deviation of the variables
-        muxneqk = np.zeros(self.n)
-        sigmaxneqk = np.zeros(self.n)
+        muxneqk = np.zeros(self.nxvar)
+        sigmaxneqk = np.zeros(self.nxvar)
         namevar = []
         dist = []
         mux0 = []
@@ -466,7 +481,7 @@ class Reliability():
         # Step 1 - Determination of equivalent correlation coefficients and
         #          Jacobian matrices Jxz and Jzx
         #
-        Imatrix = np.eye(self.n)
+        Imatrix = np.eye(self.nxvar)
         #
         # Correlation matrix is self.corrmatrix
         #
@@ -486,13 +501,13 @@ class Reliability():
         Jyx = np.dot(Jyz, Jzx)
         Jxz = np.copy(D)
         Jxy = np.dot(Jxz, Jzy)
-        yk1 = np.zeros(self.n)
+        yk1 = np.zeros(self.nxvar)
     #    xk1 = mux0 + Jxy.dot(yk1)
         xk1 = np.copy(self.x0)
         #
         # Error tolerance for yk and g(x)
         epsilon = toler
-        delta = toler * np.abs(self.fel(xk1))
+        delta = toler * np.abs(self.fel(xk1, self.d))
         # Initial values for errors and iteration counters
         erro1 = 1000.00
         erro2 = 1000.00
@@ -507,7 +522,7 @@ class Reliability():
             #
             # Calculation of the equivalent normal distribution parameters for xk
             #
-            for i in range(self.n):
+            for i in range(self.nxvar):
                 xval = xk[i]
                 mux = mux0[i]
                 sigmax = sigmax0[i]
@@ -531,7 +546,7 @@ class Reliability():
             #
             #  Step 5 - Evaluation of g(xk)
             #
-            gxk = self.fel(xk)
+            gxk = self.fel(xk, self.d)
 
             #
             # Step 6 - Evaluation of the gradients of g(x) in relation to yk
@@ -539,7 +554,7 @@ class Reliability():
             #
             # a. Calculation of the partial derivatives of g(x) in relation to xk
             #
-            gradxk = optimize.approx_fprime(xk, self.fel, eps)
+            gradxk = optimize.approx_fprime(xk, self.fel, eps, self.d)
             #
             # b. Calculation of the partial derivatives of g(x) in relation to yk
             #
@@ -584,7 +599,7 @@ class Reliability():
                     lambdak = b ** k
                     yk1 = yk + lambdak * dk
                     xk1 = muxneqk + Jxy.dot(yk1)
-                    gyk1 = self.fel(xk1)
+                    gyk1 = self.fel(xk1, self.d)
                     normyk1 = np.linalg.norm(yk1)
                     f1 = mfunc(normyk1, gyk1, ck) - mfunc(normyk, gyk, ck)
                     gradm = yk + ck * gradyk * np.sign(gyk)
@@ -624,7 +639,9 @@ class Reliability():
         print('\nProbability of Failure Pf = {0:0.4e}'.format(pf))
         return beta, xk, alpha, normgradyk, sigmaxneqk
 
-    def sorm(self):
+
+
+    def sorm(self, iHLRF=True, toler=1.e-6):
         """
         Second order reliability method = SORM
 
@@ -633,23 +650,23 @@ class Reliability():
         #
         # GRAM-SCHMIDT transformation
         #
-        def gramschmidt(A, n):
-            rk = np.zeros(n)
-            rj = np.zeros(n)
-            rk0 = np.zeros(n)
+        def gramschmidt(A, nxvar):
+            rk = np.zeros(nxvar)
+            rj = np.zeros(nxvar)
+            rk0 = np.zeros(nxvar)
             #
-            R = np.zeros((n, n))
-            R[n - 1, :] = A[n - 1, :].copy()
-            for k in range(n - 2, -1, -1):
+            R = np.zeros((nxvar, nxvar))
+            R[nxvar - 1, :] = A[nxvar - 1, :].copy()
+            for k in range(nxvar - 2, -1, -1):
                 rk0 = A[k, :].copy()
-                rk0projection = np.zeros(n)
-                for j in range(n - 1, k, -1):
+                rk0projection = np.zeros(nxvar)
+                for j in range(nxvar - 1, k, -1):
                     rj = R[j, :].copy()
                     projection = (rj.dot(rk0)) / (rj.dot(rj))
                     rk0projection = rk0projection + projection * rj
                 rk = rk0 - rk0projection
                 R[k, :] = rk.copy()
-            for i in range(n):
+            for i in range(nxvar):
                 R[i, :] = R[i, :] / np.linalg.norm(R[i, :])
             #
             return R
@@ -674,26 +691,26 @@ class Reliability():
             if i == j:
                 x0 = np.copy(x)
                 x0[i] = a - h
-                g10 = self.fel(x0)
+                g10 = self.fel(x0, self.d)
                 x0[i] = a
-                g00 = self.fel(x0)
+                g00 = self.fel(x0, self.d)
                 x0[i] = a + h
-                g20 = self.fel(x0)
+                g20 = self.fel(x0, self.d)
                 d2g = (g10 - 2. * g00 + g20) / h ** 2  # second order derivative: d2g/dxi2
             else:
                 x0 = np.copy(x)
                 x0[i] = a + h1
                 x0[j] = b + h2
-                g22 = self.fel(x0)
+                g22 = self.fel(x0, self.d)
                 x0[i] = a + h1
                 x0[j] = b - h2
-                g21 = self.fel(x0)
+                g21 = self.fel(x0, self.d)
                 x0[i] = a - h1
                 x0[j] = b + h2
-                g12 = self.fel(x0)
+                g12 = self.fel(x0, self.d)
                 x0[i] = a - h1
                 x0[j] = b - h2
-                g11 = self.fel(x0)
+                g11 = self.fel(x0, self.d)
                 d2g = (g22 - g21 - g12 + g11) / (4. * h1 * h2)  # second order derivative: d2g/dxidxj
             #
             return d2g
@@ -701,7 +718,7 @@ class Reliability():
         #
         # First run FORM-iHLRF algorithm
         #
-        n = self.n
+        n = self.nxvar
         xk = np.zeros(n)
         yk = np.zeros(n)
         gradxk = np.zeros(n)
@@ -710,7 +727,7 @@ class Reliability():
         kiter = 0
         erro1 = 0.00
 
-        beta, xk, alpha, normgradyk, sigmaxneqk = self.form(iHLRF=True, toler=1.e-3)
+        beta, xk, alpha, normgradyk, sigmaxneqk = self.form(iHLRF, toler)
         #
         # Formulation of Second Order Reliability Method - SORM
         #
@@ -794,12 +811,12 @@ class Reliability():
             fk = 1.00 + deltax ** 2 - gamma(1.00 + gsignal * 2.00 / kapa) / gamma(1.00 + gsignal * 1.00 / kapa) ** 2
             return fk
 
-        x = np.zeros((ns, self.n))
+        x = np.zeros((ns, self.nxvar))
         weight = np.ones(ns)
         fx = np.zeros(ns)
         hx = np.zeros(ns)
         fxixj = np.ones(ns)
-        yk = np.zeros((ns, self.n))
+        yk = np.zeros((ns, self.nxvar))
 
 
 
@@ -818,7 +835,7 @@ class Reliability():
         #
 
         yk = norm.ppf(uk_cycle)
-        zf = np.zeros((ns, self.n))
+        zf = np.zeros((ns, self.nxvar))
         zk = np.dot(Jzy, yk.T).T
 
 
@@ -997,7 +1014,7 @@ class Reliability():
         sum1 = 0.00
         sum2 = 0.00
         fxmax_cycle = np.zeros(nc)
-        uk_cycle = np.zeros((ns, self.n))
+        uk_cycle = np.zeros((ns, self.nxvar))
 
         #
         # Standard deviation multiplier for MC-IS
@@ -1010,13 +1027,13 @@ class Reliability():
         # Number of Monte Carlo simulations
         #
         #
-        # Matrix xp(ns, self.n) for ns Monte Carlo simulations and self.n random variables
+        # Matrix xp(ns, self.nxvar) for ns Monte Carlo simulations and self.nxvar random variables
         #
-        xp = np.zeros((ns, self.n))
+        xp = np.zeros((ns, self.nxvar))
         wp = np.ones(ns)
         fx = np.ones(ns)
-        zf = np.zeros((ns, self.n))
-        zh = np.zeros((ns, self.n))
+        zf = np.zeros((ns, self.nxvar))
+        zh = np.zeros((ns, self.nxvar))
 
         #
         # Adaptive cycles
@@ -1032,7 +1049,7 @@ class Reliability():
             # Generation of uniform random numbers
             #
             index = icycle % 2
-            uk_new = np.random.rand(ns, self.n)
+            uk_new = np.random.rand(ns, self.nxvar)
             if index == 0:
                 uk_cycle = uk_new.copy()
             else:
@@ -1138,7 +1155,7 @@ class Reliability():
         sum2 = 0.00
         fxmax = 0.00
         fxmax_cycle = np.zeros(nc)
-        uk_cycle = np.zeros((ns, self.n))
+        uk_cycle = np.zeros((ns, self.nxvar))
 
         #
         # Standard deviation multiplier for MC-IS
@@ -1150,13 +1167,13 @@ class Reliability():
         # Number of Monte Carlo simulations
         #
         #
-        # Matrix xp(ns, self.n) for ns Monte Carlo simulations and self.n random variables
+        # Matrix xp(ns, self.nxvar) for ns Monte Carlo simulations and self.nxvar random variables
         #
-        xp = np.zeros((ns, self.n))
+        xp = np.zeros((ns, self.nxvar))
         wp = np.ones(ns)
         fx = np.ones(ns)
-        zf = np.zeros((ns, self.n))
-        zh = np.zeros((ns, self.n))
+        zf = np.zeros((ns, self.nxvar))
+        zh = np.zeros((ns, self.nxvar))
 
         #
         # Adaptive cycles
@@ -1172,7 +1189,7 @@ class Reliability():
             # Generation of uniform random numbers
             #
             index = icycle % 2
-            uk_new = np.random.rand(ns, self.n)
+            uk_new = np.random.rand(ns, self.nxvar)
             if index == 0:
                 uk_cycle = uk_new.copy()
             else:
@@ -1296,24 +1313,24 @@ class Reliability():
         #
         nc = int(nc)
         ns = int(ns)
-        xm = np.zeros(self.n)
-        sum_xwig = np.zeros(self.n)
+        xm = np.zeros(self.nxvar)
+        sum_xwig = np.zeros(self.nxvar)
         sum_wig = 0.00
         pfc = np.zeros(nc)
         cov_pf = np.zeros(nc)
         pf_mean = np.zeros(nc)
         sum1 = 0.00
         sum2 = 0.00
-        uk_cycle = np.zeros((ns, self.n))
+        uk_cycle = np.zeros((ns, self.nxvar))
 
         #
         #
         # Number of Monte Carlo simulations
         #
         #
-        # Matrix xp(ns, self.n) for ns Monte Carlo simulations and self.n random variables
+        # Matrix xp(ns, self.nxvar) for ns Monte Carlo simulations and self.nxvar random variables
         #
-        xp = np.zeros((ns, self.n))
+        xp = np.zeros((ns, self.nxvar))
         wp = np.ones(ns)
         fx = np.ones(ns)
 
@@ -1331,7 +1348,7 @@ class Reliability():
             # Generation of uniform random numbers
             #
             index = icycle % 2
-            uk_new = np.random.rand(ns, self.n)
+            uk_new = np.random.rand(ns, self.nxvar)
             if index == 0:
                 uk_cycle = uk_new.copy()
             else:
