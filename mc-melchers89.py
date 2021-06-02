@@ -13,9 +13,9 @@ from realpy import *
 #
 
 
-def gfunction(x):
+def gfunction(x, d):
 
-    g = 1.44e5 * np.pi * x[0] * x[4] - 24.1344 * x[1] * x[2] ** 2 * x[3]
+    g = d[0] * np.pi * x[0] * x[4] + d[1] * x[1] * x[2] ** 2 * x[3]
     return g
 
 #
@@ -31,9 +31,16 @@ xvar = [
     {'varname': 'X4', 'vardist': 'normal', 'varmean': 0.672, 'varcov': 0.10},
     {'varname': 'X5', 'vardist': 'normal', 'varmean': 38.0, 'varcov': 0.10}
 ]
+
+# Design variables
+
+dvar = [
+    {'varname': 'factor1', 'varvalue': 1.44e5},
+    {'varname': 'factor2', 'varvalue': - 24.1344}
+]
 #
-# FORM method
+# MC method
 #
-test = Reliability(xvar, gfunction)
+test = Reliability(xvar, dvar, gfunction)
 test.mc(100, 5000, 0.02, 1.00)
 #

@@ -13,7 +13,7 @@ from realpy import *
 #
 
 
-def gR1(x):
+def gR1(x, d):
     r1 = 4.00
     a1 = np.pi * r1 ** 2
     v = 300
@@ -21,11 +21,12 @@ def gR1(x):
     h = k * v
     le = np.sqrt(v ** 2 + h ** 2)
 
-    g = a1*x[0] / 1000 - le / (2 * v) * (x[2] - x[3] / k)
+    g = d[0] * a1*x[0] / 1000 - le / (2 * v) * (x[2] - x[3] / k)
 
     return g
 
-def gE1(x):
+
+def gE1(x, d):
     r1 = 4.00
     i1 = (np.pi * r1 ** 4) / 4
     v = 300
@@ -33,12 +34,12 @@ def gE1(x):
     h = k * v
     le = np.sqrt(v ** 2 + h ** 2)
 
-    g = np.pi ** 2 * x[1] * i1 / le ** 2 - le / (2 * v) * (-x[2] + x[3] / k)
+    g = d[0] * np.pi ** 2 * x[1] * i1 / le ** 2 - le / (2 * v) * (-x[2] + x[3] / k)
 
     return g
 
 
-def gE2(x):
+def gE2(x, d):
     r2 = 5.20
     i2 = (np.pi * r2 ** 4) / 4
     v = 300
@@ -46,7 +47,7 @@ def gE2(x):
     h = k * v
     le = np.sqrt(v ** 2 + h ** 2)
 
-    g = np.pi ** 2 * x[1] * i2 / le ** 2 - le / (2 * v) * (+x[2] + x[3] / k)
+    g = d[0] * np.pi ** 2 * x[1] * i2 / le ** 2 - le / (2 * v) * (+x[2] + x[3] / k)
 
     return g
 
@@ -63,6 +64,9 @@ xvar = [
     {'varname': 'H', 'vardist': 'normal', 'varmean': 2.00, 'varcov': 0.20},
     {'varname': 'V', 'vardist': 'normal', 'varmean': 1.00, 'varcov': 0.20},
 ]
+
+dvar = [{'varname': 'factor1', 'varvalue': 1.00}]
+
 glist = [gR1, gE1, gE2]
-test = Reliability(xvar, glist, None, None)
-test.multig(xvar, glist)
+test = Reliability(xvar, dvar, glist, None, None)
+test.multig(xvar, dvar, glist)

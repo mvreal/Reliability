@@ -10,6 +10,7 @@ from realpy import *
 # Step 0 - Beam: g(Y, Z, M) = Y*Z-M = 0
 #
 
+
 def gfunction(x, d):
 
     g = d[0]*x[0]*x[1]-d[1]*x[2]

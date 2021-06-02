@@ -4,22 +4,18 @@ Reliabilty Analysis
 Example 7.9 - Nonlinear limit state function with non-normal correlated variables
 @author: MVREAL
 """
-import numpy as np
 from realpy import *
-import time
 
 #
 # Step 0 - Column: g(Y, Z) = Y*Z-1140 = 0
 #
 
 
-def gfunction(x):
+def gfunction(x, d):
 
-    g = x[0]*x[1]-1140
+    g = d[0]*x[0]*x[1]-1140
     return g
 
-
-ti = time.time()
 #
 # Data input
 #
@@ -30,12 +26,11 @@ xvar = [
     {'varname': 'Z', 'vardist': 'normal', 'varmean': 54.00, 'varcov': 0.05}
 ]
 
+dvar = [{'varname': 'factor1', 'varvalue': 1.00}]
 
 # SORM method
 #
-beam = Reliability(xvar, gfunction, None, None)
-beam.sorm()
-tf = time.time()
-ttotal = tf - ti
-print(f'Processing time = {ttotal}')
+beam = Reliability(xvar, dvar, gfunction, None, None)
+beam.sorm(iHLRF=True, toler=1.e-6)
+
 #

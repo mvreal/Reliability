@@ -1473,7 +1473,7 @@ class Reliability():
 
         return beta, pf, delta_pf, nsimul, ttotal
 
-    def multig(self, xvar, glist):
+    def multig(self, xvar, dvar, glist):
         """
         Solution of the problem of the reliability of serial system with multiple limit state functions
         According to:
@@ -1497,7 +1497,7 @@ class Reliability():
             #
             # FORM method for  the multiple g(x) functions
             #
-            test = Reliability(xvar, gfunction, None, None)
+            test = Reliability(xvar, dvar, gfunction, None, None)
             beta[i], x0, alpha[i, :], normgradyk, sigmaxneqk = test.form(iHLRF=True, toler=1.e-3)
             pf[i] = norm.cdf(-beta[i])
         #

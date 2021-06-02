@@ -10,7 +10,7 @@ import numpy as np
 from realpy import *
 
 #
-def gfunction(x):
+def gfunction(x, d):
     b = x[0]
     h = x[1]
     dl = x[2]
@@ -21,21 +21,23 @@ def gfunction(x):
     thetaR = x[7]
     thetaS = x[8]
     # Parâmetro geométrico da viga
-    As1 = 0.00050;  # Área de aço da seção transversal da viga (m2)
+    As1 = d[0]  # Área de aço da seção transversal da viga (m2)
+    alpha_cc = d[1]
     # Função de estado limite g(x)=MR - MS = 0
     MR = thetaR * 1000. * As1 * fy * (
-                h - dl - 0.5 * (As1 * fy / (0.85 * fc * b)))  # Momento de flexão resistente interno
+                h - dl - 0.5 * (As1 * fy / (alpha_cc * fc * b)))  # Momento de flexão resistente interno
     # O fator 1000. converte de MNm para kNm
     MS = thetaS * (g + q)  # Momento de carregamento externo (kNm)
     gx = MR - MS  # Função estado limite
     return gx
 
+
 # Parâmetro geométrico da viga
-As1 = 0.00050;    # Área de aço da seção transversal da viga (m2)
+As1 = 0.00050    # Área de aço da seção transversal da viga (m2)
 #
 # Momento de cálculo
 #
-Md = 92.00 # kN.m
+Md = 92.00  # kN.m
 #
 # Coeficientes de segurança
 #
@@ -66,9 +68,11 @@ xvar = [
     {'varname': 'thetaS', 'vardist': 'lognormal', 'varmean': 1.00, 'varcov': 0.05}
 ]
 
+dvar = [{'varname': 'As1', 'varvalue': As1},
+        {'varname': 'alpha_cc', 'varvalue': 0.85}]
 #
 # MCS method
 #
-beam = Reliability(xvar, gfunction, None, None)
+beam = Reliability(xvar, dvar, gfunction, None, None)
 beam.bucher(100, 5_000, 0.05, 2.00)
 #

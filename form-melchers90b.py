@@ -16,9 +16,9 @@ from realpy import *
 #
 
 
-def gfunction(x):
+def gfunction(x, d):
 
-    g = 3 * x[0] * x[3] - x[1] ** 2 * x[2] + 11.00
+    g = d[0] * x[0] * x[3] + d[1] * x[1] ** 2 * x[2] + d[2]
     return g
 
 #
@@ -27,15 +27,24 @@ def gfunction(x):
 # Random variables: name, probability distribution, mean and coefficient of variation
 
 xvar = [
-    {'varname': 'X1', 'vardist': 'normal', 'varmean': 0.001, 'varstd': 1.00},
-    {'varname': 'X2', 'vardist': 'normal', 'varmean': 0.001, 'varstd': 1.00},
-    {'varname': 'X3', 'vardist': 'normal', 'varmean': 0.001, 'varstd': 1.00},
-    {'varname': 'X4', 'vardist': 'normal', 'varmean': 0.001, 'varstd': 1.00},
+    {'varname': 'X1', 'vardist': 'normal', 'varmean': 0.00, 'varstd': 1.00, 'varhmean': +1.9149},
+    {'varname': 'X2', 'vardist': 'normal', 'varmean': 0.00, 'varstd': 1.00, 'varhmean': 0.0000},
+    {'varname': 'X3', 'vardist': 'normal', 'varmean': 0.00, 'varstd': 1.00, 'varhmean': 0.0000},
+    {'varname': 'X4', 'vardist': 'normal', 'varmean': 0.00, 'varstd': 1.00, 'varhmean': -1.9149},
 ]
+
+# Design variables
+
+dvar = [
+    {'varname': 'factor1', 'varvalue': 3.00},
+    {'varname': 'factor2', 'varvalue': -1.00},
+    {'varname': 'const', 'varvalue': 11.00},
+]
+
 #
 # FORM method
 #
 x0 = [1.914, 0, 0, -1.914]
-test = Reliability(xvar, gfunction, x0, None)
+test = Reliability(xvar, dvar, gfunction, x0, None)
 test.form(iHLRF=True, toler=1.e-3)
 #

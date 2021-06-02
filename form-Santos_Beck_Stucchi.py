@@ -11,8 +11,9 @@ from realpy import *
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
 #
-def gfunction(x):
+def gfunction(x, d):
     b = x[0]
     h = x[1]
     dl = x[2]
@@ -23,10 +24,11 @@ def gfunction(x):
     thetaR = x[7]
     thetaS = x[8]
     # Parâmetro geométrico da viga
-    global As1  # Área de aço da seção transversal da viga (m2)
+    As1 = d[0]  # Área de aço da seção transversal da viga (m2)
+    alpha_cc = d[1]
     # Função de estado limite g(x)=MR - MS = 0
     MR = thetaR * 1000. * As1 * fy * (
-                h - dl - 0.5 * (As1 * fy / (0.85 * fc * b)))  # Momento de flexão resistente interno
+                h - dl - 0.5 * (As1 * fy / (alpha_cc * fc * b)))  # Momento de flexão resistente interno
     # O fator 1000. converte de MNm para kNm
     MS = thetaS * (g + q)  # Momento de carregamento externo (kNm)
     gx = MR - MS  # Função estado limite
@@ -62,7 +64,6 @@ betak = np.zeros((nchi, nv))
 
 for j in range(nv):
     Md = mrd[j]
-    As1 = ast[j]
     i = -1
 
     for k in chi:
@@ -92,10 +93,13 @@ for j in range(nv):
             {'varname': 'thetaS', 'vardist': 'lognormal', 'varmean': 1.00, 'varcov': 0.05}
         ]
 
+        dvar = [{'varname': 'As1', 'varvalue': ast[j]},
+                {'varname': 'alpha_cc', 'varvalue': 0.85}]
+
         #
         # FORM method
         #
-        beam = Reliability(xvar, gfunction, None, None)
+        beam = Reliability(xvar, dvar, gfunction, None, None)
         beta, xk, alpha, normgradyk, sigmaxneqk = beam.form(iHLRF=True, toler=1.e-3)
         betak[i, j] = beta
         #

@@ -13,23 +13,23 @@ from realpy import *
 #
 
 
-def gfunction1(x):
+def gfunction1(x, d):
 
-    g = x[1] + 2 * x[2] + x[3] - 5 * x[6]
-
-    return g
-
-
-def gfunction2(x):
-
-    g = x[0] + 2 * x[2] + 2 * x[3] + x[4] - 5 * x[5] - 5 * x[6]
+    g = d[0] * x[1] + d[1] * x[2] + d[0] * x[3] + d[2] * x[6]
 
     return g
 
 
-def gfunction3(x):
+def gfunction2(x, d):
 
-    g = x[0] + 2 * x[1] + x[3] + x[4] - 5 * x[5]
+    g = d[0] * x[0] + d[1] * x[2] + d[1] * x[3] + d[0] * x[4] + d[2] * x[5] + d[2] * x[6]
+
+    return g
+
+
+def gfunction3(x, d):
+
+    g = d[0] * x[0] + d[1] * x[1] + d[0] * x[3] + d[0] * x[4] + d[2] * x[5]
 
     return g
 
@@ -50,9 +50,16 @@ xvar = [
     {'varname': 'X6', 'vardist': 'gumbel', 'varmean': 20.00, 'varcov': 0.30},
     {'varname': 'X7', 'vardist': 'gumbel', 'varmean': 25.00, 'varcov': 0.30},
 ]
+
+dvar = [
+    {'varname': 'factor0', 'varvalue': 1.00},
+    {'varname': 'factor1', 'varvalue': 2.00},
+    {'varname': 'factor2', 'varvalue': -5.00},
+]
+
 #
 # multig method
 #
 glist = [gfunction1, gfunction2, gfunction3]
-test = Reliability(xvar, glist, None, None)
-test.multig(xvar, glist)
+test = Reliability(xvar, dvar, glist, None, None)
+test.multig(xvar, dvar, glist)
