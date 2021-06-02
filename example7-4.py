@@ -17,7 +17,6 @@ def gfunction(x, d):
     return g
 
 
-ti = time.time()
 #
 # Data input
 #

@@ -11,9 +11,9 @@ from realpy import *
 #
 
 
-def gfunction(x):
+def gfunction(x, d):
 
-    g = x[0]*x[1]-x[2]
+    g = d[0]*x[0]*x[1]-d[1]*x[2]
     return g
 
 
@@ -28,9 +28,16 @@ xvar = [
     {'varname': 'Z', 'vardist': 'lognormal', 'varmean': 50.00, 'varcov': 0.05},
     {'varname': 'M', 'vardist': 'gumbel', 'varmean': 1000.00, 'varcov': 0.20}
 ]
+
+# Design variables
+
+dvar = [
+    {'varname': 'gamma1', 'varvalue': 1.00},
+    {'varname': 'gamma2', 'varvalue': 1.00}
+]
 #
 # FORM method
 #
-beam = Reliability(xvar, gfunction)
+beam = Reliability(xvar, dvar, gfunction)
 beam.form(iHLRF=True, toler=1.e-6)
 #

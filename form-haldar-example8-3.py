@@ -11,9 +11,9 @@ from realpy import *
 #
 
 
-def gfunction(x):
+def gfunction(x, d):
 
-    g = x[0]*x[1]-1140
+    g = d[0] * x[0] * x[1] - 1140
     return g
 
 
@@ -27,6 +27,12 @@ xvar = [
     {'varname': 'Z', 'vardist': 'normal', 'varmean': 54.00, 'varcov': 0.05}
 ]
 
+# Design variables
+
+dvar = [
+    {'varname': 'gamma1', 'varvalue': 1.00},
+    {'varname': 'gamma2', 'varvalue': 1.00}
+]
 
 # Correlation matrix
 
@@ -35,6 +41,6 @@ corrmatrix = [[1.00, 0.30],
 #
 # FORM method
 #
-beam = Reliability(xvar, gfunction, None, corrmatrix)
+beam = Reliability(xvar, dvar, gfunction, None, corrmatrix)
 beam.form(iHLRF=True, toler=1.e-6)
 #
