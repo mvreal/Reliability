@@ -6,7 +6,6 @@ Example 4.8 - Choi et al. Reliability based structural design p. 132.
 """
 import numpy as np
 from realpy import *
-import time
 
 #
 # Step 0 - Function: g(x1, x2) = x1**4+2*x2**4-20 = 0
@@ -18,8 +17,6 @@ def gfunction(x, d):
     g = d[0] * x[0] ** 4 + 2 * d[1] * x[1] ** 4 - 20.00
     return g
 
-
-ti = time.time()
 #
 # Data input
 #
@@ -43,7 +40,4 @@ xvar = [
 #
 test = Reliability(xvar, dvar, gfunction, None, None)
 test.sorm(iHLRF=True, toler=1.e-6)
-tf = time.time()
-ttotal = tf - ti
-print(f'Processing time = {ttotal}')
 #

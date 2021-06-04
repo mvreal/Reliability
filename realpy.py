@@ -93,8 +93,7 @@ class Reliability():
             self.Rz = np.eye(self.nxvar)
         else:
             self.Rz = self.nataf()
-        print('Correlation Matrix after Nataf correction:')
-        print(self.Rz)
+
 #
 # Nataf correction of the correlation matrix
 #
@@ -321,7 +320,7 @@ class Reliability():
 #        print(Rz1)
         return Rz1
 
-    def form(self, iHLRF, toler=1.e-3):
+    def form(self, iHLRF, toler=1.e-3, iprint=True):
         """
 
                Algorithm FORM-iHLRF.
@@ -488,6 +487,9 @@ class Reliability():
         #
         # Correlation matrix is self.corrmatrix
         #
+        if iprint:
+            print('Correlation Matrix after Nataf correction:')
+            print(self.Rz)
         #
         # Cholesky decomposition of the correlation matrix
         #
@@ -631,20 +633,22 @@ class Reliability():
             # Evaluation of the error in the limit state function g(x)
             erro2 = np.abs(gxk)
             # Printing of the updated values
-            print('\nIteration number = {0:d} g(x) ={1:0.5e} erro1 ={2:0.5e} Beta ={3:0.4f}'
-                  .format(kiter, gxk, erro1, beta))
-            datadict = {'xvar': namevar, 'prob_dist': dist, 'mux': muxneqk, 'sigmax': sigmaxneqk,
-                        'xk': xk, 'yk': yk, 'alpha': alpha}
-            data = pd.DataFrame(datadict)
-            print(data)
+            if iprint:
+                print('\nIteration number = {0:d} g(x) ={1:0.5e} erro1 ={2:0.5e} Beta ={3:0.4f}'
+                      .format(kiter, gxk, erro1, beta))
+                datadict = {'xvar': namevar, 'prob_dist': dist, 'mux': muxneqk, 'sigmax': sigmaxneqk,
+                            'xk': xk, 'yk': yk, 'alpha': alpha}
+                data = pd.DataFrame(datadict)
+                print(data)
         #
         pf = norm.cdf(-beta)
-        print('\nProbability of Failure Pf = {0:0.4e}'.format(pf))
+        if iprint:
+            print('\nProbability of Failure Pf = {0:0.4e}'.format(pf))
         return beta, xk, alpha, normgradyk, sigmaxneqk
 
 
 
-    def sorm(self, iHLRF=True, toler=1.e-6):
+    def sorm(self, iHLRF=True, toler=1.e-6, iprint=True):
         """
         Second order reliability method = SORM
 
@@ -730,11 +734,10 @@ class Reliability():
         kiter = 0
         erro1 = 0.00
 
-        beta, xk, alpha, normgradyk, sigmaxneqk = self.form(iHLRF, toler)
+        beta, xk, alpha, normgradyk, sigmaxneqk = self.form(iHLRF, toler, iprint)
         #
         # Formulation of Second Order Reliability Method - SORM
         #
-        print('\nSORM results:')
         #
         # Failure probability calculation
         #
@@ -756,16 +759,11 @@ class Reliability():
             for j in range(n):
                 dmatrix[i, j] = second_order_derivative(xk, i, j) * sigmaxneqk[i] * sigmaxneqk[j]
 
-        print('\nHessian matrix:')
-        print(dmatrix)
 
         #
         # Calculation of the matrix B
         #
         bmatrix = 1. / normgradyk * dmatrix
-        print('\nNorm of the gradient of g(y) =', normgradyk)
-        print('\nB matrix:')
-        print(bmatrix)
 
         #
         # Calculation of the orthogonal matrix H
@@ -774,16 +772,11 @@ class Reliability():
         #
         hmatrix = gramschmidt(amatrix, n)
 
-        print('\nH matrix:')
-
-        print(hmatrix)
 
         #
         # Calculation of the curvature matrix K
         #
         kmatrix = hmatrix.dot(bmatrix.dot(hmatrix.T))
-        print('\nK = curvatures matrix:')
-        print(kmatrix)
 
         #
         # Calculation of the failure probability using SORM Breitung equation
@@ -796,14 +789,26 @@ class Reliability():
         #
         # Print the result
         #
-        print('\npfFORM =', pfform)
-        print('\nfactor =', factor)
-        print('\npfSORM =', pfsorm)
-        print('\nBetaSORM =', betasorm)
+        if iprint:
+            print('\nSORM results:')
+            print('\nHessian matrix:')
+            print(dmatrix)
+            print('\nNorm of the gradient of g(y) =', normgradyk)
+            print('\nB matrix:')
+            print(bmatrix)
+            print('\nH matrix:')
+            print(hmatrix)
+            print('\nK = curvatures matrix:')
+            print(kmatrix)
+            print('\npfFORM =', pfform)
+            print('\nBetaFORM =', beta)
+            print('\nfactor =', factor)
+            print('\npfSORM =', pfsorm)
+            print('\nBetaSORM =', betasorm)
 
         return
 
-    def var_gen(self, ns, uk_cycle, nsigma=1.00):
+    def var_gen(self, ns, uk_cycle, nsigma=1.00, iprint=True):
         """
 
            Random variables generator for the Monte Carlo Simulation methods
@@ -848,7 +853,8 @@ class Reliability():
             i += 1
             if var['varstd'] == 0.00:
                 var['varstd'] = float(var['varcov']) * float(var['varmean'])
-            print(self.xvar[i])
+            if iprint:
+                print(self.xvar[i])
             #
 
             #
@@ -995,7 +1001,7 @@ class Reliability():
 
         return x, weight, fxixj
 
-    def mc(self, nc, ns, delta_lim, nsigma=1.00, igraph=True):
+    def mc(self, nc, ns, delta_lim, nsigma=1.00, igraph=True, iprint=True):
         """
         Monte Carlo Simulation Method
         nc Cycles
@@ -1018,7 +1024,12 @@ class Reliability():
         sum2 = 0.00
         fxmax_cycle = np.zeros(nc)
         uk_cycle = np.zeros((ns, self.nxvar))
-
+        #
+        # Correlation matrix is self.Rz
+        #
+        if iprint:
+            print('Correlation Matrix after Nataf correction:')
+            print(self.Rz)
         #
         # Standard deviation multiplier for MC-IS
         #
@@ -1067,7 +1078,7 @@ class Reliability():
             # Step 1 - Generation of the random numbers according to their appropriate distribution
             #
 
-            xp, wp, fx = self.var_gen(ns, uk_cycle, nsigma)
+            xp, wp, fx = self.var_gen(ns, uk_cycle, nsigma, iprint)
             #
             #
             # Step 2 - Evaluation of the limit state function g(x)
@@ -1098,9 +1109,10 @@ class Reliability():
                 cov_pf[icycle] = 0.00
             delta_pf = cov_pf[icycle]
             # Probability of failure in this cycle
-            print('Cycle =', kcycle, self.xvar)
-            print(f'Probability of failure pf ={pf}')
-            print(f'Coefficient of variation of pf ={delta_pf}')
+            if iprint:
+                print('Cycle =', kcycle, self.xvar)
+                print(f'Probability of failure pf ={pf}')
+                print(f'Coefficient of variation of pf ={delta_pf}')
             if delta_pf < delta_lim and kcycle > 3:
                 break
 
@@ -1109,13 +1121,14 @@ class Reliability():
         tf = time.time()
         ttotal = tf - ti
         #
-        print('*** Resultados do Método Monte Carlo ***')
-        print(f'\nReliability Index Beta = {beta}')
-        print(f'Probability of failure pf ={pf}')
-        print(f'COV of pf ={delta_pf}')
-        print('nimul = {0:0.4f} '.format(nsimul))
-        print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
-        print(f'Processing time = {ttotal} s')
+        if iprint:
+            print('*** Resultados do Método Monte Carlo ***')
+            print(f'\nReliability Index Beta = {beta}')
+            print(f'Probability of failure pf ={pf}')
+            print(f'COV of pf ={delta_pf}')
+            print('nimul = {0:0.4f} '.format(nsimul))
+            print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
+            print(f'Processing time = {ttotal} s')
 
         if igraph:
             # Plot results:
@@ -1137,7 +1150,7 @@ class Reliability():
 
         return beta, pf, delta_pf, nsimul, ttotal
 
-    def adaptive(self, nc, ns, delta_lim, nsigma=1.50, igraph=True):
+    def adaptive(self, nc, ns, delta_lim, nsigma=1.50, igraph=True, iprint=True):
         """
         Monte Carlo Simulations with Importance Sampling (MC-IS)
         Importance sampling with adaptative technique
@@ -1165,9 +1178,11 @@ class Reliability():
         uk_cycle = np.zeros((ns, self.nxvar))
 
         #
-        # Standard deviation multiplier for MC-IS
+        # Correlation matrix is self.Rz
         #
-        #
+        if iprint:
+            print('Correlation Matrix after Nataf correction:')
+            print(self.Rz)
 
         #
         #
@@ -1181,6 +1196,7 @@ class Reliability():
         fx = np.ones(ns)
         zf = np.zeros((ns, self.nxvar))
         zh = np.zeros((ns, self.nxvar))
+
 
         # Matrix dmatrix(ns, self.ndvar) for ns Monte Carlo simulations and self.ndvar design variables
 
@@ -1211,7 +1227,7 @@ class Reliability():
             # Step 1 - Generation of the random numbers according to their appropriate distribution
             #
 
-            xp, wp, fx = self.var_gen(ns, uk_cycle, nsigma)
+            xp, wp, fx = self.var_gen(ns, uk_cycle, nsigma, iprint)
             #
             #
             # Step 2 - Evaluation of the limit state function g(x)
@@ -1269,9 +1285,10 @@ class Reliability():
                 cov_pf[icycle] = 0.00
             delta_pf = cov_pf[icycle]
             # Probability of failure in this cycle
-            print('Cycle =', kcycle)
-            print(f'Probability of failure pf ={pf}')
-            print(f'Coefficient of variation of pf ={delta_pf}')
+            if iprint:
+                print('Cycle =', kcycle)
+                print(f'Probability of failure pf ={pf}')
+                print(f'Coefficient of variation of pf ={delta_pf}')
             if delta_pf < delta_lim and kcycle > 3:
                 break
 
@@ -1280,13 +1297,14 @@ class Reliability():
         tf = time.time()
         ttotal = tf - ti
         #
-        print('*** Resultados do Método Monte Carlo ***')
-        print(f'\nReliability Index Beta = {beta}')
-        print(f'Probability of failure pf ={pf}')
-        print(f'COV of pf ={delta_pf}')
-        print('nimul = {0:0.4f} '.format(nsimul))
-        print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
-        print(f'Processing time = {ttotal} s')
+        if iprint:
+            print('*** Resultados do Método Monte Carlo ***')
+            print(f'\nReliability Index Beta = {beta}')
+            print(f'Probability of failure pf ={pf}')
+            print(f'COV of pf ={delta_pf}')
+            print('nimul = {0:0.4f} '.format(nsimul))
+            print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
+            print(f'Processing time = {ttotal} s')
 
         if igraph:
             # Plot results:
@@ -1308,7 +1326,7 @@ class Reliability():
 
         return beta, pf, delta_pf, nsimul, ttotal
 
-    def bucher(self, nc, ns, delta_lim, nsigma=1.50, igraph=True):
+    def bucher(self, nc, ns, delta_lim, nsigma=1.50, igraph=True, iprint=True):
         """
         Monte Carlo Simulations with Importance Sampling (MC-IS)
         Importance sampling with adaptive technique
@@ -1333,6 +1351,13 @@ class Reliability():
         sum1 = 0.00
         sum2 = 0.00
         uk_cycle = np.zeros((ns, self.nxvar))
+
+        #
+        # Correlation matrix is self.Rz
+        #
+        if iprint:
+            print('Correlation Matrix after Nataf correction:')
+            print(self.Rz)
 
         #
         #
@@ -1374,7 +1399,7 @@ class Reliability():
             # Step 1 - Generation of the random numbers according to their appropriate distribution
             #
 
-            xp, wp, fx = self.var_gen(ns, uk_cycle, nsigma)
+            xp, wp, fx = self.var_gen(ns, uk_cycle, nsigma, iprint)
             #
             #
             # Step 2 - Evaluation of the limit state function g(x)
@@ -1434,9 +1459,10 @@ class Reliability():
             delta_pf = cov_pf[icycle]
             nc_final = icycle
             # Probability of failure in this cycle
-            print('Cycle =', kcycle)
-            print(f'Probability of failure pf ={pf}')
-            print(f'Coefficient of variation of pf ={delta_pf}')
+            if iprint:
+                print('Cycle =', kcycle)
+                print(f'Probability of failure pf ={pf}')
+                print(f'Coefficient of variation of pf ={delta_pf}')
             if delta_pf < delta_lim and kcycle > 3:
                 break
 
@@ -1445,13 +1471,14 @@ class Reliability():
         tf = time.time()
         ttotal = tf - ti
         #
-        print('*** Resultados do Método Monte Carlo ***')
-        print(f'\nReliability Index Beta = {beta}')
-        print(f'Probability of failure pf ={pf}')
-        print(f'COV of pf ={delta_pf}')
-        print('nimul = {0:0.4f} '.format(nsimul))
-        print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
-        print(f'Processing time = {ttotal} s')
+        if iprint:
+            print('*** Resultados do Método Monte Carlo ***')
+            print(f'\nReliability Index Beta = {beta}')
+            print(f'Probability of failure pf ={pf}')
+            print(f'COV of pf ={delta_pf}')
+            print('nimul = {0:0.4f} '.format(nsimul))
+            print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
+            print(f'Processing time = {ttotal} s')
 
         if igraph:
             # Plot results:
@@ -1473,7 +1500,7 @@ class Reliability():
 
         return beta, pf, delta_pf, nsimul, ttotal
 
-    def multig(self, xvar, dvar, glist):
+    def multig(self, xvar, dvar, glist, iprint=True):
         """
         Solution of the problem of the reliability of serial system with multiple limit state functions
         According to:
@@ -1501,22 +1528,11 @@ class Reliability():
             beta[i], x0, alpha[i, :], normgradyk, sigmaxneqk = test.form(iHLRF=True, toler=1.e-3)
             pf[i] = norm.cdf(-beta[i])
         #
-        # Print the initial results
-        #
-        print('Initial results:')
-        print('pf =', pf)
 
         pfinf = pf.max()
         pfsup = pf.sum()
-        print('pfinf =', pfinf)
-        print('pfsup =', pfsup)
-
-        print('beta =', beta)
-
-        print('alpha =', alpha)
         alpha_sign = np.sign(alpha)
         alpha2 = alpha_sign * alpha ** 2
-        print(('alpha2 =', alpha2))
 
         #
         # Sort arrays pf, beta, alpha, alpha2, glist in decrescent order of probability of failure
@@ -1535,7 +1551,6 @@ class Reliability():
         #
 
         ro = np.dot(alpha, alpha.T)
-        print('ro =', ro)
 
         #
         # Calculation of the p(Aij) and p(Bij) matrices
@@ -1549,8 +1564,6 @@ class Reliability():
                     pb[i, j] = norm.cdf(-beta[j]) * norm.cdf(
                         -((beta[i] - ro[i, j] * beta[j]) / np.sqrt(1. - ro[i, j] ** 2)))
 
-        print('pa =', pa)
-        print('pb =', pb)
 
         #
         # Calculation of the terms P(Fi.Fj)sup and P(Fi.Fj)inf
@@ -1586,22 +1599,37 @@ class Reliability():
         for i in range(1, ng, 1):
             pf_sup -= np.max(pfij_sup[i, 0:i], axis=0)
 
-        #
-        # Print final results
-        #
-        print('Final results:')
-        glist = list(glist)
-        print('g list =', glist)
-        print('pf =', pf)
-        print('beta =', beta)
-        print('alpha =', alpha)
-        print(('alpha2 =', alpha2))
-        print('pf_inf =', pf_inf)
-        print('pf_sup =', pf_sup)
         beta_sup = -norm.ppf(pf_inf)
         beta_inf = -norm.ppf(pf_sup)
-        print('beta_inf =', beta_inf)
-        print('beta_sup =', beta_sup)
+        glist = list(glist)
+
+        if iprint:
+            #
+            # Print the initial results
+            #
+            print('Initial results:')
+            print('pf =', pf)
+            print('beta =', beta)
+            print('pfinf =', pfinf)
+            print('pfsup =', pfsup)
+            print('alpha =', alpha)
+            print(('alpha2 =', alpha2))
+            print('ro =', ro)
+            print('pa =', pa)
+            print('pb =', pb)
+            #
+            # Print final results
+            #
+            print('Final results:')
+            print('g list =', glist)
+            print('pf =', pf)
+            print('beta =', beta)
+            print('alpha =', alpha)
+            print(('alpha2 =', alpha2))
+            print('pf_inf =', pf_inf)
+            print('pf_sup =', pf_sup)
+            print('beta_inf =', beta_inf)
+            print('beta_sup =', beta_sup)
 
 
 
