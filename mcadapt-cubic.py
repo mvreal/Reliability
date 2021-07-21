@@ -39,8 +39,8 @@ dvar = [
 
 
 #
-# FORM method
+# MC-IS method
 #
 beam = Reliability(xvar, dvar, gfunction, None, None)
-beam.form(iHLRF=True, toler=1.e-3)
+beam.adaptive(100, 5000, 0.03, 1.50)
 #
