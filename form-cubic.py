@@ -2,19 +2,22 @@
 Created on Wed Jul 21 11:25:00 2021
 Reliabilty Analysis
 Example with a cubic function
+Ghalehnovi, M., Rashki, M., & Ameryan, A. (2020).
+First order control variates algorithm for reliability analysis of engineering structures. Applied Mathematical Modelling, 77, 829–847.
+https://doi.org/10.1016/j.apm.2019.07.049
 @author: MVREAL
 """
 from realpy import *
 
 #
-# Step 0 - Column: g(Y, Z) = Y*Z-1140 = 0
+# Step 0 - Function: g(X) = X1**3+X1**2*X2+X2**3-18 = 0
 #
 
 
 def gfunction(x, d):
     d[0]=1.0
     d[1]=1.0
-    g =x[0] ** 3 + 2. * x[0] ** 2 * x[1] + x[1] ** 3 - 18.00
+    g =x[0] ** 3 + x[0] ** 2 * x[1] + x[1] ** 3 - 18.00
     return g
 
 
@@ -42,5 +45,5 @@ dvar = [
 # FORM method
 #
 beam = Reliability(xvar, dvar, gfunction, None, None)
-beam.form(iHLRF=True, toler=1.e-3)
+beam.form(iHLRF=False, toler=1.e-6)
 #
