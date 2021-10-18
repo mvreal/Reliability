@@ -30,10 +30,10 @@ def gfunction(x, d):
 
 
 xvar = [
-    {'varname': 'c', 'vardist': 'normal', 'varmean': 5.00, 'varstd': 1.00},
-    {'varname': 'phi', 'vardist': 'normal', 'varmean': 40.00, 'varstd': 4.00},
-    {'varname': 'q0', 'vardist': 'normal', 'varmean': 18.00, 'varstd': 2.00},
-    {'varname': 'gamma', 'vardist': 'normal', 'varmean': 18.00, 'varstd': 2.00},
+    {'varname': 'c', 'vardist': 'lognormal', 'varmean': 5.00, 'varstd': 1.00},
+    {'varname': 'phi', 'vardist': 'lognormal', 'varmean': 40.00, 'varstd': 4.00},
+    {'varname': 'q0', 'vardist': 'uniform', 'varmean': 18.00, 'varstd': 20.00},
+    {'varname': 'gamma', 'vardist': 'uniform', 'varmean': 18.00, 'varstd': 20.00},
     {'varname': 'P', 'vardist': 'normal', 'varmean': 800, 'varstd': 80.00}
     ]
 
@@ -41,6 +41,7 @@ dvar = [{'varname': 'B', 'varvalue': 1.00}]
 #
 # FORM method
 #
-sapata_corrida = Reliability(xvar, dvar, gfunction, None, None)
-sapata_corrida.form(iHLRF=True, toler=1.e-6)
+x0 = [5.00, 40.00, 18.10, 18.10, 800]
+sapata_corrida = Reliability(xvar, dvar, gfunction, x0, None)
+sapata_corrida.form(iHLRF=True, toler=1.e-3)
 #
