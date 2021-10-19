@@ -877,15 +877,15 @@ class Reliability():
             # c = ?, d = ? ---> Verificar
             #
             elif namedist.lower() == 'uniform':
-                a = float(var['a'])
-                b = float(var['b'])
-                c = float(var['c'])
-                d = float(var['d'])
+                a = float(var['varmean'])
+                b = float(var['varstd'])
+                c = float(var['varmean'])
+                d = float(var['varstd'])
                 uk = norm.cdf(zk[:, i])
                 x[:, i] = c + (d - c) * uk
                 zf[:, i] = norm.ppf((x[:, i]-a)/(b-a))
                 fx = uniform.pdf(x[:, i], a, b)
-                hx = uniform.pdf(x[:, i], a, b)
+                hx = uniform.pdf(x[:, i], c, d)
                 weight = weight * ((fx/norm.pdf(zf[:, i], 0, 1)) / (hx/norm.pdf(zk[:, i], 0, 1)))
                 fxixj = fxixj * fx / norm.pdf(zf[:, i], 0, 1)
             #
