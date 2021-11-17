@@ -39,5 +39,5 @@ dvar = [
 # FORM method
 #
 beam = Reliability(xvar, dvar, gfunction)
-beam.form(iHLRF=True, toler=1.e-6)
+beam.form(iHLRF=True, toler=1.e-3)
 #
