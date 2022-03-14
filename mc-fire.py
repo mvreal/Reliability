@@ -87,5 +87,5 @@ dvar = [{'varname': 'As1', 'varvalue': As1},
 # MCS method
 #
 beam = Reliability(xvar, dvar, gfunction, None, None)
-beam.bucher(100, 5_000, 0.05, 2.00)
+beam.bucher(100, 10_000, 0.05, 2.00)
 #
