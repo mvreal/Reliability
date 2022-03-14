@@ -84,8 +84,8 @@ dvar = [{'varname': 'As1', 'varvalue': As1},
         {'varname': 'L', 'varvalue': L},
         ]
 #
-# MCS method
+# FORM method
 #
 beam = Reliability(xvar, dvar, gfunction, None, None)
-beam.bucher(100, 5_000, 0.05, 2.00)
+beam.form(iHLRF=True, toler=1.e-6)
 #
