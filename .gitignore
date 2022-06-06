@@ -1,3 +1,5 @@
 **/_gsdata_/
 **/idea/
 **/_pycache_/
+**/venv/
+**/vscode/
