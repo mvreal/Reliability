@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d1019bbf-4097-4d0d-8d4c-6c25d83c45f8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/form-G2R.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mc-G2R.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Reliability.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/buch_example6-6.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/adapt_example6-6.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
