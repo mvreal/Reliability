@@ -1,12 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" id="d1019bbf-4097-4d0d-8d4c-6c25d83c45f8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/buch_example6-6.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/adapt_example6-6.py" beforeDir="false" />
+    <list default="true" id="cfe21d29-3d9c-4480-a1fb-5e48f85885c0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/adapt_example7-3.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/adapt_example7-4.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/adapt_example7-5.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/adapt_example7-6.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/adapt_example7-7.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/adapt_example7-8.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/adapt_example7-9.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/bridge1.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/class_reliability.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/class_reliability0.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/example7-3.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/example7-4.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/example7-5.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/example7-6.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/example7-7.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/example7-8.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/example7-9.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/form-haldar-example8-3.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gencorr.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/mc_example7-3.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/mc_example7-4.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/mc_example7-5.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/mc_example7-6.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/mc_example7-7.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/mc_example7-8.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/mc_example7-9.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/mc_is_example7-6.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/mcis-haldar-example8-3.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/mcis_example7-7.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/mcis_example7-8.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/mcis_example7-9.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/normal_multivariate_test.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/pdf/Geração de variáveis correlacionadas.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sorm-choi-example4-8.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sorm-example8-1-haldar.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/test1.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/test2.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/test3.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/test4.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/test5.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/launch.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mc-G2R.py" beforeDir="false" afterPath="$PROJECT_DIR$/mc-G2R.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,7 +59,8 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectId" id="2AZMbAJOl2lzhG1BGWIHuYceH2C" />
+  <component name="ProjectId" id="2AcEDcTmN0OEqKS1yxc7cFAffNQ" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -24,26 +68,21 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-  </component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="F:\Reliability" />
-    </key>
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunManager" selected="Python.mc-G2R">
     <configuration name="form-G2R" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Reliability" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="F:\Reliability\venv\Scripts\python.exe" />
+      <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="false" />
+      <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/form-G2R.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
@@ -54,17 +93,17 @@
       <method v="2" />
     </configuration>
     <configuration name="mc-G2R" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Reliability" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="F:\Reliability\venv\Scripts\python.exe" />
+      <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="false" />
+      <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/mc-G2R.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
@@ -84,24 +123,12 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="d1019bbf-4097-4d0d-8d4c-6c25d83c45f8" name="Changes" comment="" />
-      <created>1655212728130</created>
+      <changelist id="cfe21d29-3d9c-4480-a1fb-5e48f85885c0" name="Changes" comment="" />
+      <created>1655300356527</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1655212728130</updated>
+      <updated>1655300356527</updated>
     </task>
     <servers />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
 </project>

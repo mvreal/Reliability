@@ -44,5 +44,5 @@ dvar = [{'varname': 'k', 'varvalue': 1.00}
 # MCS method
 #
 g2r = Reliability(xvar, dvar, gfunction, None, None)
-g2r.mc(100, 100_000, 0.05, 1.00)
+g2r.mc(100, 100_000, 0.03, 1.00)
 #
