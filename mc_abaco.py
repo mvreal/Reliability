@@ -5,11 +5,6 @@ Versão com D0 como variável aleatória normal
 09/02/2023
 """
 import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-from scipy.stats import norm
-from scipy.stats import lognorm
-from scipy.stats import beta
 from scipy.special import erf
 from realpy import *
 
@@ -45,7 +40,7 @@ def gfunction(x, d):
 #
 
 # Tempo de vida útil requerido
-tsl= 120 # vida útil (service life) em anos
+tsl= 50 # vida útil (service life) em anos
 
 # Dados de entrada determinísticos
 
@@ -73,7 +68,7 @@ desvioalpha=0.029
 
 #
 # xd = cobrimento da armadura - distribuição normal
-mediaxd = 72.20 # mm
+mediaxd = 48.00 # mm
 desvioxd = 5.3 # mm
 
 
@@ -81,7 +76,7 @@ desvioxd = 5.3 # mm
 
 xvar = [
     {'varname': 'D0', 'vardist': 'lognormal', 'varmean': mediaD0, 'varstd': desvioD0 },
-    {'varname': 'Ccr', 'vardist': 'beta', 'varmean': lower, 'varstd': upper, 'parameter3': a, 'parameter4': b},
+    {'varname': 'Ccr', 'vardist': 'beta', 'parameter1': lower, 'parameter2': upper, 'parameter3': a, 'parameter4': b},
     {'varname': 'Cs', 'vardist': 'lognormal', 'varmean': mediaCs, 'varstd': desvioCs },
     {'varname': 'alpha', 'vardist': 'normal', 'varmean': mediaalpha, 'varstd': desvioalpha },
     {'varname': 'xd', 'vardist': 'normal', 'varmean': mediaxd, 'varstd': desvioxd },    
@@ -98,7 +93,7 @@ dvar = [
 # FORM method
 #
 abaco = Reliability(xvar, dvar, gfunction, None)
-abaco.mc(10, 10000, 0.02, 1.00)
+abaco.mc(10, 10000, 0.05, 1.00)
 #
 
 

@@ -58,8 +58,8 @@ desvioD0 = 0.20*mediaD0
 # Concentração crítica de cloretos - distribuição beta
 lower = 0.45
 upper = 1.25 
-a = 0.22
-b = 0.36
+q = 0.22
+r = 0.36
 
 #
 # Concentração superficial de cloretos - distribuição lognormal
@@ -81,7 +81,7 @@ desvioxd = 5.3 # mm
 
 xvar = [
     {'varname': 'D0', 'vardist': 'lognormal', 'varmean': mediaD0, 'varstd': desvioD0 },
-    {'varname': 'Ccr', 'vardist': 'beta', 'varmean': lower, 'varstd': upper, 'parameter3': a, 'parameter4': b},
+    {'varname': 'Ccr', 'vardist': 'beta', 'parameter1': lower, 'parameter2': upper, 'parameter3': q, 'parameter4': r},
     {'varname': 'Cs', 'vardist': 'lognormal', 'varmean': mediaCs, 'varstd': desvioCs },
     {'varname': 'alpha', 'vardist': 'normal', 'varmean': mediaalpha, 'varstd': desvioalpha },
     {'varname': 'xd', 'vardist': 'normal', 'varmean': mediaxd, 'varstd': desvioxd },    

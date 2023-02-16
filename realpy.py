@@ -5,7 +5,7 @@ from scipy.stats import gumbel_r
 from scipy.stats import invweibull
 from scipy.stats import weibull_min
 from scipy.stats import multivariate_normal
-from scipy.stats import beta
+from scipy.stats import beta as beta_dist
 import scipy.optimize
 from scipy import optimize
 import scipy.linalg
@@ -34,26 +34,42 @@ class Reliability():
             i += 1
             # Mean value of the random variables x
             self.d[i] = float(var['varvalue'])
+        
         #
-        # Initial values of the aleatory variables
+        # Setting variables initial values
         #
-        if x0 is None:
+        i = -1
+        for var in self.xvar:
+            i += 1
+                        
             #
-            # Original mean of the variables x
+            # Setting standard variable distribution names
             #
-            i = -1
-            self.x0 = np.zeros(self.nxvar)
-            for var in self.xvar:
-                i += 1
-                # Mean value of the random variables x
-                self.x0[i] = float(var['varmean'])
+            if var['vardist'].lower() in ['norm', 'normal', 'gauss']:
+                var['vardist'] = 'gauss'
+            elif var['vardist'].lower() in ['uniform', 'uniforme', 'const']:
+                var['vardist'] = 'uniform'
+            elif var['vardist'].lower() in ['lognormal', 'lognorm', 'log']:
+                var['vardist'] = 'lognorm'
+            elif var['vardist'].lower() in ['gumbel', 'extvalue1', 'evt1max']:
+                var['vardist'] = 'gumbel'
+            elif var['vardist'].lower() in ['frechet', 'extvalue2', 'evt2max']:
+                var['vardist'] = 'frechet'
+            elif var['vardist'].lower() in ['weibull', 'extvalue3', 'evt3min']:
+                var['vardist'] = 'weibull'
+            elif var['vardist'].lower() in ['Beta', 'beta', 'beta_dist']:
+                var['vardist'] = 'beta'
+
+            # For the beta distribution calculates the mean and standard deviation as a function of parameters a, b, q and r
+            if var['vardist'] == 'beta':
+                a = var['parameter1']
+                b = var['parameter2']
+                q = var['parameter3']
+                r = var['parameter4']
+                var['varmean'] = float(a + q / (q + r) * (b - a))
+                var['varstd'] = float(np.sqrt((q * r) / ((q + r) **2 * (q + r + 1)) * (b - a) ** 2))
                 var['varhmean'] = float(var['varmean'])
-        else:
-            i = -1
-            for var in self.xvar:
-                i += 1
-                # Mean value of the random variables x
-                var['varhmean'] = self.x0[i]
+
         #
         # Setting variables initial values
         #
@@ -74,24 +90,30 @@ class Reliability():
                     var['varcov'] = 1.00
             else:
                 var['varstd'] = float(var['varcov'] * var['varmean'])
-            
+        #
+        # Initial values of the aleatory variables
+        #
+        if x0 is None:
             #
-            # Setting standard variable distribution names
+            # Original mean of the variables x
             #
-            if var['vardist'].lower() in ['norm', 'normal', 'gauss']:
-                var['vardist'] = 'gauss'
-            elif var['vardist'].lower() in ['uniform', 'uniforme', 'const']:
-                var['vardist'] = 'uniform'
-            elif var['vardist'].lower() in ['lognormal', 'lognorm', 'log']:
-                var['vardist'] = 'lognorm'
-            elif var['vardist'].lower() in ['gumbel', 'extvalue1', 'evt1max']:
-                var['vardist'] = 'gumbel'
-            elif var['vardist'].lower() in ['frechet', 'extvalue2', 'evt2max']:
-                var['vardist'] = 'frechet'
-            elif var['vardist'].lower() in ['weibull', 'extvalue3', 'evt3min']:
-                var['vardist'] = 'weibull'
-            elif var['vardist'].lower() in ['Beta', 'beta', 'beta_dist']:
-                var['vardist'] = 'beta'
+            i = -1
+            self.x0 = np.zeros(self.nxvar)
+            for var in self.xvar:
+                i += 1
+                # Mean value of the random variables x
+                self.x0[i] = float(var['varmean'])
+                var['varhmean'] = float(var['varmean'])
+        else:
+            i = -1
+            for var in self.xvar:
+                i += 1
+                # Mean value of the random variables x
+                var['varhmean'] = self.x0[i]
+
+        #
+        # Initializes the correlation matrix
+        #
 
         if self.Rz is None:
             self.Rz = np.eye(self.nxvar)
@@ -450,8 +472,8 @@ class Reliability():
                 b = xpar4
                 loc = lower
                 scale = (upper - lower)
-                pdfx = beta.pdf(xval, a, b, loc, scale)
-                cdfx = beta.cdf(xval, a, b, loc, scale)
+                pdfx = beta_dist.pdf(xval, a, b, loc, scale)
+                cdfx = beta_dist.cdf(xval, a, b, loc, scale)
                 zval = norm.ppf(cdfx)
                 sigmaxneq = norm.pdf(zval) / pdfx
                 muxneq = xval - zval * sigmaxneq
@@ -471,6 +493,8 @@ class Reliability():
         dist = []
         mux0 = []
         sigmax0 = []
+        par1 = []
+        par2 = []
         par3 = []
         par4 = []
         #
@@ -491,6 +515,16 @@ class Reliability():
                 sigmax0.append(float(var['varcov']) * float(var['varmean']))
             else:
                 sigmax0.append(float(var['varstd']))
+            # Parameter1
+            if 'parameter1' in var:
+                par1.append(float(var['parameter1']))
+            else:
+                par1.append(0.00)
+            # Parameter2
+            if 'parameter2' in var:
+                par2.append(float(var['parameter2']))
+            else:
+                par2.append(0.00)
             # Parameter3
             if 'parameter3' in var:
                 par3.append(float(var['parameter3']))
@@ -508,6 +542,8 @@ class Reliability():
         #
         mux0 = np.array(mux0)
         sigmax0 = np.array(sigmax0)
+        par1 = np.array(par1)
+        par2 = np.array(par2)
         par3 = np.array(par3)
         par4 = np.array(par4)
         #
@@ -566,9 +602,15 @@ class Reliability():
                 mux = mux0[i]
                 sigmax = sigmax0[i]
                 namedist = dist[i]
+                xpar1 = mux
+                xpar2 = sigmax
                 xpar3 = par3[i]
                 xpar4 = par4[i]
-                muxneqk[i], sigmaxneqk[i] = normeqv(xval, mux, sigmax, xpar3, xpar4, namedist)
+                if dist[i] == 'beta':
+                    xpar1 = par1[i]
+                    xpar2 = par2[i]
+
+                muxneqk[i], sigmaxneqk[i] = normeqv(xval, xpar1, xpar2, xpar3, xpar4, namedist)
             #
             # Step 3 - Update of the Jacobian matrices Jyx and Jxy
             #
@@ -1032,21 +1074,21 @@ class Reliability():
             # Beta distribution
             #
             elif namedist.lower() == 'beta':
-                lower = float(var['varmean'])
-                upper = float(var['varstd'])
+                lower = float(var['parameter1'])
+                upper = float(var['parameter2'])
                 a = float(var['parameter3'])
                 b = float(var['parameter4'])
                 loc = lower
                 scale = (upper - lower)
-                x[:, i] = beta.ppf(zk[:, i], a, b, loc, scale)
-                fx = beta.pdf(x[:, i], a, b, loc, scale)
-                hx = beta.pdf(x[:, i], a, b, loc, scale)
-                cdfx = beta.cdf(x[:, i], a, b, loc, scale)
+                x[:, i] = beta_dist.ppf(zk[:, i], a, b, loc, scale)
+                fx = beta_dist.pdf(x[:, i], a, b, loc, scale)
+                hx = beta_dist.pdf(x[:, i], a, b, loc, scale)
+                cdfx = beta_dist.cdf(x[:, i], a, b, loc, scale)
                 zf[:, i] = norm.ppf(cdfx, 0, 1)
-                #weight = weight * ((fx/norm.pdf(zf[:, i], 0, 1)) / (hx/norm.pdf(zk[:, i], 0, 1)))
-                #fxixj = fxixj * fx / norm.pdf(zf[:, i], 0, 1)
-                weight = 1.00
-                fxixj = 1.00
+                weight = weight * ((fx/norm.pdf(zf[:, i], 0, 1)) / (hx/norm.pdf(zk[:, i], 0, 1)))
+                fxixj = fxixj * fx / norm.pdf(zf[:, i], 0, 1)
+                # weight = 1.00
+                # fxixj = 1.00
 
         norm_multivarf = multivariate_normal(mean=None, cov=self.Rz)
         phif = list(map(norm_multivarf.pdf, zf))
