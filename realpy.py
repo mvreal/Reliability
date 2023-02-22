@@ -1078,9 +1078,14 @@ class Reliability():
                 upper = float(var['parameter2'])
                 a = float(var['parameter3'])
                 b = float(var['parameter4'])
+                mufx = float(var['varmean'])
+                sigmafx = float(var['varstd'])
+                muhx = float(var['varhmean'])
+                sigmahx = nsigma * sigmafx
                 loc = lower
                 scale = (upper - lower)
-                x[:, i] = beta_dist.ppf(zk[:, i], a, b, loc, scale)
+                uk = norm.cdf(zk[:, i])
+                x[:, i] = beta_dist.ppf(uk, a, b, loc, scale)
                 fx = beta_dist.pdf(x[:, i], a, b, loc, scale)
                 hx = beta_dist.pdf(x[:, i], a, b, loc, scale)
                 cdfx = beta_dist.cdf(x[:, i], a, b, loc, scale)

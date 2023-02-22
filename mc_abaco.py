@@ -93,7 +93,7 @@ dvar = [
 # FORM method
 #
 abaco = Reliability(xvar, dvar, gfunction, None)
-abaco.mc(10, 10000, 0.05, 1.00)
+abaco.mc(10, 100000, 0.05, 1.00)
 #
 
 
