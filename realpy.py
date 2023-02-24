@@ -8,6 +8,7 @@ from scipy.stats import multivariate_normal
 from scipy.stats import beta as beta_dist
 import scipy.optimize
 from scipy import optimize
+from scipy.optimize import fsolve
 import scipy.linalg
 from scipy.special import gamma
 import pandas as pd
@@ -466,14 +467,14 @@ class Reliability():
             # Beta distribution
             #
             elif namedist.lower() == 'beta':
-                lower = xpar1
-                upper = xpar2
-                a = xpar3
-                b = xpar4
-                loc = lower
-                scale = (upper - lower)
-                pdfx = beta_dist.pdf(xval, a, b, loc, scale)
-                cdfx = beta_dist.cdf(xval, a, b, loc, scale)
+                a = xpar1
+                b = xpar2
+                q = xpar3
+                r = xpar4
+                loc = a
+                scale = (b - a)
+                pdfx = beta_dist.pdf(xval, q, r, loc, scale)
+                cdfx = beta_dist.cdf(xval, q, r, loc, scale)
                 zval = norm.ppf(cdfx)
                 sigmaxneq = norm.pdf(zval) / pdfx
                 muxneq = xval - zval * sigmaxneq
@@ -896,6 +897,12 @@ class Reliability():
         def fkapa(kapa, deltax, gsignal):
             fk = 1.00 + deltax ** 2 - gamma(1.00 + gsignal * 2.00 / kapa) / gamma(1.00 + gsignal * 1.00 / kapa) ** 2
             return fk
+        
+        def beta_limits(vars, mux, sigmax, q, r):
+            a, b = vars
+            eq1 = a + q / (q + r) * (b - a) - mux
+            eq2 = ((q * r) / ((q + r) ** 2 * (q + r + 1))) ** (0.50) * (b - a) - sigmax
+            return [eq1, eq2]
 
         x = np.zeros((ns, self.nxvar))
         weight = np.ones(ns)
@@ -1074,26 +1081,28 @@ class Reliability():
             # Beta distribution
             #
             elif namedist.lower() == 'beta':
-                lower = float(var['parameter1'])
-                upper = float(var['parameter2'])
-                a = float(var['parameter3'])
-                b = float(var['parameter4'])
+                a = float(var['parameter1'])
+                b = float(var['parameter2'])
+                q = float(var['parameter3'])
+                r = float(var['parameter4'])
                 mufx = float(var['varmean'])
                 sigmafx = float(var['varstd'])
+                loc = a
+                scale = (b - a)
                 muhx = float(var['varhmean'])
                 sigmahx = nsigma * sigmafx
-                loc = lower
-                scale = (upper - lower)
+                ah, bh =  fsolve(beta_limits, (1, 1), args= ( muhx, sigmahx, q, r))  
+                loch = ah
+                scaleh = (bh - ah)        
                 uk = norm.cdf(zk[:, i])
-                x[:, i] = beta_dist.ppf(uk, a, b, loc, scale)
-                fx = beta_dist.pdf(x[:, i], a, b, loc, scale)
-                hx = beta_dist.pdf(x[:, i], a, b, loc, scale)
-                cdfx = beta_dist.cdf(x[:, i], a, b, loc, scale)
+                x[:, i] = beta_dist.ppf(uk, q, r, loc, scale)
+                fx = beta_dist.pdf(x[:, i], q, r, loc, scale)
+                hx = beta_dist.pdf(x[:, i], q, r, loch, scaleh)
+                cdfx = beta_dist.cdf(x[:, i], q, r, loc, scale)
                 zf[:, i] = norm.ppf(cdfx, 0, 1)
                 weight = weight * ((fx/norm.pdf(zf[:, i], 0, 1)) / (hx/norm.pdf(zk[:, i], 0, 1)))
                 fxixj = fxixj * fx / norm.pdf(zf[:, i], 0, 1)
-                # weight = 1.00
-                # fxixj = 1.00
+                
 
         norm_multivarf = multivariate_normal(mean=None, cov=self.Rz)
         phif = list(map(norm_multivarf.pdf, zf))
