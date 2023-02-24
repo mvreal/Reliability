@@ -30,8 +30,8 @@ def gfunction(x, d):
 # Random variables: name, probability distribution, mean and coefficient of variation
 
 xvar = [
-    {'varname': 'D', 'vardist': 'uniform', 'varmean': 0.00, 'varstd': 1.00},
-    {'varname': 'P', 'vardist': 'uniform', 'varmean': 0.60, 'varstd': 1.00},
+    {'varname': 'D', 'vardist': 'uniform', 'parameter1': 0.00, 'parameter2': 1.00},
+    {'varname': 'P', 'vardist': 'uniform', 'parameter1': 0.60, 'parameter2': 1.00},
     ]
 # Design variables
 
@@ -44,5 +44,5 @@ dvar = [
 # MCS method
 #
 beam = Reliability(xvar, dvar, gfunction, None, None)
-beam.mc(100, 10_000, 0.03, 1.00)
+beam.mc(100, 100_000, 0.03, 1.00)
 #

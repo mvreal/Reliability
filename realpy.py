@@ -71,6 +71,15 @@ class Reliability():
                 var['varstd'] = float(np.sqrt((q * r) / ((q + r) **2 * (q + r + 1)) * (b - a) ** 2))
                 var['varhmean'] = float(var['varmean'])
 
+            # For the uniform distribution calculates the mean and standard deviation as a function of parameters a and b
+            if var['vardist'] == 'uniform':
+                a = var['parameter1']
+                b = var['parameter2']
+                
+                var['varmean'] = float((a + b) / 2)
+                var['varstd'] = float((b - a) / np.sqrt(12))
+                var['varhmean'] = float(var['varmean'])
+
         #
         # Setting variables initial values
         #
@@ -610,6 +619,9 @@ class Reliability():
                 if dist[i] == 'beta':
                     xpar1 = par1[i]
                     xpar2 = par2[i]
+                if dist[i] == 'uniform':
+                    xpar1 = par1[i]
+                    xpar2 = par2[i]
 
                 muxneqk[i], sigmaxneqk[i] = normeqv(xval, xpar1, xpar2, xpar3, xpar4, namedist)
             #
@@ -903,6 +915,12 @@ class Reliability():
             eq1 = a + q / (q + r) * (b - a) - mux
             eq2 = ((q * r) / ((q + r) ** 2 * (q + r + 1))) ** (0.50) * (b - a) - sigmax
             return [eq1, eq2]
+        
+        def uniform_limits(vars, mux, sigmax):
+            a, b = vars
+            eq1 = (a + b) / 2 - mux
+            eq2 = (b - a) / np.sqrt(12.) - sigmax
+            return [eq1, eq2]
 
         x = np.zeros((ns, self.nxvar))
         weight = np.ones(ns)
@@ -963,15 +981,21 @@ class Reliability():
             # c = ?, d = ? ---> Verificar
             #
             elif namedist.lower() == 'uniform':
-                a = float(var['varmean'])
-                b = float(var['varstd'])
-                c = float(var['varmean'])
-                d = float(var['varstd'])
+                a = float(var['parameter1'])
+                b = float(var['parameter2'])
+                
+                mufx = float(var['varmean'])
+                sigmafx = float(var['varstd'])
+                
+                muhx = float(var['varhmean'])
+                sigmahx = nsigma * sigmafx
+                ah, bh =  fsolve(uniform_limits, (1, 1), args= (muhx, sigmahx))  
+                                
                 uk = norm.cdf(zk[:, i])
-                x[:, i] = c + (d - c) * uk
-                zf[:, i] = norm.ppf((x[:, i]-a)/(b-a))
+                x[:, i] = a + (b - a) * uk
+                zf[:, i] = norm.ppf(uk)
                 fx = uniform.pdf(x[:, i], a, b)
-                hx = uniform.pdf(x[:, i], c, d)
+                hx = uniform.pdf(x[:, i], ah, bh)
                 weight = weight * ((fx/norm.pdf(zf[:, i], 0, 1)) / (hx/norm.pdf(zk[:, i], 0, 1)))
                 fxixj = fxixj * fx / norm.pdf(zf[:, i], 0, 1)
             #
