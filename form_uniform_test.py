@@ -40,9 +40,13 @@ dvar = [
     {'varname': 'epsilon', 'varvalue': 0.05},
     {'varname': 'Pb', 'varvalue': 1.00}
 ]
+# Correlation matrix
+
+corrmatrix = [[1.00, 0.00],
+              [0.00, 1.00]]
 #
-# MCS method
+# FORM method
 #
-beam = Reliability(xvar, dvar, gfunction, None, None)
-beam.mc(100, 100_000, 0.03, 1.00)
+beam = Reliability(xvar, dvar, gfunction, None, corrmatrix)
+beam.form(iHLRF=False, toler=1.e-3)
 #

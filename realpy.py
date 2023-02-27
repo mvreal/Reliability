@@ -674,6 +674,7 @@ class Reliability():
             if iHLRF:
                 gamma0 = 2.0
                 a = 0.1
+                # a = 0.5
                 b = 0.5
                 #
                 gyk = gxk
