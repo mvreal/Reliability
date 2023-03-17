@@ -42,5 +42,5 @@ dvar = [
 # FORM method
 #
 column = Reliability(xvar, dvar, gfunction, None, None)
-column.form(iHLRF=True, toler=1.e-6)
+column.form2(iHLRF=False, toler=1.e-6)
 #

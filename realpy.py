@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.stats import norm
+from scipy.stats import lognorm
 from scipy.stats import uniform
 from scipy.stats import gumbel_r
 from scipy.stats import invweibull
@@ -359,7 +360,7 @@ class Reliability():
     def form(self, iHLRF, toler=1.e-3, iprint=True):
         """
 
-               Algorithm FORM-iHLRF.
+               Algorithm FORM-iHLRF. Normal equivalente transformation
 
         """
       #
@@ -489,7 +490,7 @@ class Reliability():
                 muxneq = xval - zval * sigmaxneq
 
             return muxneq, sigmaxneq
-
+        
         #
         #
         # Data input
@@ -739,6 +740,472 @@ class Reliability():
         return beta, xk, alpha, normgradyk, sigmaxneqk
 
 
+
+    def form2(self, iHLRF, toler=1.e-3, iprint=True):
+        """
+
+            Algorithm FORM-iHLRF. Direct mapping to standard Gaussian space
+
+        """
+      #
+        # FORM - First Order Reliability Method with improved HLRF (iHLRF)
+        #
+        #
+        #
+        # Penalty function m(y) for FORM-iHLRF algorithm
+        #
+
+        def mfunc(normy, g, c):
+            my = 1. / 2. * normy ** 2 + c * np.abs(g)
+            return my
+
+        #
+        #
+        # Evaluation of parameter k for Frechet and Weibull distribution
+        #
+
+        def fkapa(kapa, deltax, gsignal):
+            fk = 1.00 + deltax ** 2 - gamma(1.00 + gsignal * 2.00 / kapa) / gamma(1.00 + gsignal * 1.00 / kapa) ** 2
+            return fk
+
+        #
+        # Equivalent normal distribution parameters
+        # xval = value of the variable x (scalar)
+        # xpar1,xpar2,xpar3,xpar4 = parameters of the original pdf (scalars)
+        # namedist = name of the x probability distribution ('string')
+        # zval = equivalente normal variabel correlated
+        #
+
+        
+        def direct_mapping(xval, xpar1, xpar2, xpar3, xpar4, namedist):
+
+            #
+            # Normal distribution. Direct mapping to standard Gaussian space
+            #
+            if namedist.lower() == 'gauss':
+                mux = xpar1
+                sigmax = xpar2
+                cdfx = norm.cdf(xval,mux,sigmax)
+                zval = norm.ppf(cdfx)
+            #
+            # Uniform or constant distribution. Direct mapping to standard Gaussian space
+            #
+            elif namedist.lower() == 'uniform':
+                a = xpar1
+                b = xpar2
+                c = (b - a)
+                cdfx = uniform.cdf(xval,a,c)
+                zval = norm.ppf(cdfx)
+                
+            #
+            # Lognormal distribution. Direct mapping to standard Gaussian space
+            #
+            elif namedist.lower() == 'lognorm':
+                mux = xpar1
+                sigmax = xpar2
+                zetax = np.sqrt(np.log(1. + (sigmax / mux) ** 2))
+                lambdax = np.log(mux) - 0.50 * zetax ** 2
+                cdfx = lognorm.cdf(xval/np.exp(lambdax), zetax)
+                zval = norm.ppf(cdfx)
+            #
+            # Gumbel distribution. Direct mapping to standard Gaussian space
+            #
+            elif namedist.lower() == 'gumbel':
+                mux = xpar1
+                sigmax = xpar2
+                alphan = (np.pi / np.sqrt(6.00)) / (sigmax)
+                un = mux - np.euler_gamma / alphan
+                betan = 1.00 / alphan
+                cdfx = gumbel_r.cdf(xval, un, betan)
+                zval = norm.ppf(cdfx)
+            #
+            #
+            # Frechet distribution. Direct mapping to standard Gaussian space
+            #
+            elif namedist.lower() == 'frechet':
+                mux = xpar1
+                sigmax = xpar2
+                deltax = sigmax / mux
+                kapa0 = 2.50
+                gsignal = -1.00
+                kapa = scipy.optimize.newton(fkapa, kapa0, args=(deltax, gsignal))
+                vn = mux / gamma(1.00 - 1.00 / kapa)
+                yn = xval / vn
+                cdfx = invweibull.cdf(yn, kapa)
+                zval = norm.ppf(cdfx)
+            #
+            #
+            # Weibull distribution. Direct mapping to standard Gaussian space
+            #
+            elif namedist.lower() == 'weibull':
+                mux = xpar1
+                sigmax = xpar2
+                epsilon = xpar3
+                deltax = sigmax / (mux - epsilon)
+                kapa0 = 2.50
+                gsignal = 1.00
+                kapa = scipy.optimize.newton(fkapa, kapa0, args=(deltax, gsignal))
+                w1 = (mux - epsilon) / gamma(1.00 + 1.00 / kapa) + epsilon
+                yn = (xval - epsilon) / (w1 - epsilon)
+                cdfx = weibull_min.cdf(yn, kapa)
+                zval = norm.ppf(cdfx)
+            #
+            #
+            # Beta distribution. Direct mapping to standard Gaussian space
+            #
+            elif namedist.lower() == 'beta':
+                a = xpar1
+                b = xpar2
+                q = xpar3
+                r = xpar4
+                loc = a
+                scale = (b - a)
+                cdfx = beta_dist.cdf(xval, q, r, loc, scale)
+                zval = norm.ppf(cdfx)
+
+            return zval
+        
+        
+        def inverse_mapping(zval, xpar1, xpar2, xpar3, xpar4, namedist):
+
+            #
+            # Normal distribution. Inverse mapping from standard Gaussian space
+            #
+            if namedist.lower() == 'gauss':
+                mux = xpar1
+                sigmax = xpar2
+                cdfx = norm.cdf(zval)
+                xval = norm.ppf(cdfx,mux,sigmax)
+            #
+            # Uniform or constant distribution. Inverse mapping from standard Gaussian space
+            #
+            elif namedist.lower() == 'uniform':
+                a = xpar1
+                b = xpar2
+                c = (b - a)
+                cdfx = norm.cdf(zval)
+                xval = uniform.ppf(cdfx,a,c)
+            #
+            # Lognormal distribution. Inverse mapping from standard Gaussian space
+            #
+            elif namedist.lower() == 'lognorm':
+                mux = xpar1
+                sigmax = xpar2
+                zetax = np.sqrt(np.log(1. + (sigmax / mux) ** 2))
+                lambdax = np.log(mux) - 0.50 * zetax ** 2
+                cdfx = norm.cdf(zval)
+                xval = lognorm.ppf(cdfx, zetax)
+            #
+            # Gumbel distribution. Inverse mapping from standard Gaussian space
+            #
+            elif namedist.lower() == 'gumbel':
+                mux = xpar1
+                sigmax = xpar2
+                alphan = (np.pi / np.sqrt(6.00)) / (sigmax)
+                un = mux - np.euler_gamma / alphan
+                cdfx = norm.cdf(zval)
+                xval = un - alphan * np.log(np.log(1. / cdfx))
+            #
+            #
+            # Frechet distribution. Inverse mapping from standard Gaussian space
+            #
+            elif namedist.lower() == 'frechet':
+                mux = xpar1
+                sigmax = xpar2
+                deltax = sigmax / mux
+                kapa0 = 2.50
+                gsignal = -1.00
+                kapa = scipy.optimize.newton(fkapa, kapa0, args=(deltax, gsignal))
+                vn = mux / gamma(1.00 - 1.00 / kapa)
+                cdfx = norm.cdf(zval)
+                xval = vn / (np.log(1. / cdfx)) ** (1. / kapa)
+            #
+            #
+            # Weibull distribution. Inverse mapping from standard Gaussian space
+            #
+            elif namedist.lower() == 'weibull':
+                mux = xpar1
+                sigmax = xpar2
+                epsilon = xpar3
+                deltax = sigmax / (mux - epsilon)
+                kapa0 = 2.50
+                gsignal = 1.00
+                kapa = scipy.optimize.newton(fkapa, kapa0, args=(deltax, gsignal))
+                w1 = (mux - epsilon) / gamma(1.00 + 1.00 / kapa) + epsilon
+                cdfx = norm.cdf(zval)
+                xval = (w1 - epsilon) * (np.log(1./(1. - cdfx))) ** (1. / kapa) + epsilon
+            #
+            #
+            # Beta distribution. Inverse mapping from standard Gaussian space
+            #
+            elif namedist.lower() == 'beta':
+                a = xpar1
+                b = xpar2
+                q = xpar3
+                r = xpar4
+                loc = a
+                scale = (b - a)
+                cdfx = norm.cdf(zval)
+                xval = beta_dist.ppf(cdfx, q, r, loc, scale)
+                
+
+            return xval
+        #
+        #
+        # Data input
+        #
+        # Number of variables of the problem
+
+        # Equivalent normal mean and standard deviation of the variables
+        muxneqk = np.zeros(self.nxvar)
+        sigmaxneqk = np.zeros(self.nxvar)
+        namevar = []
+        dist = []
+        mux0 = []
+        sigmax0 = []
+        par1 = []
+        par2 = []
+        par3 = []
+        par4 = []
+        #
+        # Original mean and standard deviation of the variables x
+        #
+
+        i = -1
+        for var in self.xvar:
+            i += 1
+            # Names of the random variables x
+            namevar.append(str(var['varname']))
+            # Names of the probability density functions of the variables x
+            dist.append(str(var['vardist']))
+            # Mean value of the random variables x
+            mux0.append(float(var['varmean']))
+            # Standard deviation of the random variables x
+            if var['varstd'] == 0.00:
+                sigmax0.append(float(var['varcov']) * float(var['varmean']))
+            else:
+                sigmax0.append(float(var['varstd']))
+            # Parameter1
+            if 'parameter1' in var:
+                par1.append(float(var['parameter1']))
+            else:
+                par1.append(0.00)
+            # Parameter2
+            if 'parameter2' in var:
+                par2.append(float(var['parameter2']))
+            else:
+                par2.append(0.00)
+            # Parameter3
+            if 'parameter3' in var:
+                par3.append(float(var['parameter3']))
+            else:
+                par3.append(0.00)
+            # Parameter4
+            if 'parameter4' in var:
+                par4.append(float(var['parameter4']))
+            else:
+                par4.append(0.00)
+            
+           
+        #
+        # Conversion to array format
+        #
+        mux0 = np.array(mux0)
+        sigmax0 = np.array(sigmax0)
+        par1 = np.array(par1)
+        par2 = np.array(par2)
+        par3 = np.array(par3)
+        par4 = np.array(par4)
+        #
+        #   Algorithm FORM-HLRF: Beck, 2019, pag. 101.
+        #
+        #
+        # Step 1 - Determination of equivalent correlation coefficients and
+        #          Jacobian matrices Jxz and Jzx
+        #
+        Imatrix = np.eye(self.nxvar)
+        #
+        # Correlation matrix is self.corrmatrix
+        #
+        if iprint:
+            print('Correlation Matrix after Nataf correction:')
+            print(self.Rz)
+        #
+        # Cholesky decomposition of the correlation matrix
+        #
+        L = scipy.linalg.cholesky(self.Rz, lower=True)
+        Jzy = np.copy(L)
+        Jyz = np.linalg.inv(L)
+        #
+        # Step 2 - Initialize de xk value with mux0
+        #
+        # Initialization of the variable yk1
+        # Jacobian matrices of x==>z and z==>y transformations
+        D = sigmax0 * Imatrix
+        Jzx = np.linalg.inv(D)
+        Jyx = np.dot(Jyz, Jzx)
+        Jxz = np.copy(D)
+        Jxy = np.dot(Jxz, Jzy)
+        yk1 = np.zeros(self.nxvar)
+        zk = np.zeros(self.nxvar)
+        zk1 = np.zeros(self.nxvar)
+        xk1 = np.copy(self.x0)
+        #
+        # Error tolerance for yk and g(x)
+        epsilon = toler
+        delta = toler * np.abs(self.fel(xk1, self.d))
+        # Initial values for errors and iteration counters
+        erro1 = 1000.00
+        erro2 = 1000.00
+        kiter = 0
+        # Value of dx increment for the evaluation of the derivatives
+        eps = 1.e-6
+        #
+        while (erro1 > epsilon or erro2 > delta) and kiter < 100:
+            #
+            kiter += 1
+            xk = np.copy(xk1)
+            #
+            # Step 2 - Calculation of equivalent normal variables by direct mapping to standard normal space (correlated)
+            #
+            for i in range(self.nxvar):
+                xval = xk[i]
+                mux = mux0[i]
+                sigmax = sigmax0[i]
+                namedist = dist[i]
+                xpar1 = mux
+                xpar2 = sigmax
+                xpar3 = par3[i]
+                xpar4 = par4[i]
+                if dist[i] == 'beta':
+                    xpar1 = par1[i]
+                    xpar2 = par2[i]
+                if dist[i] == 'uniform':
+                    xpar1 = par1[i]
+                    xpar2 = par2[i]
+
+                zk[i] = direct_mapping(xval, xpar1, xpar2, xpar3, xpar4, namedist)
+            
+            #
+            #  Step 4 - Transformation from zk to yk
+            #
+            yk = Jyz.dot(zk)
+            normyk = np.linalg.norm(yk)
+            beta = np.linalg.norm(yk)
+
+            #
+            #  Step 5 - Evaluation of g(xk)
+            #
+            gxk = self.fel(xk, self.d)
+
+            #
+            # Step 6 - Evaluation of the gradients of g(x) in relation to yk
+            #
+            #
+            # a. Calculation of the partial derivatives of g(x) in relation to xk
+            #
+            gradxk = optimize.approx_fprime(xk, self.fel, eps, self.d)
+            #
+            # b. Calculation of the partial derivatives of g(x) in relation to yk
+            #
+            gradyk = np.transpose(Jxy).dot(gradxk)
+            normgradyk = np.linalg.norm(gradyk)
+            #
+            # c. Calculation of the direction cosines for xk
+            #
+            # Direction cosines
+            alpha = gradyk / normgradyk
+
+            #
+            # Step 7. Vector yk updating to yk+1 by HLRF algorithm
+            #
+            dk = ((np.dot(gradyk, yk) - gxk) / normgradyk ** 2) * gradyk - yk
+            lambdak = 1.00
+            yk1 = yk + lambdak * dk
+            #
+            # Parameters of iHLRF method
+            #
+            if iHLRF:
+                gamma0 = 2.0
+                a = 0.1
+                # a = 0.5
+                b = 0.5
+                #
+                gyk = gxk
+                normyk = np.linalg.norm(yk)
+                normyk1 = np.linalg.norm(yk1)
+                c1 = normyk / normgradyk
+                #
+                if erro2 > delta:
+                    c2 = 0.5 * normyk1 ** 2 / np.abs(gyk)
+                    ck = gamma0 * np.max([c1, c2])
+                else:
+                    ck = gamma0 * c1
+                #
+                k = -1
+                f1 = 1.00
+                f2 = 0.00
+                while f1 > f2 and k < 10:
+                    k += 1
+                    lambdak = b ** k
+                    yk1 = yk + lambdak * dk
+                    xk1 = muxneqk + Jxy.dot(yk1)
+                    gyk1 = self.fel(xk1, self.d)
+                    normyk1 = np.linalg.norm(yk1)
+                    f1 = mfunc(normyk1, gyk1, ck) - mfunc(normyk, gyk, ck)
+                    gradm = yk + ck * gradyk * np.sign(gyk)
+                    normgradm = np.linalg.norm(gradm)
+                    f2 = a * lambdak * np.dot(gradm, dk)
+            
+            #
+            yk1 = yk + lambdak * dk
+
+            #
+            # Step 8. Transformation from yk+1 to xk+1
+            #
+            zk1 = np.dot(Jyz,yk1)
+            for i in range(self.nxvar):
+                zval = zk1[i]
+                mux = mux0[i]
+                sigmax = sigmax0[i]
+                namedist = dist[i]
+                xpar1 = mux
+                xpar2 = sigmax
+                xpar3 = par3[i]
+                xpar4 = par4[i]
+                if dist[i] == 'beta':
+                    xpar1 = par1[i]
+                    xpar2 = par2[i]
+                if dist[i] == 'uniform':
+                    xpar1 = par1[i]
+                    xpar2 = par2[i]
+
+                xk1[i] = inverse_mapping(zval, xpar1, xpar2, xpar3, xpar4, namedist)
+
+            #
+            # Step 9. Convergence test for yk and g(x)
+            #
+            prod = normgradyk * normyk
+            # Evaluation of the error in the yk1 vector
+            if np.abs(prod) > eps:
+                erro1 = 1. - np.abs(np.dot(gradyk, yk) / (normgradyk * normyk))
+            else:
+                erro1 = 1000.00
+            # Evaluation of the error in the limit state function g(x)
+            erro2 = np.abs(gxk)
+            # Printing of the updated values
+            if iprint:
+                print('\nIteration number = {0:d} g(x) ={1:0.5e} erro1 ={2:0.5e} Beta ={3:0.4f}'
+                      .format(kiter, gxk, erro1, beta))
+                datadict = {'xvar': namevar, 'prob_dist': dist, 'mux': muxneqk, 'sigmax': sigmaxneqk,
+                            'xk': xk, 'yk': yk, 'alpha': alpha}
+                data = pd.DataFrame(datadict)
+                print(data)
+        #
+        pf = norm.cdf(-beta)
+        if iprint:
+            print('\nProbability of Failure Pf = {0:0.4e}'.format(pf))
+        return beta, xk, alpha, normgradyk
 
     def sorm(self, iHLRF=True, toler=1.e-6, iprint=True):
         """
