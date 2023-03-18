@@ -775,7 +775,105 @@ class Reliability():
         # namedist = name of the x probability distribution ('string')
         # zval = equivalente normal variabel correlated
         #
+        def normeqv(xval, xpar1, xpar2, xpar3, xpar4, namedist):
 
+            #
+            # Normal distribution
+            #
+            if namedist.lower() == 'gauss':
+                mux = xpar1
+                sigmax = xpar2
+                muxneq = mux
+                sigmaxneq = sigmax
+            #
+            # Uniform or constant distribution
+            #
+            elif namedist.lower() == 'uniform':
+                a = xpar1
+                b = xpar2
+                c = (b - a)
+                pdfx = 1. / c
+                cdfx = (xval - a) / c
+                zval = norm.ppf(cdfx)
+                sigmaxneq = (norm.pdf(zval)) / pdfx
+                muxneq = xval - zval * sigmaxneq
+            #
+            # Lognormal distribution
+            #
+            elif namedist.lower() == 'lognorm':
+                mux = xpar1
+                sigmax = xpar2
+                zetax = np.sqrt(np.log(1. + (sigmax / mux) ** 2))
+                lambdax = np.log(mux) - 0.50 * zetax ** 2
+                sigmaxneq = zetax * xval
+                muxneq = xval * (1. - np.log(xval) + lambdax)
+            #
+            # Gumbel distribution
+            #
+            elif namedist.lower() == 'gumbel':
+                mux = xpar1
+                sigmax = xpar2
+                alphan = (np.pi / np.sqrt(6.00)) / (sigmax)
+                un = mux - np.euler_gamma / alphan
+                cdfx = np.exp(-np.exp(-alphan * (xval - un)))
+                pdfx = alphan * np.exp(-alphan * (xval - un)) * cdfx
+                zval = norm.ppf(cdfx)
+                sigmaxneq = norm.pdf(zval) / pdfx
+                muxneq = xval - zval * sigmaxneq
+            #
+            #
+            # Frechet distribution
+            #
+            elif namedist.lower() == 'frechet':
+                mux = xpar1
+                sigmax = xpar2
+                deltax = sigmax / mux
+                kapa0 = 2.50
+                gsignal = -1.00
+                kapa = scipy.optimize.newton(fkapa, kapa0, args=(deltax, gsignal))
+                vn = mux / gamma(1.00 - 1.00 / kapa)
+                cdfx = np.exp(-(vn / xval) ** kapa)
+                pdfx = kapa / vn * (vn / xval) ** (kapa + 1) * np.exp(-(vn / xval) ** kapa)
+                zval = norm.ppf(cdfx)
+                sigmaxneq = norm.pdf(zval) / pdfx
+                muxneq = xval - zval * sigmaxneq
+            #
+            #
+            # Weibull distribution
+            #
+            elif namedist.lower() == 'weibull':
+                mux = xpar1
+                sigmax = xpar2
+                epsilon = xpar3
+                deltax = sigmax / (mux - epsilon)
+                kapa0 = 2.50
+                gsignal = 1.00
+                kapa = scipy.optimize.newton(fkapa, kapa0, args=(deltax, gsignal))
+                w1 = (mux - epsilon) / gamma(1.00 + 1.00 / kapa) + epsilon
+                y1 = (xval - epsilon) / (w1 - epsilon)
+                pdfx = weibull_min.pdf(y1, kapa) / (w1 - epsilon)
+                cdfx = weibull_min.cdf(y1, kapa)
+                zval = norm.ppf(cdfx)
+                sigmaxneq = norm.pdf(zval) / pdfx
+                muxneq = xval - zval * sigmaxneq
+            #
+            #
+            # Beta distribution
+            #
+            elif namedist.lower() == 'beta':
+                a = xpar1
+                b = xpar2
+                q = xpar3
+                r = xpar4
+                loc = a
+                scale = (b - a)
+                pdfx = beta_dist.pdf(xval, q, r, loc, scale)
+                cdfx = beta_dist.cdf(xval, q, r, loc, scale)
+                zval = norm.ppf(cdfx)
+                sigmaxneq = norm.pdf(zval) / pdfx
+                muxneq = xval - zval * sigmaxneq
+
+            return muxneq, sigmaxneq
         
         def direct_mapping(xval, xpar1, xpar2, xpar3, xpar4, namedist):
 
@@ -786,7 +884,7 @@ class Reliability():
                 mux = xpar1
                 sigmax = xpar2
                 cdfx = norm.cdf(xval,mux,sigmax)
-                zval = norm.ppf(cdfx)
+                
             #
             # Uniform or constant distribution. Direct mapping to standard Gaussian space
             #
@@ -795,7 +893,7 @@ class Reliability():
                 b = xpar2
                 c = (b - a)
                 cdfx = uniform.cdf(xval,a,c)
-                zval = norm.ppf(cdfx)
+                
                 
             #
             # Lognormal distribution. Direct mapping to standard Gaussian space
@@ -806,7 +904,7 @@ class Reliability():
                 zetax = np.sqrt(np.log(1. + (sigmax / mux) ** 2))
                 lambdax = np.log(mux) - 0.50 * zetax ** 2
                 cdfx = lognorm.cdf(xval/np.exp(lambdax), zetax)
-                zval = norm.ppf(cdfx)
+                
             #
             # Gumbel distribution. Direct mapping to standard Gaussian space
             #
@@ -817,7 +915,7 @@ class Reliability():
                 un = mux - np.euler_gamma / alphan
                 betan = 1.00 / alphan
                 cdfx = gumbel_r.cdf(xval, un, betan)
-                zval = norm.ppf(cdfx)
+                
             #
             #
             # Frechet distribution. Direct mapping to standard Gaussian space
@@ -832,7 +930,7 @@ class Reliability():
                 vn = mux / gamma(1.00 - 1.00 / kapa)
                 yn = xval / vn
                 cdfx = invweibull.cdf(yn, kapa)
-                zval = norm.ppf(cdfx)
+                
             #
             #
             # Weibull distribution. Direct mapping to standard Gaussian space
@@ -848,7 +946,7 @@ class Reliability():
                 w1 = (mux - epsilon) / gamma(1.00 + 1.00 / kapa) + epsilon
                 yn = (xval - epsilon) / (w1 - epsilon)
                 cdfx = weibull_min.cdf(yn, kapa)
-                zval = norm.ppf(cdfx)
+                
             #
             #
             # Beta distribution. Direct mapping to standard Gaussian space
@@ -861,9 +959,9 @@ class Reliability():
                 loc = a
                 scale = (b - a)
                 cdfx = beta_dist.cdf(xval, q, r, loc, scale)
-                zval = norm.ppf(cdfx)
+                
 
-            return zval
+            return cdfx
         
         
         def inverse_mapping(zval, xpar1, xpar2, xpar3, xpar4, namedist):
@@ -874,7 +972,6 @@ class Reliability():
             if namedist.lower() == 'gauss':
                 mux = xpar1
                 sigmax = xpar2
-                cdfx = norm.cdf(zval)
                 xval = norm.ppf(cdfx,mux,sigmax)
             #
             # Uniform or constant distribution. Inverse mapping from standard Gaussian space
@@ -883,7 +980,6 @@ class Reliability():
                 a = xpar1
                 b = xpar2
                 c = (b - a)
-                cdfx = norm.cdf(zval)
                 xval = uniform.ppf(cdfx,a,c)
             #
             # Lognormal distribution. Inverse mapping from standard Gaussian space
@@ -893,8 +989,7 @@ class Reliability():
                 sigmax = xpar2
                 zetax = np.sqrt(np.log(1. + (sigmax / mux) ** 2))
                 lambdax = np.log(mux) - 0.50 * zetax ** 2
-                cdfx = norm.cdf(zval)
-                xval = lognorm.ppf(cdfx, zetax)
+                xval = lognorm.ppf(cdfx, zetax)*np.exp(lambdax)
             #
             # Gumbel distribution. Inverse mapping from standard Gaussian space
             #
@@ -903,8 +998,7 @@ class Reliability():
                 sigmax = xpar2
                 alphan = (np.pi / np.sqrt(6.00)) / (sigmax)
                 un = mux - np.euler_gamma / alphan
-                cdfx = norm.cdf(zval)
-                xval = un - alphan * np.log(np.log(1. / cdfx))
+                xval = un - 1./alphan * np.log(np.log(1. / cdfx))
             #
             #
             # Frechet distribution. Inverse mapping from standard Gaussian space
@@ -917,7 +1011,6 @@ class Reliability():
                 gsignal = -1.00
                 kapa = scipy.optimize.newton(fkapa, kapa0, args=(deltax, gsignal))
                 vn = mux / gamma(1.00 - 1.00 / kapa)
-                cdfx = norm.cdf(zval)
                 xval = vn / (np.log(1. / cdfx)) ** (1. / kapa)
             #
             #
@@ -932,7 +1025,6 @@ class Reliability():
                 gsignal = 1.00
                 kapa = scipy.optimize.newton(fkapa, kapa0, args=(deltax, gsignal))
                 w1 = (mux - epsilon) / gamma(1.00 + 1.00 / kapa) + epsilon
-                cdfx = norm.cdf(zval)
                 xval = (w1 - epsilon) * (np.log(1./(1. - cdfx))) ** (1. / kapa) + epsilon
             #
             #
@@ -945,7 +1037,6 @@ class Reliability():
                 r = xpar4
                 loc = a
                 scale = (b - a)
-                cdfx = norm.cdf(zval)
                 xval = beta_dist.ppf(cdfx, q, r, loc, scale)
                 
 
@@ -1049,6 +1140,8 @@ class Reliability():
         yk1 = np.zeros(self.nxvar)
         zk = np.zeros(self.nxvar)
         zk1 = np.zeros(self.nxvar)
+        uk = np.zeros(self.nxvar)
+        uk1 = np.zeros(self.nxvar)
         xk1 = np.copy(self.x0)
         #
         # Error tolerance for yk and g(x)
@@ -1084,11 +1177,25 @@ class Reliability():
                     xpar1 = par1[i]
                     xpar2 = par2[i]
 
-                zk[i] = direct_mapping(xval, xpar1, xpar2, xpar3, xpar4, namedist)
+                uk[i] = direct_mapping(xval, xpar1, xpar2, xpar3, xpar4, namedist)
+
+                muxneqk[i], sigmaxneqk[i] = normeqv(xval, xpar1, xpar2, xpar3, xpar4, namedist)
+            #
+            # Step 3 - Update of the Jacobian matrices Jyx and Jxy
+            #
+            Dneq = sigmaxneqk * Imatrix
+            Jzx = np.linalg.inv(Dneq)
+            Jyx = np.dot(Jyz, Jzx)
+            Jxz = np.copy(Dneq)
+            Jxy = np.dot(Jxz, Jzy)
+            
+            
+            
             
             #
             #  Step 4 - Transformation from zk to yk
             #
+            zk = norm.ppf(uk)
             yk = Jyz.dot(zk)
             normyk = np.linalg.norm(yk)
             beta = np.linalg.norm(yk)
@@ -1163,9 +1270,10 @@ class Reliability():
             #
             # Step 8. Transformation from yk+1 to xk+1
             #
-            zk1 = np.dot(Jyz,yk1)
+            zk1 = Jzy.dot(yk1)
+            uk1 = norm.cdf(zk1)
             for i in range(self.nxvar):
-                zval = zk1[i]
+                cdfx = uk1[i]
                 mux = mux0[i]
                 sigmax = sigmax0[i]
                 namedist = dist[i]
@@ -1180,7 +1288,7 @@ class Reliability():
                     xpar1 = par1[i]
                     xpar2 = par2[i]
 
-                xk1[i] = inverse_mapping(zval, xpar1, xpar2, xpar3, xpar4, namedist)
+                xk1[i] = inverse_mapping(cdfx, xpar1, xpar2, xpar3, xpar4, namedist)
 
             #
             # Step 9. Convergence test for yk and g(x)

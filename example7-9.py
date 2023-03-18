@@ -43,5 +43,5 @@ corrmatrix = [[1.00, 0.40, 0.00],
 # FORM method
 #
 beam = Reliability(xvar, dvar, gfunction, None, corrmatrix)
-beam.form(iHLRF=True, toler=1.e-6)
+beam.form2(iHLRF=True, toler=1.e-6)
 #
