@@ -30,7 +30,7 @@ def gfunction(x, d):
 # Random variables: name, probability distribution, mean and coefficient of variation
 
 xvar = [
-    {'varname': 'D', 'vardist': 'uniform', 'parameter1': 0.00, 'parameter2': 1.00},
+    {'varname': 'D', 'vardist': 'uniform', 'parameter1': 0.00, 'parameter2': 0.60},
     {'varname': 'P', 'vardist': 'uniform', 'parameter1': 0.60, 'parameter2': 1.00},
     ]
 # Design variables
@@ -47,6 +47,7 @@ corrmatrix = [[1.00, 0.00],
 #
 # FORM method
 #
-beam = Reliability(xvar, dvar, gfunction, None, corrmatrix)
-beam.form(iHLRF=False, toler=1.e-3)
+x0 = [0.30, 0.80]
+beam = Reliability(xvar, dvar, gfunction, x0, corrmatrix)
+beam.form(iHLRF=True, toler=1.e-6)
 #

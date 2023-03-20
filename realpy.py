@@ -789,9 +789,12 @@ class Reliability():
             # Uniform or constant distribution
             #
             elif namedist.lower() == 'uniform':
+                epsilon = 1.e-8
                 a = xpar1
                 b = xpar2
                 c = (b - a)
+                if xval<=a: xval = a + epsilon
+                if xval>=b: xval = b - epsilon
                 pdfx = 1. / c
                 cdfx = (xval - a) / c
                 zval = norm.ppf(cdfx)
@@ -861,12 +864,15 @@ class Reliability():
             # Beta distribution
             #
             elif namedist.lower() == 'beta':
+                epsilon = 1.e-8
                 a = xpar1
                 b = xpar2
                 q = xpar3
                 r = xpar4
                 loc = a
                 scale = (b - a)
+                if xval<=a: xval = a + epsilon
+                if xval>=b: xval = b - epsilon
                 pdfx = beta_dist.pdf(xval, q, r, loc, scale)
                 cdfx = beta_dist.cdf(xval, q, r, loc, scale)
                 zval = norm.ppf(cdfx)
@@ -889,9 +895,12 @@ class Reliability():
             # Uniform or constant distribution. Direct mapping to standard Gaussian space
             #
             elif namedist.lower() == 'uniform':
+                epsilon = 1.e-8
                 a = xpar1
                 b = xpar2
                 c = (b - a)
+                if xval<=a: xval = a + epsilon
+                if xval>=b: xval = b - epsilon
                 cdfx = uniform.cdf(xval,a,c)
                 
                 
@@ -952,12 +961,15 @@ class Reliability():
             # Beta distribution. Direct mapping to standard Gaussian space
             #
             elif namedist.lower() == 'beta':
+                epsilon = 1.e-8
                 a = xpar1
                 b = xpar2
                 q = xpar3
                 r = xpar4
                 loc = a
                 scale = (b - a)
+                if xval<=a: xval = a + epsilon
+                if xval>=b: xval = b - epsilon
                 cdfx = beta_dist.cdf(xval, q, r, loc, scale)
                 
 
@@ -1256,7 +1268,29 @@ class Reliability():
                     k += 1
                     lambdak = b ** k
                     yk1 = yk + lambdak * dk
-                    xk1 = muxneqk + Jxy.dot(yk1)
+                    #
+                    #  Transformation from yk+1 to xk+1
+                    #
+                    zk1 = Jzy.dot(yk1)
+                    uk1 = norm.cdf(zk1)
+                    for i in range(self.nxvar):
+                        cdfx = uk1[i]
+                        mux = mux0[i]
+                        sigmax = sigmax0[i]
+                        namedist = dist[i]
+                        xpar1 = mux
+                        xpar2 = sigmax
+                        xpar3 = par3[i]
+                        xpar4 = par4[i]
+                        if dist[i] == 'beta':
+                            xpar1 = par1[i]
+                            xpar2 = par2[i]
+                        if dist[i] == 'uniform':
+                            xpar1 = par1[i]
+                            xpar2 = par2[i]
+
+                        xk1[i] = inverse_mapping(cdfx, xpar1, xpar2, xpar3, xpar4, namedist)
+
                     gyk1 = self.fel(xk1, self.d)
                     normyk1 = np.linalg.norm(yk1)
                     f1 = mfunc(normyk1, gyk1, ck) - mfunc(normyk, gyk, ck)
