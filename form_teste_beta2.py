@@ -1,6 +1,6 @@
 """
-Cálculo da probabilidade de falha para um combinação de distribuição normal e beta
-Mauro Real
+Cálculo da probabilidade de falha para uma combinação de distribuição normal e beta
+Método de Monte Carlo Força Bruta
 22/02/2023
 """
 import numpy as np
@@ -42,11 +42,8 @@ def gfunction(x, d):
 # Random variables: name, probability distribution, mean and coefficient of variation
 
 xvar = [
-    {'varname': 'R', 'vardist': 'normal', 'varmean': 200, 'varstd': 30 },
-#    {'varname': 'S', 'vardist': 'beta', 'parameter1': 50, 'parameter2': 150, 'parameter3': 2.625, 'parameter4': 2.625}  
-#     {'varname': 'R', 'vardist': 'uniform', 'parameter1': 140, 'parameter2': 260},
-#     {'varname': 'S', 'vardist': 'uniform', 'parameter1': 50, 'parameter2': 150}   
-    {'varname': 'S', 'vardist': 'lognormal', 'varmean': 100, 'varstd': 20 }
+    {'varname': 'R', 'vardist': 'beta', 'parameter1': 0.45, 'parameter2': 1.25, 'parameter3': 0.22, 'parameter4': 0.36},
+    {'varname': 'S', 'vardist': 'normal', 'varmean': 0.40, 'varstd': 0.10}      
     ]
 
 # Design variables
@@ -62,7 +59,6 @@ dvar = [
 column = Reliability(xvar, dvar, gfunction, None)
 column.form2(iHLRF=True, toler=1.e-6)
 #
-
 
 
 

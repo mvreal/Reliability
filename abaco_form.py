@@ -98,7 +98,7 @@ dvar = [
 # FORM method
 #
 abaco = Reliability(xvar, dvar, gfunction, None)
-abaco.form(iHLRF=True, toler=1.e-3)
+abaco.form2(iHLRF=True, toler=1.e-3)
 #
 
 

@@ -40,7 +40,7 @@ def gfunction(x, d):
 #
 
 # Tempo de vida útil requerido
-tsl= 50 # vida útil (service life) em anos
+tsl= 120 # vida útil (service life) em anos
 
 # Dados de entrada determinísticos
 
@@ -68,7 +68,7 @@ desvioalpha=0.029
 
 #
 # xd = cobrimento da armadura - distribuição normal
-mediaxd = 48.00 # mm
+mediaxd = 72.20 # mm
 desvioxd = 5.3 # mm
 
 
