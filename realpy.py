@@ -81,6 +81,11 @@ class Reliability():
                 var['varstd'] = float((b - a) / np.sqrt(12))
                 var['varhmean'] = float(var['varmean'])
 
+            # For the Weibull distribution - min: sets the lower limit
+            if var['vardist'] == 'weibull':
+                var['varinf'] = float(var['parameter3'])
+                
+
         #
         # Setting variables initial values
         #
@@ -193,7 +198,7 @@ class Reliability():
                         cv = cvj
                     f = 1.030 + 0.238 * cv + 0.364 * cv ** 2
 
-                # 6 Xi = gauss and Xj = weibull
+                # 6 Xi = gauss and Xj = weibull - min
 
                 elif self.xvar[i]['vardist'] == 'gauss' and self.xvar[i]['vardist'] == 'weibull' \
                         or self.xvar[i]['vardist'] == 'weibull' and self.xvar[j]['vardist'] == 'gauss':
@@ -243,7 +248,7 @@ class Reliability():
                         cv = cvj
                     f = 1.033 + 0.305 * cv + 0.074 * ro ** 2 + 0.405 * cv ** 2
 
-                # 12 Xi = uniform and Xj = weibull
+                # 12 Xi = uniform and Xj = weibull - min
 
                 elif self.xvar[i]['vardist'] == 'uniform' and self.xvar[j]['vardist'] == 'weibull' \
                         or self.xvar[i]['vardist'] == 'weibull' and self.xvar[j]['vardist'] == 'uniform':
@@ -273,7 +278,7 @@ class Reliability():
                         cv = cvj
                     f = 1.056 - 0.060 * ro + 0.263 * cv + 0.020 * ro ** 2 + 0.383 * cv ** 2 - 0.332 * ro * cv
 
-                # 15 Xi = gumbel and Xj = weibull
+                # 15 Xi = gumbel and Xj = weibull - min
 
                 elif self.xvar[i]['vardist'] == 'gumbel' and self.xvar[j]['vardist'] == 'weibull' \
                         or self.xvar[i]['vardist'] == 'weibull' and self.xvar[j]['vardist'] == 'gumbel':
@@ -304,7 +309,7 @@ class Reliability():
                         + 0.018 * ro ** 2 + 0.288 * cvl ** 2 + 0.379 * cvf ** 2 \
                         - 0.441 * ro * cvl + 0.126 * cvl * cvf - 0.277 * ro * cvf
 
-                # 18 Xi = lognorm and Xj = weibull
+                # 18 Xi = lognorm and Xj = weibull - min
 
                 elif self.xvar[i]['vardist'] == 'lognorm' and self.xvar[j]['vardist'] == 'weibull' \
                         or self.xvar[i]['vardist'] == 'weibull' and self.xvar[j]['vardist'] == 'lognorm':
@@ -328,7 +333,7 @@ class Reliability():
                         - 0.371 * ro * (cvi ** 2 + cvj ** 2) + 0.257 * ro ** 2 * (cvi + cvj) \
                         + 0.141 * cvi * cvj * (cvi + cvj)
 
-                # 20 Xi = frechet and Xj = weibull
+                # 20 Xi = frechet and Xj = weibull min
 
                 elif self.xvar[i]['vardist'] == 'frechet' and self.xvar[j]['vardist'] == 'weibull' \
                         or self.xvar[i]['vardist'] == 'weibull' and self.xvar[j]['vardist'] == 'frechet':
@@ -342,7 +347,7 @@ class Reliability():
                         + 0.013 * ro ** 2 + 0.372 * cvf ** 2 + 0.435 * cvw ** 2  \
                         + 0.005 * ro * cvf + 0.034 * cvf * cvw - 0.481 * ro * cvw
 
-                # 20 Xi = weibull and Xj = weibull
+                # 20 Xi = weibull and Xj = weibull min
 
                 elif self.xvar[i]['vardist'] == 'weibull' and self.xvar[j]['vardist'] == 'weibull':
                     f = 1.063 - 0.004 * ro - 0.200 * (cvi + cvj) \
@@ -377,7 +382,7 @@ class Reliability():
 
         #
         #
-        # Evaluation of parameter k for Frechet and Weibull distribution
+        # Evaluation of parameter k for Frechet and Weibull distribution min
         #
 
         def fkapa(kapa, deltax, gsignal):
@@ -455,7 +460,7 @@ class Reliability():
                 muxneq = xval - zval * sigmaxneq
             #
             #
-            # Weibull distribution
+            # Weibull distribution minimum
             #
             elif namedist.lower() == 'weibull':
                 mux = xpar1
@@ -761,7 +766,7 @@ class Reliability():
 
         #
         #
-        # Evaluation of parameter k for Frechet and Weibull distribution
+        # Evaluation of parameter k for Frechet and Weibull distribution minimum
         #
 
         def fkapa(kapa, deltax, gsignal):
@@ -842,7 +847,7 @@ class Reliability():
                 muxneq = xval - zval * sigmaxneq
             #
             #
-            # Weibull distribution
+            # Weibull distribution minimum
             #
             elif namedist.lower() == 'weibull':
                 mux = xpar1
@@ -942,7 +947,7 @@ class Reliability():
                 
             #
             #
-            # Weibull distribution. Direct mapping to standard Gaussian space
+            # Weibull distribution minimum. Direct mapping to standard Gaussian space
             #
             elif namedist.lower() == 'weibull':
                 mux = xpar1
@@ -1026,7 +1031,7 @@ class Reliability():
                 xval = vn / (np.log(1. / cdfx)) ** (1. / kapa)
             #
             #
-            # Weibull distribution. Inverse mapping from standard Gaussian space
+            # Weibull distribution minimum. Inverse mapping from standard Gaussian space
             #
             elif namedist.lower() == 'weibull':
                 mux = xpar1
@@ -1681,7 +1686,7 @@ class Reliability():
 
             #
             #
-            # Weibull distribution
+            # Weibull distribution - minimum
             #
             elif namedist.lower() == 'weibull':
                 mufx = float(var['varmean'])

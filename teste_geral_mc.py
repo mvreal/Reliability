@@ -43,8 +43,9 @@ def gfunction(x, d):
 
 xvar = [
     {'varname': 'R', 'vardist': 'normal', 'varmean': 200, 'varstd': 30 },
-    {'varname': 'S', 'vardist': 'uniform', 'parameter1': 50, 'parameter2': 150}      
-#    {'varname': 'S', 'vardist': 'gumbel', 'varmean': 100, 'varstd': 20 }
+#    {'varname': 'S', 'vardist': 'uniform', 'parameter1': 50, 'parameter2': 150}      
+#    {'varname': 'S', 'vardist': 'beta', 'parameter1': 50, 'parameter2': 150, 'parameter3': 2.65, 'parameter4': 2.65} 
+    {'varname': 'S', 'vardist': 'normal', 'varmean': 100, 'varstd': 20 }
     ]
 
 # Design variables
@@ -58,7 +59,7 @@ dvar = [
 # FORM method
 #
 column = Reliability(xvar, dvar, gfunction, None)
-column.mc(10, 100_000, 0.03, 1.00)
+column.mc(10, 100_000, 0.05, 1.00)
 #
 
 
