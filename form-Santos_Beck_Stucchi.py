@@ -44,14 +44,14 @@ sigmaxneq = np.zeros(n)
 
 # Número de vigas
 
-nv = 5
+nv = 1
 
 # Parâmetro geométrico da viga
-ast = [1.5e-4, 3.2e-4, 5.0e-4, 8.0e-4, 9.45e-4]     # Área de aço da seção transversal da viga (m2)
+ast = [11.82e-4]     # Área de aço da seção transversal da viga (m2)
 #
 # Momento de cálculo
 #
-mrd = [29.36, 60.81, 92.00, 139.03, 159.14]  # kN.m
+mrd = [196.08]  # kN.m
 #
 # Coeficientes de segurança
 #
@@ -84,9 +84,9 @@ for j in range(nv):
         xvar = [
             {'varname': 'b', 'vardist': 'normal', 'varmean': 0.20, 'varcov': 0.06},
             {'varname': 'h', 'vardist': 'normal', 'varmean': 0.50, 'varcov': 0.045},
-            {'varname': 'dl', 'vardist': 'lognormal', 'varmean': 0.039, 'varcov': 0.2821},
-            {'varname': 'fc', 'vardist': 'normal', 'varmean': 1.17*25, 'varcov': 0.15},
-            {'varname': 'fy', 'vardist': 'normal', 'varmean': 1.08*500, 'varcov': 0.05},
+            {'varname': 'dl', 'vardist': 'lognormal', 'varmean': 0.045, 'varcov': 0.011/0.045},
+            {'varname': 'fc', 'vardist': 'normal', 'varmean': 1.22*30, 'varcov': 0.15},
+            {'varname': 'fy', 'vardist': 'normal', 'varmean': 1.22*500, 'varcov': 0.04},
             {'varname': 'g', 'vardist': 'normal', 'varmean': gm, 'varcov': Vg},
             {'varname': 'q', 'vardist': 'gumbel', 'varmean': qm, 'varcov': Vq},
             {'varname': 'thetaR', 'vardist': 'lognormal', 'varmean': 1.00, 'varcov': 0.05},
@@ -137,7 +137,7 @@ plt.figure(figsize=(8.5, 6))
 for j in range(nv):
     plt.plot(chi, betak[:, j], label=r'$A_s =$ {0:0.2f} $cm^2$'.format(ast[j]*10000))
 plt.xlim(0, 1)
-plt.ylim(2, 5)
+plt.ylim(2, 7)
 plt.xlabel(r"$\chi$")
 plt.ylabel(r"$\beta$")
 plt.legend(loc='upper right', title='legend')
