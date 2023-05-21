@@ -127,7 +127,7 @@ for i in range(1,51):
     # FORM method
     #
     vida_util = Reliability(xvar, dvar, gfunction, None)
-    beta[i], pf[i], delta_pf, nsimul, ttotal = vida_util.adaptive(100, 10_000, 0.05, 1.50, igraph=False, iprint=False,)
+    beta[i], pf[i], delta_pf, nsimul, ttotal = vida_util.mc(100, 10_000, 0.05, 1.50, igraph=False, iprint=False,)
     
     #
 
