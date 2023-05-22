@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.stats import norm
-from scipy.special import erf
+from scipy.special import erfinv
 from realpy import *
 
 
@@ -30,18 +30,19 @@ def gfunction(x, d):
      t0 = x[0]
      Ccr = x[1]
      Cs = x[2]
-     xc = x[3]
+     cobr = x[3]
      Temp = x[4]
      alpha = x[5]
      D0 = x[6]
 
      # Cálculo do fator ke
-     ke=np.exp(EA/R*(1./293.-1./(273.+Temp)))    
+     ke = np.exp(EA/R*(1./293.-1./(273.+Temp)))    
     # Cálculo do coeficiente de difussão no tempo t
-     D=D0/(1.-alpha)*((1.+tl/t)**(1.-alpha)-(tl/t)**(1.-alpha))*(t0/t)**alpha*ke
+     D = D0/(1.-alpha)*((1.+tl/t)**(1.-alpha)-(tl/t)**(1.-alpha))*(t0/t)**alpha*ke
+    # D = ke*D0*(tl/t)**alpha
     #cxtp é a concentração de cloretos em x=xc após t  anos
-     Cxt = Cs * (1-erf(xc / (2 * (D*t) ** 0.5)))
-     g = Ccr - Cxt
+     xc = 2.00  * erfinv(1. - Ccr / Cs)*(D*t)**0.5
+     g = cobr - xc
 
      return g
 
@@ -53,10 +54,11 @@ def gfunction(x, d):
 #
 # Probabilidade de falha por despassivação da armadura
 #
-pf = np.zeros(121)
-beta = np.zeros(121)
+tf = 120
+pf = np.zeros(tf+1)
+beta = np.zeros(tf+1)
 # Tempo até a despassivação da armadura
-td=np.arange(0,121)
+td=np.arange(0,tf+1)
 
 # Dados de entrada determinísticos
 
@@ -79,12 +81,12 @@ mediaCs=5.50
 desvioCs=1.35
 
 # Cobrimento da armadura - distribuição normal
-mediaxc=0.07
-desvioxc=0.006
+mediacobr=0.070
+desviocobr=0.006
 
 # Temperatura média anual - distribuição normal
 mediaTemp=10.
-desvioTemp=1.00
+desvioTemp=0.10
 
 # alpha = fator de envelhecimento do concreto - distribuição normal
 mediaalpha=0.40
@@ -92,8 +94,8 @@ desvioalpha=0.08
 
 # D0 = coeficiente de difusão médio aos 28 dias = distribuição normal
 
-mediaD0 = 6.00*55188000.e-12 #coeficiente de difusão de cloretos em m2/anos
-desvioD0 = 0.64*55188000.e-12
+mediaD0 = 6.00*31536000.e-12 #coeficiente de difusão de cloretos em m2/anos
+desvioD0 = 0.64*31536000.e-12
 
 #
 # Laço sobre o tempo de despassivação 
@@ -105,7 +107,7 @@ beta[0] = 0.50
 
 
 
-for i in range(1,121):
+for i in range(1,tf+1):
     t = td[i]
     # Random variables: name, probability distribution, mean and coefficient of variation
 
@@ -113,7 +115,7 @@ for i in range(1,121):
         {'varname': 't0', 'vardist': 'normal', 'varmean': mediat0, 'varstd': desviot0 },
         {'varname': 'Ccr', 'vardist': 'normal', 'varmean': mediaCcr, 'varstd': desvioCcr },
         {'varname': 'Cs', 'vardist': 'normal', 'varmean': mediaCs, 'varstd': desvioCs },
-        {'varname': 'xc', 'vardist': 'normal', 'varmean': mediaxc, 'varstd': desvioxc }, 
+        {'varname': 'cobr', 'vardist': 'normal', 'varmean': mediacobr, 'varstd': desviocobr }, 
         {'varname': 'Temp', 'vardist': 'normal', 'varmean': mediaTemp, 'varstd': desvioTemp }, 
         {'varname': 'alpha', 'vardist': 'normal', 'varmean': mediaalpha, 'varstd': desvioalpha },
         {'varname': 'D0', 'vardist': 'normal', 'varmean': mediaD0, 'varstd': desvioD0 }
@@ -165,6 +167,7 @@ plt.title('Probabilidade acumulada do tempo de despassivação')
 plt.xlabel('tempo de despassivação td (anos)')
 plt.ylabel('Probabilidade de falha')
 plt.xlim(0,td.max())
+plt.ylim(0,1.00)
 plt.grid()
 plt.savefig('D:\Reliability\cdf_td.pdf')
 plt.show()
