@@ -27,19 +27,18 @@ def gfunction(x, d):
      EA = d[1]
      R = d[2]
      tl = d[3]
-     t0 = x[0]
-     Ccr = x[1]
-     Cs = x[2]
-     cobr = x[3]
-     Temp = x[4]
-     alpha = x[5]
-     D0 = x[6]
+     t0 = d[4]
+     Ccr = x[0]
+     Cs = x[1]
+     cobr = x[2]
+     Temp = x[3]
+     alpha = x[4]
+     D0 = x[5]
 
      # Cálculo do fator ke
      ke = np.exp(EA/R*(1./293.-1./(273.+Temp)))    
      # Cálculo do coeficiente de difussão no tempo t
      D = D0/(1.-alpha)*((1.+tl/t)**(1.-alpha)-(tl/t)**(1.-alpha))*(t0/t)**alpha*ke
-     # D = ke*D0*(tl/t)**alpha
      #cxtp é a concentração de cloretos em x=xc após t  anos
      xc = 2.00  * erfinv(1. - Ccr / Cs)*(D*t)**0.5
      g = cobr - xc
@@ -62,15 +61,15 @@ td=np.arange(0,tf+1)
 
 # Dados de entrada determinísticos
 
-EA=5000.00 #EA é a ativação de energia para a difusão do cloreto [kcal/mol]
+EA=5000.00 #EA é a ativação de energia para a difusão de cloretos [kcal/mol]
 R = 1.00 #R é a constante universal dos gases perfeitos 
 tl =float(28./365.) #t′ a idade do concreto quando exposto aos íons [anos]
+t0 =float(28./365) # t0 é a idade de medida do coeficiente de difusão de cloretos
+
 # Geração das variáveis para as simulações de Monte Carlo
 #
 # Geração das variáveis aleatórias do problema
-# Tempo de início da exposição t0 (anos) - distribuição normal
-mediat0=28./365.
-desviot0=1./365.
+
 
 # Concentração crítica de cloretos - distribuição normal
 mediaCcr=0.40
@@ -85,7 +84,7 @@ mediacobr=0.070
 desviocobr=0.006
 
 # Temperatura média anual - distribuição normal
-mediaTemp=10.
+mediaTemp=20.
 desvioTemp=0.10
 
 # alpha = fator de envelhecimento do concreto - distribuição normal
@@ -112,7 +111,6 @@ for i in range(1,tf+1):
     # Random variables: name, probability distribution, mean and coefficient of variation
 
     xvar = [
-        {'varname': 't0', 'vardist': 'normal', 'varmean': mediat0, 'varstd': desviot0 },
         {'varname': 'Ccr', 'vardist': 'normal', 'varmean': mediaCcr, 'varstd': desvioCcr },
         {'varname': 'Cs', 'vardist': 'normal', 'varmean': mediaCs, 'varstd': desvioCs },
         {'varname': 'cobr', 'vardist': 'normal', 'varmean': mediacobr, 'varstd': desviocobr }, 
@@ -128,7 +126,8 @@ for i in range(1,tf+1):
         {'varname': 't', 'varvalue': t},
         {'varname': 'EA', 'varvalue': EA},
         {'varname': 'R', 'varvalue': R},
-        {'varname': 'tl', 'varvalue': tl}
+        {'varname': 'tl', 'varvalue': tl},
+        {'varname': 't0', 'varvalue': t0}
         ]
 
     #
@@ -160,18 +159,18 @@ dfres = pd.DataFrame(res)
 with pd.ExcelWriter('D:\Reliability\dados_td.xlsx', engine='openpyxl') as writer:
      dfres.to_excel(writer, sheet_name='Planilha1', index=False)    
 
-# Histograma do tempo de despassivação
+# CDF do tempo de despassivação
 # 
 plt.plot(td,pf)
 plt.title('Probabilidade acumulada do tempo de despassivação')
 plt.xlabel('tempo de despassivação td (anos)')
 plt.ylabel('Probabilidade de falha')
 plt.xlim(0,td.max())
-plt.ylim(0,1.00)
+plt.xticks(np.arange(0, max(td)+10, 10))
+plt.yticks(np.arange(0, max(pf)+0.05, 0.05))
 plt.grid()
 plt.savefig('D:\Reliability\cdf_td.pdf')
 plt.show()
-
 
 
 

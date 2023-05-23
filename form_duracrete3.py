@@ -27,13 +27,13 @@ def gfunction(x, d):
      EA = d[1]
      R = d[2]
      tl = d[3]
-     t0 = x[0]
-     Ccr = x[1]
-     Cs = x[2]
-     cobr = x[3]
-     Temp = x[4]
-     alpha = x[5]
-     D0 = x[6]
+     t0 = d[4]
+     Ccr = x[0]
+     Cs = x[1]
+     cobr = x[2]
+     Temp = x[3]
+     alpha = x[4]
+     D0 = x[5]
 
      # Cálculo do fator ke
      ke = np.exp(EA/R*(1./293.-1./(273.+Temp)))    
@@ -62,15 +62,14 @@ td=np.arange(0,tf+1)
 
 # Dados de entrada determinísticos
 
-EA=5000.00 #EA é a ativação de energia para a difusão do cloreto [kcal/mol]
+EA=5000.00 #EA é a ativação de energia para a difusão de cloretos [kcal/mol]
 R = 1.00 #R é a constante universal dos gases perfeitos 
 tl =float(28./365.) #t′ a idade do concreto quando exposto aos íons [anos]
+t0 =float(28./365) # t0 é a idade de medida do coeficiente de difusão de cloretos
+
 # Geração das variáveis para as simulações de Monte Carlo
 #
 # Geração das variáveis aleatórias do problema
-# Tempo de início da exposição t0 (anos) - distribuição normal
-mediat0=28./365.
-desviot0=1./365.
 
 # Concentração crítica de cloretos - distribuição normal
 mediaCcr=0.40
@@ -85,17 +84,17 @@ mediacobr=0.070
 desviocobr=0.006
 
 # Temperatura média anual - distribuição normal
-mediaTemp=10.
-desvioTemp=0.10
+mediaTemp=20.
+desvioTemp=2.00
 
 # alpha = fator de envelhecimento do concreto - distribuição normal
-mediaalpha=0.40
-desvioalpha=0.08
+mediaalpha=0.50
+desvioalpha=0.10
 
 # D0 = coeficiente de difusão médio aos 28 dias = distribuição normal
 
-mediaD0 = 6.00*31536000.e-12 #coeficiente de difusão de cloretos em m2/anos
-desvioD0 = 0.64*31536000.e-12
+mediaD0 = 1.90*31536000.e-12 #coeficiente de difusão de cloretos em m2/anos
+desvioD0 = 0.08*31536000.e-12
 
 #
 # Laço sobre o tempo de despassivação 
@@ -128,15 +127,20 @@ for i in range(1,tf+1):
         {'varname': 't', 'varvalue': t},
         {'varname': 'EA', 'varvalue': EA},
         {'varname': 'R', 'varvalue': R},
-        {'varname': 'tl', 'varvalue': tl}
+        {'varname': 'tl', 'varvalue': tl},
+        {'varname': 't0', 'varvalue': t0}
         ]
 
     #
-    # MC method
+    # FORM method
     #
     vida_util = Reliability(xvar, dvar, gfunction, None)
-    beta[i], pf[i], delta_pf, nsimul, ttotal = vida_util.mc(100, 10_000, 0.05, 1.50, igraph=False, iprint=False,)
-    
+    beta[i], xk, cos_dir, normgradyk,sigmaxneq = vida_util.form(iHLRF=True, toler=1.e-3)
+    # Correção para quando pf>0.50, beta deve ser negativo!
+    if i>1 and pf[i-1]>0.50:
+        beta[i] = -beta[i]
+    #    
+    pf[i] = norm.cdf(-beta[i])
     #
 
 # Primeiro cria um dicionário chamado res para arquivar os dados a serem inseridos no dataframe
@@ -160,14 +164,15 @@ dfres = pd.DataFrame(res)
 with pd.ExcelWriter('D:\Reliability\dados_td.xlsx', engine='openpyxl') as writer:
      dfres.to_excel(writer, sheet_name='Planilha1', index=False)    
 
-# Histograma do tempo de despassivação
+# CDF do tempo de despassivação
 # 
 plt.plot(td,pf)
 plt.title('Probabilidade acumulada do tempo de despassivação')
 plt.xlabel('tempo de despassivação td (anos)')
 plt.ylabel('Probabilidade de falha')
 plt.xlim(0,td.max())
-plt.ylim(0,1.00)
+plt.xticks(np.arange(0, max(td)+10, 10))
+plt.yticks(np.arange(0, max(pf)+0.05, 0.05))
 plt.grid()
 plt.savefig('D:\Reliability\cdf_td.pdf')
 plt.show()
