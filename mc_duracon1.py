@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.stats import norm
-from scipy.special import erfinv
+from scipy.special import erfinv, erfc
 from realpy import *
 
 
@@ -39,9 +39,9 @@ def gfunction(x, d):
      ke = np.exp(EA/R*(1./293.-1./(273.+Temp)))    
      # Cálculo do coeficiente de difussão no tempo t
      D = D0/(1.-alpha)*((1.+tl/t)**(1.-alpha)-(tl/t)**(1.-alpha))*(t0/t)**alpha*ke
-     #
+     # D = D0*(t0/t)**alpha*ke
      #cxtp é a concentração de cloretos em x=xc após t  anos
-     xc = 2.00  * erfinv(1. - Ccr / Cs)*(D*t)**0.5
+     xc = 2.00 * (D * t) ** 0.5  * erfinv(1. - Ccr / Cs)
      g = cobr - xc
 
      return g
@@ -54,60 +54,66 @@ def gfunction(x, d):
 #
 # Probabilidade de falha por despassivação da armadura
 #
-tf = 120
-pf = np.zeros(tf+1)
-beta = np.zeros(tf+1)
+tf = 50
 # Tempo até a despassivação da armadura
-td=np.arange(0,tf+1)
+td=np.arange(0,tf+1, 5)
+nt = int(tf/5)
+pf = np.zeros(nt+1)
+beta = np.zeros(nt+1)
+delta_pf = np.zeros(nt+1)
+nsimul = np.zeros(nt+1)
+ttotal= np.zeros(nt+1)
+
 
 # Dados de entrada determinísticos
 
 EA=5000.00 #EA é a ativação de energia para a difusão de cloretos [kcal/mol]
 R = 1.00 #R é a constante universal dos gases perfeitos 
-tl =float(28./365.) #t′ a idade do concreto quando exposto aos íons [anos]
+tl =float(180./365.) #t′ a idade do concreto quando exposto aos íons [anos]
 t0 =float(28./365) # t0 é a idade de medida do coeficiente de difusão de cloretos
 
 # Geração das variáveis para as simulações de Monte Carlo
 #
 # Geração das variáveis aleatórias do problema
 
+
 # Concentração crítica de cloretos - distribuição normal
-mediaCcr=0.40
+mediaCcr=0.48
 desvioCcr=0.10
 
 # Concentração superficial de cloretos - distribuição normal
-mediaCs=5.50
-desvioCs=1.35
+mediaCs=2.50
+desvioCs=0.54
 
 # Cobrimento da armadura - distribuição normal
-mediacobr=0.070
-desviocobr=0.006
+mediacobr=0.055
+desviocobr=0.005
 
 # Temperatura média anual - distribuição normal
 mediaTemp=20.
-desvioTemp=2.00
+desvioTemp=0.01
 
 # alpha = fator de envelhecimento do concreto - distribuição normal
-mediaalpha=0.60
-desvioalpha=0.12
+mediaalpha=0.37
+desvioalpha=0.07
 
 # D0 = coeficiente de difusão médio aos 28 dias = distribuição normal
 
-mediaD0 = 7.00*31536000.e-12 #coeficiente de difusão de cloretos em m2/anos
-desvioD0 = 1.09*31536000.e-12
+mediaD0 = 3.5*31536000.e-12 #coeficiente de difusão de cloretos em m2/anos
+desvioD0 = 0.26*31536000.e-12
 
 #
 # Laço sobre o tempo de despassivação 
 #
 
-td[0] = 0.00
+td[0] = 1.00
 pf[0] = 0.00
-beta[0] = 0.50
+beta[0] = 6.00
 
+i = -1
 
-
-for i in range(1,tf+1):
-    t = td[i]
+for t in td:
+    i += 1
     # Random variables: name, probability distribution, mean and coefficient of variation
 
     xvar = [
@@ -131,10 +137,12 @@ for i in range(1,tf+1):
         ]
 
     #
-    # MC method
+    # FORM method
     #
     vida_util = Reliability(xvar, dvar, gfunction, None)
-    beta[i], pf[i], delta_pf, nsimul, ttotal = vida_util.bucher(100, 10_000, 0.05, 1.50, igraph=False, iprint=False,)
+    beta[i], pf[i], delta_pf[i], nsimul[i],ttotal[i] = vida_util.mc(100, 10_000, 0.05, 1.50, igraph=False, iprint=False,)
+    #    
+    
     #
 
 # Primeiro cria um dicionário chamado res para arquivar os dados a serem inseridos no dataframe
@@ -143,7 +151,11 @@ res = {}
 #
 res['td'] = td
 res['pf'] = pf
-res['beta'] = beta
+res['Beta'] = beta
+res['delta_pf'] = delta_pf
+res['nsimul'] = nsimul
+res['ttotal'] = ttotal
+
 
 # Cria então o novo dataframe, se usasse o antigo (sheet) ia gerar conflito de tamanho (número de linhas)
 dfres = pd.DataFrame(res)
@@ -155,7 +167,7 @@ dfres = pd.DataFrame(res)
 
 #   index=False evita que crie uma coluna no ínicio com o contador de linhas
 #       O ExcelWriter é necessário quando mais de um dataframe é gravado no mesmo arquivo
-with pd.ExcelWriter('D:\Reliability\dados_td.xlsx', engine='openpyxl') as writer:
+with pd.ExcelWriter('C://Users//Mauro//OneDrive//Reliability//dados_td.xlsx', engine='openpyxl') as writer:
      dfres.to_excel(writer, sheet_name='Planilha1', index=False)    
 
 # CDF do tempo de despassivação
@@ -170,7 +182,6 @@ plt.yticks(np.arange(0, max(pf)+0.05, 0.05))
 plt.grid()
 plt.savefig('D:\Reliability\cdf_td.pdf')
 plt.show()
-
 
 
 

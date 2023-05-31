@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.stats import norm
-from scipy.special import erfinv
+from scipy.special import erfinv, erfc
 from realpy import *
 
 
@@ -39,7 +39,7 @@ def gfunction(x, d):
      ke = np.exp(EA/R*(1./293.-1./(273.+Temp)))    
      # Cálculo do coeficiente de difussão no tempo t
      D = D0/(1.-alpha)*((1.+tl/t)**(1.-alpha)-(tl/t)**(1.-alpha))*(t0/t)**alpha*ke
-     #D = D0*(t0/t)**alpha*ke
+     # D = D0*(t0/t)**alpha*ke
      #cxtp é a concentração de cloretos em x=xc após t  anos
      xc = 2.00 * (D * t) ** 0.5  * erfinv(1. - Ccr / Cs)
      g = cobr - xc
@@ -55,15 +55,17 @@ def gfunction(x, d):
 # Probabilidade de falha por despassivação da armadura
 #
 tf = 50
-pf = np.zeros(tf+1)
-beta = np.zeros(tf+1)
 # Tempo até a despassivação da armadura
-td=np.arange(0,tf+1)
+td=np.arange(0,tf+1, 5)
+nt = int(tf/5)
+pf = np.zeros(nt+1)
+beta = np.zeros(nt+1)
+data = np.zeros((nt+1,6))
 
 # Dados de entrada determinísticos
 
-EA=5000.00 #EA é a ativação de energia para a difusão de cloretos [kcal/mol]
-R = 1.00 #R é a constante universal dos gases perfeitos 
+EA=44600.00 #EA é a ativação de energia para a difusão de cloretos [kcal/mol]
+R = 8.314 #R é a constante universal dos gases perfeitos 
 tl =float(28./365.) #t′ a idade do concreto quando exposto aos íons [anos]
 t0 =float(28./365) # t0 é a idade de medida do coeficiente de difusão de cloretos
 
@@ -73,42 +75,42 @@ t0 =float(28./365) # t0 é a idade de medida do coeficiente de difusão de clore
 
 
 # Concentração crítica de cloretos - distribuição normal
-mediaCcr=0.48
+mediaCcr=0.40
 desvioCcr=0.10
 
 # Concentração superficial de cloretos - distribuição normal
-mediaCs=2.50
-desvioCs=0.54
+mediaCs=5.50
+desvioCs=1.35
 
 # Cobrimento da armadura - distribuição normal
-mediacobr=0.055
-desviocobr=0.005
+mediacobr=70./1000.
+desviocobr=6./1000.
 
 # Temperatura média anual - distribuição normal
-mediaTemp=20.
-desvioTemp=0.01
+mediaTemp=10.
+desvioTemp=0.001
 
 # alpha = fator de envelhecimento do concreto - distribuição normal
-mediaalpha=0.37
-desvioalpha=0.07
+mediaalpha=0.40
+desvioalpha=0.08
 
 # D0 = coeficiente de difusão médio aos 28 dias = distribuição normal
 
-mediaD0 = 3.5*31536000.e-12 #coeficiente de difusão de cloretos em m2/anos
-desvioD0 = 0.26*31536000.e-12
+mediaD0 = 6.00*31536000.e-12 #coeficiente de difusão de cloretos em m2/anos
+desvioD0 = 0.64*31536000.e-12
 
 #
 # Laço sobre o tempo de despassivação 
 #
 
-td[0] = 0.00
+td[0] = 1.00
 pf[0] = 0.00
 beta[0] = 100.00
 
+i = -1
 
-
-for i in range(1,tf+1):
-    t = td[i]
+for t in td:
+    i += 1
     # Random variables: name, probability distribution, mean and coefficient of variation
 
     xvar = [
@@ -136,11 +138,16 @@ for i in range(1,tf+1):
     #
     vida_util = Reliability(xvar, dvar, gfunction, None)
     beta[i], xk, cos_dir, normgradyk,sigmaxneq = vida_util.form(iHLRF=True, toler=1.e-3)
-    # Correção para quando pf>0.50, beta deve ser negativo!
-    if i>1 and pf[i-1]>0.49:
-        beta[i] = -beta[i]
-    #    
     pf[i] = norm.cdf(-beta[i])
+    # Correção para quando pf>0.50, beta deve ser negativo!
+    if i>=1 and pf[i-1]>0.42:
+        beta[i] = -beta[i]
+        pf[i] = norm.cdf(-beta[i])
+    else:
+        pf[0]= 0.00
+        beta[0]= 6.00
+    #    
+    data[i,:] = xk[0:6] 
     #
 
 # Primeiro cria um dicionário chamado res para arquivar os dados a serem inseridos no dataframe
@@ -148,8 +155,14 @@ res = {}
 # Grava dados no dicionário
 #
 res['td'] = td
-res['pf'] = pf
-res['beta'] = beta
+res['pf'] = pf*100.
+res['Beta'] = beta
+res['Ccr'] = data[:,0]
+res['Cs'] = data[:,1]
+res['cobr'] = data[:,2]
+res['Temp'] = data[:,3]
+res['alpha'] = data[:,4]
+res['D0'] = data[:,5]/31536000*1e+12
 
 # Cria então o novo dataframe, se usasse o antigo (sheet) ia gerar conflito de tamanho (número de linhas)
 dfres = pd.DataFrame(res)
@@ -161,18 +174,23 @@ dfres = pd.DataFrame(res)
 
 #   index=False evita que crie uma coluna no ínicio com o contador de linhas
 #       O ExcelWriter é necessário quando mais de um dataframe é gravado no mesmo arquivo
-with pd.ExcelWriter('D:\Reliability\dados_td.xlsx', engine='openpyxl') as writer:
+with pd.ExcelWriter('C://Users//Mauro//OneDrive//Reliability//dados_td.xlsx', engine='openpyxl') as writer:
      dfres.to_excel(writer, sheet_name='Planilha1', index=False)    
 
 # CDF do tempo de despassivação
 # 
-plt.plot(td,pf)
+pf_duracon_10 = np.array([ 0.0000,  0.0000,  0.0750,  0.7470,  2.6000,  5.7310,  9.7110,  14.1450,  18.7000,  23.3480,  27.8820])
+pf_duracon_20 = np.array([ 0.0000,  0.0580,  2.6530, 10.9010, 21.6100, 32.5160, 42.2720,  50.5160,  57.3410,  62.9470,  67.6820])
+ 
+plt.plot(td,pf*100.,label="Realpy")
+plt.plot(td,pf_duracon_10,label="Duracon")
 plt.title('Probabilidade acumulada do tempo de despassivação')
 plt.xlabel('tempo de despassivação td (anos)')
 plt.ylabel('Probabilidade de falha')
 plt.xlim(0,td.max())
 plt.xticks(np.arange(0, max(td)+10, 10))
-plt.yticks(np.arange(0, max(pf)+0.05, 0.05))
+plt.yticks(np.arange(0, max(pf*100.)+5, 5))
+plt.legend(loc='lower right', title='Gjorv - Type 1 - Temp. = 10°C')
 plt.grid()
 plt.savefig('D:\Reliability\cdf_td.pdf')
 plt.show()
