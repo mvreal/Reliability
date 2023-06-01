@@ -34,6 +34,7 @@ def gfunction(x, d):
      Temp = x[3]
      alpha = x[4]
      D0 = x[5]
+     
 
      # Cálculo do fator ke
      ke = np.exp(EA/R*(1./293.-1./(273.+Temp)))    
@@ -64,8 +65,8 @@ data = np.zeros((nt+1,6))
 
 # Dados de entrada determinísticos
 
-EA=44600.00 #EA é a ativação de energia para a difusão de cloretos [kcal/mol]
-R = 8.314 #R é a constante universal dos gases perfeitos 
+EA=44600.00 #EA é a ativação de energia para a difusão de cloretos [J/mol]
+R = 8.314 #R é a constante universal dos gases perfeitos [J/molK]
 tl =float(28./365.) #t′ a idade do concreto quando exposto aos íons [anos]
 t0 =float(28./365) # t0 é a idade de medida do coeficiente de difusão de cloretos
 
@@ -120,6 +121,7 @@ for t in td:
         {'varname': 'Temp', 'vardist': 'normal', 'varmean': mediaTemp, 'varstd': desvioTemp }, 
         {'varname': 'alpha', 'vardist': 'normal', 'varmean': mediaalpha, 'varstd': desvioalpha },
         {'varname': 'D0', 'vardist': 'normal', 'varmean': mediaD0, 'varstd': desvioD0 }
+        
         
     ]
 
