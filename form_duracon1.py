@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.stats import norm
-from scipy.special import erfinv, erfc
+from scipy.special import erfinv
 from realpy import *
 
 
@@ -34,12 +34,13 @@ def gfunction(x, d):
      Temp = x[3]
      alpha = x[4]
      D0 = x[5]
+     fator_D = x[6]
      
 
      # Cálculo do fator ke
      ke = np.exp(EA/R*(1./293.-1./(273.+Temp)))    
      # Cálculo do coeficiente de difussão no tempo t
-     D = D0/(1.-alpha)*((1.+tl/t)**(1.-alpha)-(tl/t)**(1.-alpha))*(t0/t)**alpha*ke
+     D = fator_D*D0/(1.-alpha)*((1.+tl/t)**(1.-alpha)-(tl/t)**(1.-alpha))*(t0/t)**alpha*ke
      # D = D0*(t0/t)**alpha*ke
      #cxtp é a concentração de cloretos em x=xc após t  anos
      xc = 2.00 * (D * t) ** 0.5  * erfinv(1. - Ccr / Cs)
@@ -65,7 +66,7 @@ data = np.zeros((nt+1,6))
 
 # Dados de entrada determinísticos
 
-EA=44600.00 #EA é a ativação de energia para a difusão de cloretos [J/mol]
+EA=35000.00 #EA é a ativação de energia para a difusão de cloretos [J/mol]
 R = 8.314 #R é a constante universal dos gases perfeitos [J/molK]
 tl =float(28./365.) #t′ a idade do concreto quando exposto aos íons [anos]
 t0 =float(28./365) # t0 é a idade de medida do coeficiente de difusão de cloretos
@@ -120,7 +121,8 @@ for t in td:
         {'varname': 'cobr', 'vardist': 'normal', 'varmean': mediacobr, 'varstd': desviocobr }, 
         {'varname': 'Temp', 'vardist': 'normal', 'varmean': mediaTemp, 'varstd': desvioTemp }, 
         {'varname': 'alpha', 'vardist': 'normal', 'varmean': mediaalpha, 'varstd': desvioalpha },
-        {'varname': 'D0', 'vardist': 'normal', 'varmean': mediaD0, 'varstd': desvioD0 }
+        {'varname': 'D0', 'vardist': 'normal', 'varmean': mediaD0, 'varstd': desvioD0 },
+        {'varname': 'fator_D', 'vardist': 'normal', 'varmean': 0.832, 'varstd': 0.024 }
         
         
     ]
@@ -194,7 +196,7 @@ plt.xticks(np.arange(0, max(td)+10, 10))
 plt.yticks(np.arange(0, max(pf*100.)+5, 5))
 plt.legend(loc='lower right', title='Gjorv - Type 1 - Temp. = 10°C')
 plt.grid()
-plt.savefig('D:\Reliability\cdf_td.pdf')
+plt.savefig('C://Users//Mauro//OneDrive//Reliability//cdf_td.pdf')
 plt.show()
 
 

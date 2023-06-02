@@ -18,6 +18,7 @@ from realpy import *
 #
 
 
+
 def gfunction(x, d):
 
      #
@@ -34,11 +35,13 @@ def gfunction(x, d):
      Temp = x[3]
      alpha = x[4]
      D0 = x[5]
+     fator_D = x[6]
+     
 
      # Cálculo do fator ke
      ke = np.exp(EA/R*(1./293.-1./(273.+Temp)))    
      # Cálculo do coeficiente de difussão no tempo t
-     D = D0/(1.-alpha)*((1.+tl/t)**(1.-alpha)-(tl/t)**(1.-alpha))*(t0/t)**alpha*ke
+     D = fator_D*D0/(1.-alpha)*((1.+tl/t)**(1.-alpha)-(tl/t)**(1.-alpha))*(t0/t)**alpha*ke
      # D = D0*(t0/t)**alpha*ke
      #cxtp é a concentração de cloretos em x=xc após t  anos
      xc = 2.00 * (D * t) ** 0.5  * erfinv(1. - Ccr / Cs)
@@ -60,16 +63,16 @@ td=np.arange(0,tf+1, 5)
 nt = int(tf/5)
 pf = np.zeros(nt+1)
 beta = np.zeros(nt+1)
+data = np.zeros((nt+1,6))
 delta_pf = np.zeros(nt+1)
 nsimul = np.zeros(nt+1)
-ttotal= np.zeros(nt+1)
-
+ttotal = np.zeros(nt+1)
 
 # Dados de entrada determinísticos
 
-EA=5000.00 #EA é a ativação de energia para a difusão de cloretos [kcal/mol]
-R = 1.00 #R é a constante universal dos gases perfeitos 
-tl =float(180./365.) #t′ a idade do concreto quando exposto aos íons [anos]
+EA=35000.00 #EA é a ativação de energia para a difusão de cloretos [J/mol]
+R = 8.314 #R é a constante universal dos gases perfeitos [J/molK]
+tl =float(28./365.) #t′ a idade do concreto quando exposto aos íons [anos]
 t0 =float(28./365) # t0 é a idade de medida do coeficiente de difusão de cloretos
 
 # Geração das variáveis para as simulações de Monte Carlo
@@ -78,29 +81,29 @@ t0 =float(28./365) # t0 é a idade de medida do coeficiente de difusão de clore
 
 
 # Concentração crítica de cloretos - distribuição normal
-mediaCcr=0.48
+mediaCcr=0.40
 desvioCcr=0.10
 
 # Concentração superficial de cloretos - distribuição normal
-mediaCs=2.50
-desvioCs=0.54
+mediaCs=5.50
+desvioCs=1.35
 
 # Cobrimento da armadura - distribuição normal
-mediacobr=0.055
-desviocobr=0.005
+mediacobr=70./1000.
+desviocobr=6./1000.
 
 # Temperatura média anual - distribuição normal
 mediaTemp=20.
-desvioTemp=0.01
+desvioTemp=0.001
 
 # alpha = fator de envelhecimento do concreto - distribuição normal
-mediaalpha=0.37
-desvioalpha=0.07
+mediaalpha=0.40
+desvioalpha=0.08
 
 # D0 = coeficiente de difusão médio aos 28 dias = distribuição normal
 
-mediaD0 = 3.5*31536000.e-12 #coeficiente de difusão de cloretos em m2/anos
-desvioD0 = 0.26*31536000.e-12
+mediaD0 = 6.00*31536000.e-12 #coeficiente de difusão de cloretos em m2/anos
+desvioD0 = 0.64*31536000.e-12
 
 #
 # Laço sobre o tempo de despassivação 
@@ -122,7 +125,9 @@ for t in td:
         {'varname': 'cobr', 'vardist': 'normal', 'varmean': mediacobr, 'varstd': desviocobr }, 
         {'varname': 'Temp', 'vardist': 'normal', 'varmean': mediaTemp, 'varstd': desvioTemp }, 
         {'varname': 'alpha', 'vardist': 'normal', 'varmean': mediaalpha, 'varstd': desvioalpha },
-        {'varname': 'D0', 'vardist': 'normal', 'varmean': mediaD0, 'varstd': desvioD0 }
+        {'varname': 'D0', 'vardist': 'normal', 'varmean': mediaD0, 'varstd': desvioD0 },
+        {'varname': 'fator_D', 'vardist': 'normal', 'varmean': 0.832, 'varstd': 0.024 }
+        
         
     ]
 
@@ -137,7 +142,7 @@ for t in td:
         ]
 
     #
-    # FORM method
+    # MC method
     #
     vida_util = Reliability(xvar, dvar, gfunction, None)
     beta[i], pf[i], delta_pf[i], nsimul[i],ttotal[i] = vida_util.mc(100, 10_000, 0.05, 1.50, igraph=False, iprint=False,)
@@ -172,15 +177,20 @@ with pd.ExcelWriter('C://Users//Mauro//OneDrive//Reliability//dados_td.xlsx', en
 
 # CDF do tempo de despassivação
 # 
-plt.plot(td,pf)
+pf_duracon_10 = np.array([ 0.0000,  0.0000,  0.0750,  0.7470,  2.6000,  5.7310,  9.7110,  14.1450,  18.7000,  23.3480,  27.8820])
+pf_duracon_20 = np.array([ 0.0000,  0.0580,  2.6530, 10.9010, 21.6100, 32.5160, 42.2720,  50.5160,  57.3410,  62.9470,  67.6820])
+ 
+plt.plot(td,pf*100.,label="Realpy")
+plt.plot(td,pf_duracon_20,label="Duracon")
 plt.title('Probabilidade acumulada do tempo de despassivação')
 plt.xlabel('tempo de despassivação td (anos)')
 plt.ylabel('Probabilidade de falha')
 plt.xlim(0,td.max())
 plt.xticks(np.arange(0, max(td)+10, 10))
-plt.yticks(np.arange(0, max(pf)+0.05, 0.05))
+plt.yticks(np.arange(0, max(pf*100.)+5, 5))
+plt.legend(loc='lower right', title='Gjorv - Type 1 - Temp. = 20°C')
 plt.grid()
-plt.savefig('D:\Reliability\cdf_td.pdf')
+plt.savefig('C://Users//Mauro//OneDrive//Reliability//cdf_td.pdf')
 plt.show()
 
 
