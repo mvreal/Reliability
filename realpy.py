@@ -2385,4 +2385,53 @@ class Reliability():
             print('beta_sup =', beta_sup)
 
 
+    def generator(self, ns, nsigma=1.00, iprint=False):
+            """
+            Method to generate random variables
+
+            """
+            #
+            #
+            # Number of variables of the problem
+            #
+            
+            ns = int(ns)
+            uk_cycle = np.zeros((ns, self.nxvar))
+            #
+            # Correlation matrix is self.Rz
+            #
+            if iprint:
+                print('Correlation Matrix after Nataf correction:')
+                print(self.Rz)
+            #
+            # Standard deviation multiplier for MC-IS
+            #
+            #
+            nsigma = 1.00
+
+            #
+            #
+            # Number of Monte Carlo simulations
+            #
+            #
+            # Matrix xp(ns, self.nxvar) for ns Monte Carlo simulations and self.nxvar random variables
+            #
+            xp = np.zeros((ns, self.nxvar))
+            wp = np.ones(ns)
+            fx = np.ones(ns)
+            
+            #
+
+            uk_cycle = np.random.rand(ns, self.nxvar)
+            
+            #
+            # Step 1 - Generation of the random numbers according to their appropriate distribution
+            #
+
+            xp, wp, fx = self.var_gen(ns, uk_cycle, nsigma, iprint)
+            #
+            #
+
+            return xp
+
 
