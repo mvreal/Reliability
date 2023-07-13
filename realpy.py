@@ -7,6 +7,7 @@ from scipy.stats import invweibull
 from scipy.stats import weibull_min
 from scipy.stats import multivariate_normal
 from scipy.stats import beta as beta_dist
+from scipy.stats import gamma as gamma_dist
 import scipy.optimize
 from scipy import optimize
 from scipy.optimize import fsolve
@@ -61,6 +62,8 @@ class Reliability():
                 var['vardist'] = 'weibull'
             elif var['vardist'].lower() in ['Beta', 'beta', 'beta_dist']:
                 var['vardist'] = 'beta'
+            elif var['vardist'].lower() in ['Gamma','gamma', 'Gama','gama']:
+                var['vardist'] = 'gamma'
 
             # For the beta distribution calculates the mean and standard deviation as a function of parameters a, b, q and r
             if var['vardist'] == 'beta':
@@ -494,6 +497,26 @@ class Reliability():
                 sigmaxneq = norm.pdf(zval) / pdfx
                 muxneq = xval - zval * sigmaxneq
 
+
+            #
+            #
+            # Gamma distribution
+            #
+            elif namedist.lower() == 'gamma':
+                mux = xpar1
+                sigmax = xpar2
+                delta = sigmax / mux
+                k = 1. / delta ** 2
+                v = k / mux
+                a = k
+                loc = 0.00
+                scale = 1. / v
+                pdfx = gamma_dist.pdf(xval, a, loc, scale)
+                cdfx = gamma_dist.cdf(xval, a, loc, scale)
+                zval = norm.ppf(cdfx)
+                sigmaxneq = norm.pdf(zval) / pdfx
+                muxneq = xval - zval * sigmaxneq
+
             return muxneq, sigmaxneq
         
         #
@@ -884,6 +907,25 @@ class Reliability():
                 sigmaxneq = norm.pdf(zval) / pdfx
                 muxneq = xval - zval * sigmaxneq
 
+            #
+            #
+            # Gamma distribution
+            #
+            elif namedist.lower() == 'gamma':
+                mux = xpar1
+                sigmax = xpar2
+                deltax = sigmax / mux
+                k = 1. / deltax
+                v = k / mux
+                a = k
+                loc = 0.00
+                scale = 1. / v
+                pdfx = gamma_dist.pdf(xval, a, loc, scale)
+                cdfx = gamma_dist.cdf(xval, a, loc, scale)
+                zval = norm.ppf(cdfx)
+                sigmaxneq = norm.pdf(zval) / pdfx
+                muxneq = xval - zval * sigmaxneq
+
             return muxneq, sigmaxneq
         
         def direct_mapping(xval, xpar1, xpar2, xpar3, xpar4, namedist):
@@ -976,6 +1018,21 @@ class Reliability():
                 if xval<=a: xval = a + epsilon
                 if xval>=b: xval = b - epsilon
                 cdfx = beta_dist.cdf(xval, q, r, loc, scale)
+
+            #
+            #
+            # Gamma distribution. Direct mapping to standard Gaussian space
+            #
+            elif namedist.lower() == 'gamma':
+                mux = xpar1
+                sigmax = xpar2
+                delta = sigmax / mux
+                k = 1. / delta ** 2
+                v = k / mux
+                a = k
+                loc = 0.00
+                scale = 1. / v
+                cdfx = gamma_dist.cdf(xval, a, loc, scale)
                 
 
             return cdfx
@@ -1055,6 +1112,21 @@ class Reliability():
                 loc = a
                 scale = (b - a)
                 xval = beta_dist.ppf(cdfx, q, r, loc, scale)
+
+            #
+            #
+            # Gamma distribution. Inverse mapping from standard Gaussian space
+            #
+            elif namedist.lower() == 'gamma':
+                mux = xpar1
+                sigmax = xpar2
+                delta = sigmax / mux
+                k = 1. / delta ** 2
+                v = k / mux
+                a = k
+                loc = 0.00
+                scale = 1. / v
+                xval = gamma_dist.ppf(cdfx, a, loc, scale)
                 
 
             return xval
@@ -1738,6 +1810,36 @@ class Reliability():
                 fx = beta_dist.pdf(x[:, i], q, r, loc, scale)
                 hx = beta_dist.pdf(x[:, i], q, r, loch, scaleh)
                 cdfx = beta_dist.cdf(x[:, i], q, r, loc, scale)
+                zf[:, i] = norm.ppf(cdfx, 0, 1)
+                weight = weight * ((fx/norm.pdf(zf[:, i], 0, 1)) / (hx/norm.pdf(zk[:, i], 0, 1)))
+                fxixj = fxixj * fx / norm.pdf(zf[:, i], 0, 1)
+
+            #
+            #
+            # Gamma distribution
+            #
+            elif namedist.lower() == 'gamma':
+                mufx = float(var['varmean'])
+                sigmafx = float(var['varstd'])
+                deltafx = sigmafx / mufx
+                k = 1. / deltafx ** 2
+                v = k / mufx
+                a = k
+                loc = 0.00
+                scale = 1. / v
+                muhx = float(var['varhmean'])
+                sigmahx = nsigma * sigmafx
+                deltahx = sigmahx / muhx
+                kh = 1. / deltahx ** 2
+                vh = kh / muhx
+                ah = kh
+                loch = 0.00
+                scaleh = 1. / vh
+                uk = norm.cdf(zk[:, i])
+                x[:, i] = gamma_dist.ppf(uk, a, loc, scale)
+                fx = gamma_dist.pdf(x[:, i], a, loc, scale)
+                hx = gamma_dist.pdf(x[:, i], ah, loch, scaleh)
+                cdfx = gamma_dist.cdf(x[:, i], a, loc, scale)
                 zf[:, i] = norm.ppf(cdfx, 0, 1)
                 weight = weight * ((fx/norm.pdf(zf[:, i], 0, 1)) / (hx/norm.pdf(zk[:, i], 0, 1)))
                 fxixj = fxixj * fx / norm.pdf(zf[:, i], 0, 1)
