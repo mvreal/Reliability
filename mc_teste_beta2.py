@@ -42,8 +42,9 @@ def gfunction(x, d):
 # Random variables: name, probability distribution, mean and coefficient of variation
 
 xvar = [
-    {'varname': 'R', 'vardist': 'beta', 'parameter1': 0.45, 'parameter2': 1.25, 'parameter3': 0.22, 'parameter4': 0.36},
-    {'varname': 'S', 'vardist': 'normal', 'varmean': 0.40, 'varstd': 0.10}      
+    {'varname': 'R', 'vardist': 'normal', 'varmean': 200, 'varstd': 30 },
+    {'varname': 'S', 'vardist': 'beta', 'parameter1': 50, 'parameter2': 150, 'parameter3': 2.625, 'parameter4': 2.625}      
+#    {'varname': 'S', 'vardist': 'normal', 'varmean': 100, 'varstd': 20 }
     ]
 
 # Design variables
@@ -57,7 +58,7 @@ dvar = [
 # MCS  method
 #
 column = Reliability(xvar, dvar, gfunction)
-column.mc(10, 100000, 0.05, 1.00)
+column.adaptive(10, 10000, 0.03, 1.50)
 #
 
 

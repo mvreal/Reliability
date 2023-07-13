@@ -1664,9 +1664,7 @@ class Reliability():
             #
             # Uniform or constant distribution
             #
-            # *To do* Parameters for the sampling function hx for the uniform distribution
-            # c = ?, d = ? ---> Verificar
-            #
+            
             elif namedist.lower() == 'uniform':
                 a = float(var['parameter1'])
                 b = float(var['parameter2'])
@@ -1679,7 +1677,7 @@ class Reliability():
                 ah, bh =  fsolve(uniform_limits, (1, 1), args= (muhx, sigmahx))  
                                 
                 uk = norm.cdf(zk[:, i])
-                x[:, i] = a + (b - a) * uk
+                x[:, i] = ah + (bh - ah) * uk
                 zf[:, i] = norm.ppf(uk)
                 fx = uniform.pdf(x[:, i], a, b)
                 hx = uniform.pdf(x[:, i], ah, bh)
@@ -1836,7 +1834,7 @@ class Reliability():
                 loch = 0.00
                 scaleh = 1. / vh
                 uk = norm.cdf(zk[:, i])
-                x[:, i] = gamma_dist.ppf(uk, a, loc, scale)
+                x[:, i] = gamma_dist.ppf(uk, ah, loch, scaleh)
                 fx = gamma_dist.pdf(x[:, i], a, loc, scale)
                 hx = gamma_dist.pdf(x[:, i], ah, loch, scaleh)
                 cdfx = gamma_dist.cdf(x[:, i], a, loc, scale)

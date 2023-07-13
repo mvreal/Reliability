@@ -36,7 +36,7 @@ def gfunction(x, d):
 # Random variables: name, probability distribution, mean and coefficient of variation
 
 xvar = [
-    {'varname': 'R', 'vardist': 'normal', 'varmean': 25, 'varstd': 0.01 },
+    {'varname': 'R', 'vardist': 'normal', 'varmean': 30, 'varcov': 0.10 },
     {'varname': 'S', 'vardist': 'gamma', 'varmean': 15, 'varcov': 0.25 }
     ]
 
