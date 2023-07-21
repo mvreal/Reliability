@@ -2909,3 +2909,335 @@ class Reliability():
                 plt.show()
 
             return beta, pf, delta_pf, nsimul, ttotal
+    
+    
+    def adaptive2(self, nc, ns, delta_lim, nsigma=1.50, igraph=True, iprint=True):
+        """
+        Monte Carlo Simulations with Importance Sampling (MC-IS)
+        Importance sampling with adaptative technique
+        Melchers, R.E. Search-based importance sampling.
+        Structural Safety, 9 (1990) 117-128
+
+        """
+        #
+        #
+        ti = time.time()
+        #
+        # Number of variables of the problem
+        #
+        nfail = 0
+        niter = 0
+        nc = int(nc)
+        ns = int(ns)
+        pfc = np.zeros(nc)
+        cov_pf = np.zeros(nc)
+        pf_mean = np.zeros(nc)
+        sum1 = 0.00
+        sum2 = 0.00
+        fxmax = 0.00
+        fxmax_cycle = np.zeros(nc)
+        
+
+        #
+        # Correlation matrix is self.Rz
+        #
+        if iprint:
+            print('Correlation Matrix after Nataf correction:')
+            print(self.Rz)
+
+        #
+        #
+        # Number of Monte Carlo simulations
+        #
+        #
+        # Matrix xp(ns, self.nxvar) for ns Monte Carlo simulations and self.nxvar random variables
+        #
+        xp = np.zeros((ns, self.nxvar))
+        wp = np.ones(ns)
+        fx = np.ones(ns)
+        
+
+
+        # Matrix dmatrix(ns, self.ndvar) for ns Monte Carlo simulations and self.ndvar design variables
+
+        dmatrix = np.array([self.d.T] * ns)
+
+        #
+        # Adaptive cycles
+        #
+
+        for icycle in range(nc):
+            kcycle = icycle + 1
+
+            #
+            # Monte Carlo Simulations
+            #
+            
+            #
+            #
+            # Step 1 - Generation of the random numbers according to their appropriate distribution
+            #
+
+            xp, wp, fx = self.var_rvs(ns, nsigma, iprint)
+            #
+            #
+            # Step 2 - Evaluation of the limit state function g(x)
+            #
+            gx = list(map(self.fel, xp, dmatrix))
+            gx = np.array(gx)
+
+            #
+            #
+            # Step 3 - Evaluation of the indicator function I[g(x)]
+            #
+            igx = np.where(gx <= 0.00, wp, 0)
+            nfail = sum(igx)
+            pfc[icycle] = nfail / ns
+            sum1 += pfc[icycle]
+            sum2 += pfc[icycle] ** 2
+            fxmax_cycle[icycle] = fx.max()
+
+            #
+            #  Step 4 - Select adaptative mean
+            #
+            if nfail == 0:
+                #
+                # No failures in ns simulations
+                #
+                imin = np.argmin(gx)
+                #
+                i = -1
+                for var in self.xvar:
+                    i += 1
+                    var['varhmean'] = xp[imin, i]
+
+            else:
+                #
+                # Ocurrence of nfail failures in ns simulations
+                #
+                if fxmax_cycle[icycle] > 1.02 * fxmax:
+                    fxmax = fxmax_cycle[icycle]
+                    imax = np.argmax(fx)
+                    #
+                    i = -1
+                    for var in self.xvar:
+                        i += 1
+                        var['varhmean'] = xp[imax, i]
+
+            #
+            #  Step 6 - Evaluation of the error in the estimation of Pf
+            #
+
+            pf_mean[icycle] = sum1 / kcycle
+            pf = pf_mean[icycle]
+            if pf > 0.00 and kcycle > 1:
+                cov_pf[icycle] = 1. / (pf * np.sqrt(kcycle * (kcycle - 1))) * np.sqrt(sum2 - 1. / kcycle * sum1 ** 2)
+            else:
+                cov_pf[icycle] = 0.00
+            delta_pf = cov_pf[icycle]
+            # Probability of failure in this cycle
+            if iprint:
+                print('Cycle =', kcycle)
+                print(f'Probability of failure pf ={pf}')
+                print(f'Coefficient of variation of pf ={delta_pf}')
+            if delta_pf < delta_lim and kcycle > 3:
+                break
+
+        beta = -norm.ppf(pf, 0, 1)
+        nsimul = kcycle * ns
+        tf = time.time()
+        ttotal = tf - ti
+        #
+        if iprint:
+            print('*** Resultados do Método Monte Carlo ***')
+            print(f'\nReliability Index Beta = {beta}')
+            print(f'Probability of failure pf ={pf}')
+            print(f'COV of pf ={delta_pf}')
+            print('nimul = {0:0.4f} '.format(nsimul))
+            print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
+            print(f'Processing time = {ttotal} s')
+
+        if igraph:
+            # Plot results:
+            cycle = np.arange(1, kcycle+1, 1)
+
+            plt.figure(1, figsize=(8.5, 6))
+            plt.plot(cycle, pf_mean[:kcycle])
+            plt.title("Convergence of Probability of Failure")
+            plt.xlabel("Cycle")
+            plt.ylabel("Pf")
+            plt.show()
+
+            plt.figure(2, figsize=(8.5, 6))
+            plt.plot(cycle, cov_pf[:kcycle])
+            plt.title("CoV of the Probability of Failure")
+            plt.xlabel("Cycle")
+            plt.ylabel("CoV Pf")
+            plt.show()
+
+        return beta, pf, delta_pf, nsimul, ttotal
+    
+    
+    def bucher2(self, nc, ns, delta_lim, nsigma=1.50, igraph=True, iprint=True):
+        """
+        Monte Carlo Simulations with Importance Sampling (MC-IS)
+        Importance sampling with adaptive technique
+        BUCHER, C.G. Adaptive sampling – an iterative fast Monte Carlo procedure. Structural
+        safety, v. 5, n. 2, p. 119-126, 1988.
+
+        """
+        #
+        #
+        ti = time.time()
+        #
+        # Number of variables of the problem
+        #
+        nc = int(nc)
+        ns = int(ns)
+        xm = np.zeros(self.nxvar)
+        sum_xwig = np.zeros(self.nxvar)
+        sum_wig = 0.00
+        pfc = np.zeros(nc)
+        cov_pf = np.zeros(nc)
+        pf_mean = np.zeros(nc)
+        sum1 = 0.00
+        sum2 = 0.00
+       
+
+        #
+        # Correlation matrix is self.Rz
+        #
+        if iprint:
+            print('Correlation Matrix after Nataf correction:')
+            print(self.Rz)
+
+        #
+        #
+        # Number of Monte Carlo simulations
+        #
+        #
+        # Matrix xp(ns, self.nxvar) for ns Monte Carlo simulations and self.nxvar random variables
+        #
+        xp = np.zeros((ns, self.nxvar))
+        wp = np.ones(ns)
+        fx = np.ones(ns)
+
+        # Matrix dmatrix(ns, self.ndvar) for ns Monte Carlo simulations and self.ndvar design variables
+
+        dmatrix = np.array([self.d.T] * ns)
+
+        #
+        # Adaptive cycles
+        #
+
+        for icycle in range(nc):
+            kcycle = icycle + 1
+
+            #
+            # Monte Carlo Simulations
+            #
+            
+            #
+            # Step 1 - Generation of the random numbers according to their appropriate distribution
+            #
+
+            xp, wp, fx = self.var_rvs(ns, nsigma, iprint)
+            #
+            #
+            # Step 2 - Evaluation of the limit state function g(x)
+            #
+            gx = list(map(self.fel, xp, dmatrix))
+            gx = np.array(gx)
+
+            #
+            #
+            # Step 3 - Evaluation of the indicator function I[g(x)]
+            #
+            igx = np.where(gx <= 0.00, wp, 0)
+            nfail = sum(igx)
+            pfc[icycle] = nfail / ns
+            sum1 += pfc[icycle]
+            sum2 += pfc[icycle] ** 2
+            wig = np.copy(igx)
+
+            #
+            #  Step 4 - Select adaptive mean
+            #
+            if nfail == 0:
+                #
+                # No failures in ns simulations
+                #
+                imin = np.argmin(gx)
+                #
+                i = -1
+                for var in self.xvar:
+                    i += 1
+                    xm[i] = xp[imin, i]
+                    var['varhmean'] = xm[i]
+
+            else:
+                #
+                # Ocurrence of nfail failures in ns simulations
+                #
+                sum_xwig += np.dot(wig.T, xp)
+                sum_wig += sum(wig)
+                #
+                i = -1
+                for var in self.xvar:
+                    i += 1
+                    xm[i] = sum_xwig[i] / sum_wig
+                    var['varhmean'] = xm[i]
+
+            #
+            #  Step 6 - Evaluation of the error in the estimation of Pf
+            #
+
+            pf_mean[icycle] = sum1 / kcycle
+            pf = pf_mean[icycle]
+            if pf > 0.00 and kcycle > 1:
+                cov_pf[icycle] = 1. / (pf * np.sqrt(kcycle * (kcycle - 1))) * np.sqrt(sum2 - 1. / kcycle * sum1 ** 2)
+            else:
+                cov_pf[icycle] = 0.00
+            delta_pf = cov_pf[icycle]
+            nc_final = icycle
+            # Probability of failure in this cycle
+            if iprint:
+                print('Cycle =', kcycle)
+                print(f'Probability of failure pf ={pf}')
+                print(f'Coefficient of variation of pf ={delta_pf}')
+            if delta_pf < delta_lim and kcycle > 3:
+                break
+
+        beta = -norm.ppf(pf, 0, 1)
+        nsimul = kcycle * ns
+        tf = time.time()
+        ttotal = tf - ti
+        #
+        if iprint:
+            print('*** Resultados do Método Monte Carlo ***')
+            print(f'\nReliability Index Beta = {beta}')
+            print(f'Probability of failure pf ={pf}')
+            print(f'COV of pf ={delta_pf}')
+            print('nimul = {0:0.4f} '.format(nsimul))
+            print(f'Function g(x): mean = {gx.mean()}, std = {gx.std()} ')
+            print(f'Processing time = {ttotal} s')
+
+        if igraph:
+            # Plot results:
+            cycle = np.arange(1, kcycle+1, 1)
+
+            plt.figure(1, figsize=(8.5, 6))
+            plt.plot(cycle, pf_mean[:kcycle])
+            plt.title("Convergence of Probability of Failure")
+            plt.xlabel("Cycle")
+            plt.ylabel("Pf")
+            plt.show()
+
+            plt.figure(2, figsize=(8.5, 6))
+            plt.plot(cycle, cov_pf[:kcycle])
+            plt.title("CoV of the Probability of Failure")
+            plt.xlabel("Cycle")
+            plt.ylabel("CoV Pf")
+            plt.show()
+
+        return beta, pf, delta_pf, nsimul, ttotal

@@ -39,5 +39,5 @@ dvar = [
 # MCS method
 #
 beam = Reliability(xvar, dvar, gfunction)
-beam.bucher(100, 5000, 0.02, 1.50)
+beam.bucher2(100, 5000, 0.02, 1.50)
 #
