@@ -1679,8 +1679,8 @@ class Reliability():
                 uk = norm.cdf(zk[:, i])
                 x[:, i] = ah + (bh - ah) * uk
                 zf[:, i] = norm.ppf(uk)
-                fx = uniform.pdf(x[:, i], a, b)
-                hx = uniform.pdf(x[:, i], ah, bh)
+                fx = uniform.pdf(x[:, i], a, b-a)
+                hx = uniform.pdf(x[:, i], ah, bh-ah)
                 weight = weight * ((fx/norm.pdf(zf[:, i], 0, 1)) / (hx/norm.pdf(zk[:, i], 0, 1)))
                 fxixj = fxixj * fx / norm.pdf(zf[:, i], 0, 1)
             #
@@ -1853,6 +1853,252 @@ class Reliability():
         fxixj = fxixj * phif
 
         return x, weight, fxixj
+    
+
+    def var_rvs(self, ns, nsigma=1.00, iprint=True):
+        """
+
+           Random variables generator for the Monte Carlo Simulation methods
+
+        """
+
+        def fkapa(kapa, deltax, gsignal):
+            fk = 1.00 + deltax ** 2 - gamma(1.00 + gsignal * 2.00 / kapa) / gamma(1.00 + gsignal * 1.00 / kapa) ** 2
+            return fk
+        
+        def beta_limits(vars, mux, sigmax, q, r):
+            a, b = vars
+            eq1 = a + q / (q + r) * (b - a) - mux
+            eq2 = ((q * r) / ((q + r) ** 2 * (q + r + 1))) ** (0.50) * (b - a) - sigmax
+            return [eq1, eq2]
+        
+        def uniform_limits(vars, mux, sigmax):
+            a, b = vars
+            eq1 = (a + b) / 2 - mux
+            eq2 = (b - a) / np.sqrt(12.) - sigmax
+            return [eq1, eq2]
+
+        x = np.zeros((ns, self.nxvar))
+        weight = np.ones(ns)
+        fx = np.zeros(ns)
+        hx = np.zeros(ns)
+        fxixj = np.ones(ns)
+        
+
+
+
+        #
+        # Step 1 - Determination of equivalent correlation coefficients and
+        #          Jacobian matrix Jzy
+        #
+        #
+        # Cholesky decomposition of the correlation matrix
+        #
+        L = scipy.linalg.cholesky(self.Rz, lower=True)
+        Jzy = np.copy(L)
+
+        #
+        # Generation of Gaussian random numbers
+        #
+
+        
+        zf = np.zeros((ns, self.nxvar))
+        
+        #
+        i = -1
+        for var in self.xvar:
+            i += 1
+            if var['varstd'] == 0.00:
+                var['varstd'] = float(var['varcov']) * float(var['varmean'])
+            if iprint:
+                print(self.xvar[i])
+            #
+            #
+            # Normal distribution
+            #
+            namedist = var['vardist']
+            if namedist.lower() == 'gauss':
+                mufx = float(var['varmean'])
+                sigmafx = float(var['varstd'])
+                muhx = float(var['varhmean'])
+                sigmahx = nsigma * sigmafx
+                x[:, i] = norm.rvs(loc=muhx, scale=sigmahx, size=ns)
+                fx = norm.pdf(x[:, i], mufx, sigmafx)
+                hx = norm.pdf(x[:, i], muhx, sigmahx)
+                weight = weight * (fx / hx)
+                fxixj = fxixj * fx 
+            #
+            # Uniform or constant distribution
+            #
+            
+            elif namedist.lower() == 'uniform':
+                a = float(var['parameter1'])
+                b = float(var['parameter2'])
+                
+                mufx = float(var['varmean'])
+                sigmafx = float(var['varstd'])
+                
+                muhx = float(var['varhmean'])
+                sigmahx = nsigma * sigmafx
+                ah, bh =  fsolve(uniform_limits, (1, 1), args= (muhx, sigmahx))  
+                                
+                
+                x[:, i] = uniform.rvs(loc=ah, scale= (bh-ah), size = ns)
+                fx = uniform.pdf(x[:, i], a, b-a)
+                hx = uniform.pdf(x[:, i], ah, bh-ah)
+                weight = weight * (fx / hx)
+                fxixj = fxixj * fx 
+            #
+            # Lognormal distribution
+            #
+            elif namedist.lower() == 'lognorm':
+                mufx = float(var['varmean'])
+                sigmafx = float(var['varstd'])
+                muhx = float(var['varhmean'])
+                sigmahx = nsigma * sigmafx
+                zetafx = np.sqrt(np.log(1.00 + (sigmafx / mufx) ** 2))
+                lambdafx = np.log(mufx) - 0.5 * zetafx ** 2
+                zetahx = np.sqrt(np.log(1.00 + (sigmahx / muhx) ** 2))
+                lambdahx = np.log(muhx) - 0.5 * zetahx ** 2
+                x[:, i] = lognorm.rvs(s=zetahx, loc=0.00, scale=lambdahx, size=ns)
+                fx = lognorm.pdf(x[:, i], s=zetafx, loc=0.00, scale=lambdafx)
+                hx = lognorm.pdf(x[:, i], s=zetahx, loc=0.00, scale=lambdahx)
+                weight = weight * (fx / hx)
+                fxixj = fxixj * fx 
+
+            #
+            # Gumbel distribution
+            #
+            elif namedist.lower() == 'gumbel':
+                mufx = float(var['varmean'])
+                sigmafx = float(var['varstd'])
+                muhx = float(var['varhmean'])
+                sigmahx = nsigma * sigmafx
+                alphafn = np.pi / np.sqrt(6.00) / sigmafx
+                ufn = mufx - np.euler_gamma / alphafn
+                betafn = 1.00 / alphafn
+                alphahn = np.pi / np.sqrt(6.00) / sigmahx
+                uhn = muhx - np.euler_gamma / alphahn
+                betahn = 1.00 / alphahn
+                x[:, i] = gumbel_r.rvs( loc=uhn, scale=betahn, size=ns)
+                fx = gumbel_r.pdf(x[:, i], ufn, betafn)
+                hx = gumbel_r.pdf(x[:, i], uhn, betahn)
+                weight = weight * (fx / hx)
+                fxixj = fxixj * fx 
+
+            #
+            # Frechet distribution
+            #
+            elif namedist.lower() == 'frechet':
+                mufx = float(var['varmean'])
+                sigmafx = float(var['varstd'])
+                muhx = float(var['varhmean'])
+                sigmahx = nsigma * sigmafx
+                deltafx = sigmafx / mufx
+                kapa0 = 2.50
+                gsinal = -1.00
+                kapaf = scipy.optimize.newton(fkapa, kapa0, args=(deltafx, gsinal))
+                vfn = mufx / gamma(1.00 - 1.00 / kapaf)
+                deltahx = sigmahx / muhx
+                kapa0 = 2.50
+                gsinal = -1.00
+                kapah = scipy.optimize.newton(fkapa, kapa0, args=(deltahx, gsinal))
+                vhn = muhx / gamma(1.00 - 1.00 / kapah)
+                x[:, i] = invweibull.rvs(c=kapah, loc=0.00, scale=vhn, size=ns)
+                fx = invweibull.pdf(x[:, i], c=kapaf, loc=0.00, scale=vfn)
+                hx = invweibull.pdf(x[:, i], c=kapah, loc=0.00, scale=vhn)
+                weight = weight * (fx / hx)
+                fxixj = fxixj * fx 
+
+            #
+            #
+            # Weibull distribution - minimum
+            #
+            elif namedist.lower() == 'weibull':
+                mufx = float(var['varmean'])
+                sigmafx = float(var['varstd'])
+                epsilon = float(var['varinf'])
+                muhx = float(var['varhmean'])
+                sigmahx = nsigma * sigmafx
+                deltafx = sigmafx / (mufx - epsilon)
+                kapa0 = 2.50
+                gsinal = 1.00
+                kapaf = scipy.optimize.newton(fkapa, kapa0, args=(deltafx, gsinal))
+                w1f = (mufx - epsilon) / gamma(1.00 + 1.00 / kapaf) + epsilon
+                deltahx = sigmahx / (muhx - epsilon)
+                kapa0 = 2.50
+                gsinal = 1.00
+                kapah = scipy.optimize.newton(fkapa, kapa0, args=(deltahx, gsinal))
+                w1h = (muhx - epsilon) / gamma(1.00 + 1.00 / kapah) + epsilon
+                x[:, i] = weibull_min.rvs(c=kapah, loc=epsilon, scale=w1h-epsilon, size=ns)
+                fx = weibull_min.pdf(x[:, i], c=kapaf, loc=epsilon, scale=w1f-epsilon)
+                hx = weibull_min.pdf(x[:, i], c=kapah, loc=epsilon, scale=w1h-epsilon)
+                weight = weight * (fx / hx)
+                fxixj = fxixj * fx 
+
+            #
+            #
+            # Beta distribution
+            #
+            elif namedist.lower() == 'beta':
+                a = float(var['parameter1'])
+                b = float(var['parameter2'])
+                q = float(var['parameter3'])
+                r = float(var['parameter4'])
+                mufx = float(var['varmean'])
+                sigmafx = float(var['varstd'])
+                loc = a
+                scale = (b - a)
+                muhx = float(var['varhmean'])
+                sigmahx = nsigma * sigmafx
+                ah, bh =  fsolve(beta_limits, (1, 1), args= ( muhx, sigmahx, q, r))  
+                loch = ah
+                scaleh = (bh - ah)        
+                x[:, i] = beta_dist.rvs(q, r, loch, scaleh, size=ns)
+                fx = beta_dist.pdf(x[:, i], q, r, loc, scale)
+                hx = beta_dist.pdf(x[:, i], q, r, loch, scaleh)
+                weight = weight * (fx / hx)
+                fxixj = fxixj * fx 
+
+            #
+            #
+            # Gamma distribution
+            #
+            elif namedist.lower() == 'gamma':
+                mufx = float(var['varmean'])
+                sigmafx = float(var['varstd'])
+                deltafx = sigmafx / mufx
+                k = 1. / deltafx ** 2
+                v = k / mufx
+                a = k
+                loc = 0.00
+                scale = 1. / v
+                muhx = float(var['varhmean'])
+                sigmahx = nsigma * sigmafx
+                deltahx = sigmahx / muhx
+                kh = 1. / deltahx ** 2
+                vh = kh / muhx
+                ah = kh
+                loch = 0.00
+                scaleh = 1. / vh
+                x[:, i] = gamma_dist.rvs(ah, loch, scaleh, size=ns)
+                fx = gamma_dist.pdf(x[:, i], a, loc, scale)
+                hx = gamma_dist.pdf(x[:, i], ah, loch, scaleh)
+                weight = weight * (fx / hx)
+                fxixj = fxixj * fx 
+                
+
+        norm_multivarf = multivariate_normal(mean=None, cov=self.Rz)
+        phif = list(map(norm_multivarf.pdf, zf))
+        phif = np.array(phif)
+        norm_multivarh = multivariate_normal(mean=None, cov=self.Rz)
+        phih = list(map(norm_multivarh.pdf, zk))
+        phih = np.array(phih)
+        weight = weight * phif / phih
+        fxixj = fxixj * phif
+
+        return x, weight, fxixj
+
 
     def mc(self, nc, ns, delta_lim, nsigma=1.00, igraph=True, iprint=True):
         """
