@@ -1629,12 +1629,13 @@ class Reliability():
         Jzy = np.copy(L)
 
         #
-        # Generation of Gaussian random numbers
+        # Generation of Gaussian correlated random numbers
         #
 
         yk = norm.ppf(uk_cycle)
         zf = np.zeros((ns, self.nxvar))
         zk = np.dot(Jzy, yk.T).T
+        # zk = multivariate_normal.rvs(mean = np.zeros(self.nxvar), cov = self.Rz, size=ns)
 
 
         #

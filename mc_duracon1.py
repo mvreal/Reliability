@@ -145,7 +145,7 @@ for t in td:
     # MC method
     #
     vida_util = Reliability(xvar, dvar, gfunction, None)
-    beta[i], pf[i], delta_pf[i], nsimul[i],ttotal[i] = vida_util.mc(100, 10_000, 0.05, 1.50, igraph=False, iprint=False,)
+    beta[i], pf[i], delta_pf[i], nsimul[i],ttotal[i] = vida_util.mc2(100, 10_000, 0.05, 1.50, igraph=False, iprint=False,)
     #    
     
     #
