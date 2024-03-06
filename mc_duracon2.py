@@ -90,7 +90,7 @@ mediacobr=70./1000.
 desviocobr=6./1000.
 
 # Temperatura média anual - distribuição normal
-mediaTemp=20.
+mediaTemp=10.
 desvioTemp=0.001
 
 # alpha = fator de envelhecimento do concreto - distribuição normal
@@ -209,14 +209,14 @@ pf_duracon_10 = np.array([ 0.0000,  0.0000,  0.0750,  0.7470,  2.6000,  5.7310, 
 pf_duracon_20 = np.array([ 0.0000,  0.0580,  2.6530, 10.9010, 21.6100, 32.5160, 42.2720,  50.5160,  57.3410,  62.9470,  67.6820])
  
 plt.plot(td,pf*100.,label="Realpy")
-plt.plot(td,pf_duracon_20,label="Duracon")
+plt.plot(td,pf_duracon_10,label="Duracon")
 plt.title('Probabilidade acumulada do tempo de despassivação')
 plt.xlabel('tempo de despassivação td (anos)')
 plt.ylabel('Probabilidade de falha')
 plt.xlim(0,td.max())
 plt.xticks(np.arange(0, max(td)+10, 10))
 plt.yticks(np.arange(0, max(pf*100.)+5, 5))
-plt.legend(loc='lower right', title='Gjorv - Type 1 - Temp. = 20°C')
+plt.legend(loc='lower right', title='Gjorv - Type 1 - Temp. = 10°C')
 plt.grid()
 plt.savefig('C://Users//Mauro//OneDrive//Reliability//cdf_td.pdf')
 plt.show()

@@ -9,83 +9,98 @@ from realpy import *
 #
 def gfunction(x, d):
     b = x[0]
-    h = x[1]
-    c = x[2]
-    fc = x[3]
-    fy = x[4]
-    g = x[5]
-    q = x[6]
-    thetaR = x[7]
-    thetaS = x[8]
+    ds = x[1]
+    fc = x[2]
+    fy = x[3]
+    Mg = x[4]
+    Mq = x[5]
+    thetaR = x[6]
+    thetaS = x[7]
     # Parâmetro geométrico da viga
     As1 = d[0]  # Área de aço da seção transversal da viga (m2)
     alpha_cc = d[1]  # efeito Rüsch
-    alpha_c = d[2]  # redução de fc com a temperatura
-    alpha_y = d[3]  # redução de fy com a temperatura
-    diam_l = d[4]
-    L = d[5]
-    #
-    dl = c + diam_l/2000.
+    k_c = d[2]  # redução de fc com a temperatura
+    k_s = d[3]  # redução de fy com a temperatura
+    
+      
     #
     # Função de estado limite g(x)=MR - MS = 0
-    MR = thetaR * 1000. * As1 * fy * alpha_y * (
-                h - dl - 0.5 * (As1 * fy * alpha_y) / (alpha_cc * fc * alpha_c * b))  # Momento de fletor resistente interno
+    MR = thetaR * 1000. * As1 * fy * k_s * (
+                ds - 0.5 * (As1 * fy * k_s) / (alpha_cc * fc * k_c * b))  # Momento de fletor resistente interno
     # O fator 1000. converte de MNm para kNm
-    MS = thetaS * (g + q) * L ** 2 / 8.0  # Momento de carregamento externo (kNm)
+    MS = thetaS * (Mg + Mq)   # Momento de carregamento externo (kNm)
     gx = MR - MS  # Função estado limite
     return gx
 
 
-# Parâmetro geométrico da viga
-As1 = 0.00050    # Área de aço da seção transversal da viga (m2)
-diam_t = 0.00  # Diâmetro do estribo em mm
-diam_l = 12.5  # Diâmetro da armadura longitudinal em mm
+# Parâmetros geométricos da viga
+b = 0.20 # Largura da viga em m
+h = 0.50 # Altura da viga em m
+As1 = 0.000942    # Área de aço da seção transversal da viga (m2)
+diam_t = 5.00  # Diâmetro do estribo em mm
+diam_l = 20.0  # Diâmetro da armadura longitudinal em mm
+c = 30.00 # Cobrimento da armadura (até o estribo)
+dl = (c + diam_t + diam_l/2.)/1000.
+
+# Parâmetros dos materiais
+fck = 25.00 # fck em MPa
+alpha_cc = 1.00 # Fator do efeito Rüsch, em situação de incêncio igual a 1.00
+fyk = 500.00 # fyk em MPa
+
+# Parâmetros de incêndio
+TRRF = 90.00 # Tempo requerido de resistência ao fogo
+k_c = 0.6806 # Fator de redução da resistência do concreto
+k_s = 0.6686 # Fator de redução da resistência do aço
+
 #
-# Momento de cálculo
+# Momento de cálculo em situação de incêndio
 #
-Msd = 92.00  # kN.m
+Mrd_fi = 1000. * As1 * fyk * k_s * ( h - dl - 0.5 * (As1 * fyk * k_s) / (alpha_cc * fck * k_c * b))  # kN.m
 #
 # Coeficientes de segurança
 #
 gamag = 1.40
 gamaq = 1.40
-r = 2.00  # r = gm / qm
-L = 5.00  # vão L = 5 m
+gamag_fi = 1.00
+gamaq_fi = 1.00
+psi_2 = 0.82
+fator = 1.00
+r = 2.00  # r = Mqk / Mgk
+k = (gamag_fi + fator*gamaq_fi*psi_2*r)/(gamag + gamaq*r)
 
-# carga acidental q: Distribuição de Gumbel
-qm = 8.00 / L ** 2 * Msd / (r * gamag / 1.05 + gamaq)  # Unidades: kN/m
-qmi = 0.24 * qm
-Vq = 0.65
 
 
 # carga permanente:Distribuição normal
-gm = r * qm  # Unidades: kN.m
-gmi = 1.05 * gm
-Vg = 0.10
+Mgk = Mrd_fi / (k*(gamag  + gamaq*r)) # Unidades: kN.m
+Mgm = 1.06 * Mgk
+Vg = 0.12
+
+
+# carga acidental q: Distribuição Gama
+Mqk = r * Mgk  # Unidades: kN.m
+Mqm = 0.21 * Mqk
+Vq = 0.76
 
 
 xvar = [
-    {'varname': 'b', 'vardist': 'normal', 'varmean': 0.20, 'varstd': 0.012},
-    {'varname': 'h', 'vardist': 'normal', 'varmean': 0.50, 'varstd': 0.0225},
-    {'varname': 'c', 'vardist': 'lognormal', 'varmean': 0.035, 'varstd': 0.011},
-    {'varname': 'fc', 'vardist': 'normal', 'varmean': 1.17*25, 'varcov': 0.10},
-    {'varname': 'fy', 'vardist': 'normal', 'varmean': 1.08*500, 'varcov': 0.08},
-    {'varname': 'g', 'vardist': 'normal', 'varmean': gmi, 'varcov': Vg},
-    {'varname': 'q', 'vardist': 'gumbel', 'varmean': qmi, 'varcov': Vq},
-    {'varname': 'thetaR', 'vardist': 'lognormal', 'varmean': 1.00, 'varcov': 0.05},
-    {'varname': 'thetaS', 'vardist': 'lognormal', 'varmean': 1.00, 'varcov': 0.05}
+    {'varname': 'b', 'vardist': 'normal', 'varmean': 0.2020, 'varstd': 0.0081},
+    {'varname': 'ds', 'vardist': 'normal', 'varmean': 0.4505, 'varstd': 0.0180},
+    {'varname': 'fc', 'vardist': 'normal', 'varmean': 1.25*25, 'varcov': 0.17},
+    {'varname': 'fy', 'vardist': 'normal', 'varmean': 1.22*500, 'varcov': 0.04},
+    {'varname': 'g', 'vardist': 'normal', 'varmean': Mgm, 'varcov': Vg},
+    {'varname': 'q', 'vardist': 'gamma', 'varmean': Mqm, 'varcov': Vq},
+    {'varname': 'thetaR', 'vardist': 'normal', 'varmean': 1.00, 'varcov': 0.05},
+    {'varname': 'thetaS', 'vardist': 'lognormal', 'varmean': 1.02, 'varcov': 0.0612}
 ]
 
 dvar = [{'varname': 'As1', 'varvalue': As1},
-        {'varname': 'alpha_cc', 'varvalue': 0.85},
-        {'varname': 'alpha_c', 'varvalue': 0.60},
-        {'varname': 'alpha_y', 'varvalue': 0.78},
-        {'varname': 'diam_l', 'varvalue': diam_l},
-        {'varname': 'L', 'varvalue': L},
+        {'varname': 'alpha_cc', 'varvalue': 1.00},
+        {'varname': 'k_c', 'varvalue': 0.6806},
+        {'varname': 'k_s', 'varvalue': 0.6686}
         ]
 #
 # FORM method
 #
 beam = Reliability(xvar, dvar, gfunction, None, None)
-beam.form(iHLRF=True, toler=1.e-6)
+beam.form(iHLRF=True, toler=1.e-3)
 #
